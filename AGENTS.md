@@ -243,7 +243,7 @@ studio/
 2. 创建 Sanity 项目，配置公开读取、服务端写令牌、两个签名 webhook，并把已核对的静态内容导入为首批已发布文档。
 3. 收集导师正式头像、成员授权头像、可公开论文 PDF 和报告 PPT/PDF，逐项确认版权与文件命名后再进入 public 存储层。
 4. 配置 DeepSeek 与 Upstash Redis REST；在服务商控制台设置费用告警/硬上限并验证限流失败时拒绝调用。
-5. 初始化或核对 Git 仓库，确认没有密钥、原始 CV 或私有文件后推送 GitHub；随后连接 Vercel、配置环境变量、webhook、`yizhoufan.com` DNS、HTTPS 与 CDN。
+5. GitHub 首次发布已完成；下一步连接 Vercel，配置环境变量、webhook、`yizhoufan.com` DNS、HTTPS 与 CDN。
 6. Sanity Studio 当前官方 CLI 依赖树的 `npm audit` 有 20 个传递依赖告警；现有 Studio 构建通过，但审计建议的自动修复会跨 Sanity 主版本。部署 Studio 前应升级到官方发布的兼容修复版并重新构建，禁止直接执行 `npm audit fix --force`。
 
 ---
@@ -312,3 +312,9 @@ npm run build
 - 团队列表改为弹性居中布局，单人和人数不足一行时均居中；同时支持 Sanity 成员头像 URL，未提供头像时继续显示姓名首字母占位。
 - 视觉与架构复核修正了嵌套 `<main>`、移动端成果容器收缩、长刊名换行、390px 水平溢出、平滑滚动标记和 favicon 404。真实 390px 视口下 `innerWidth` 与 `scrollWidth` 均为 390px。
 - 最新 Next.js 生产构建、ESLint、6 项页面/API 回归测试及 Sanity Studio 构建均通过；公开站生产依赖审计保持 0 漏洞。
+
+### 2026-07-27 - GitHub initial publication
+
+- 初始化 `main` 分支并将个人站首次推送至 `https://github.com/Reimagica/YizhouFan`；远端分支由本地 `main` 跟踪。
+- 推送前已确认工作树干净，并验证 `.env.local`、DeepSeek 密钥、原始 CV、构建缓存及依赖目录均未进入提交。
+- 本轮只完成 GitHub 代码托管，尚未连接 Vercel、配置线上环境变量或修改 `yizhoufan.com` DNS。
