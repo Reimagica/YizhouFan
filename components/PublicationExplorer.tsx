@@ -1,0 +1,122 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { profileLinks, type Language } from "../lib/content";
+import type { PublicPublication } from "../lib/cms/types";
+
+function localizedTitle(publication: PublicPublication, lang: Language) {
+  return lang === "zh" && publication.titleZh ? publication.titleZh : publication.title;
+}
+
+function toBibTeX(publication: PublicPublication) {
+  if (publication.bibtex) return publication.bibtex;
+  const entryType = publication.kind === "Book" ? "book" : publication.kind === "Journal article" ? "article" : "inproceedings";
+  const venueField = publication.kind === "Book" ? "publisher" : publication.kind === "Journal article" ? "journal" : "booktitle";
+  const key = `Fan${publication.year}`;
+  return `@${entryType}{${key},\n  title = {${publication.title}},\n  author = {${publication.authors.replaceAll(", ", " and ")}},\n  ${venueField} = {${publication.venue}},\n  year = {${publication.year}}\n}`;
+}
+
+export function PublicationExplorer({ lang, publications }: { lang: Language; publications: PublicPublication[] }) {
+  const zh = lang === "zh";
+  const [query, setQuery] = useState("");
+  const [year, setYear] = useState<number | null>(null);
+  const [kind, setKind] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const years = [...new Set(publications.map((item) => item.year))].sort((a, b) => b - a);
+  const kinds = [...new Set(publications.map((item) => item.kind))];
+  const filtered = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return publications.filter((item) => {
+      if (year && item.year !== year) return false;
+      if (kind && item.kind !== kind) return false;
+      if (!term) return true;
+      const target = [item.title, item.titleZh ?? "", item.authors, item.venue, item.kind, ...(item.keywords ?? [])].join(" ").toLowerCase();
+      return target.includes(term);
+    });
+  }, [kind, publications, query, year]);
+
+  const copyBibTeX = async (publication: PublicPublication) => {
+    await navigator.clipboard.writeText(toBibTeX(publication));
+    setCopied(publication.title);
+    window.setTimeout(() => setCopied(null), 1600);
+  };
+
+  return (
+    <>
+      <div className="archive-search">
+        <label className="search-box">
+          <span>{zh ? "检索学术成果" : "Search publications"}</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={zh ? "输入标题、作者、期刊或关键词" : "Enter a title, author, venue, or keyword"}
+          />
+          {query && <button type="button" onClick={() => setQuery("")} aria-label={zh ? "清空检索" : "Clear search"}>×</button>}
+        </label>
+      </div>
+
+      <div className="archive-layout">
+      <aside className="filter-panel">
+        <div className="filter-group">
+          <p>{zh ? "年份" : "Year"}</p>
+          <button className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
+          {years.map((item) => <button className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
+        </div>
+
+        <div className="filter-group">
+          <p>{zh ? "类型" : "Type"}</p>
+          <button className={!kind ? "active" : ""} type="button" onClick={() => setKind(null)}>{zh ? "全部" : "All"}</button>
+          {kinds.map((item) => <button className={kind === item ? "active" : ""} type="button" key={item} onClick={() => setKind(kind === item ? null : item)}>{item}</button>)}
+        </div>
+      </aside>
+
+      <section className="archive-results" aria-live="polite">
+        <div className="result-count">
+          <span>{zh ? `找到 ${filtered.length} 项成果` : `${filtered.length} results`}</span>
+          <a href={profileLinks.scholar} target="_blank" rel="noreferrer">Google Scholar ↗</a>
+        </div>
+
+        <div className="result-list">
+          {filtered.map((publication) => {
+            const title = localizedTitle(publication, lang);
+            const isOpen = expanded === publication.title;
+            const pdfUrl = publication.pdfUrl ?? null;
+            const sourceUrl = publication.sourceUrl ?? (publication.doi ? `https://doi.org/${publication.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")}` : null);
+
+            return (
+              <article className="result-card" key={`${publication.year}-${publication.title}`}>
+                <div className="result-card__meta">
+                  <span className="type-pill">{publication.kind}</span>
+                  <span>{publication.venue}</span>
+                  <time>{publication.year}</time>
+                </div>
+                <h2>{title}</h2>
+                <p className="result-card__authors">{publication.authors}</p>
+                <div className="result-card__actions">
+                  {sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer">{zh ? "查看原文" : "View source"} ↗</a>}
+                  {pdfUrl ? (
+                    <a href={pdfUrl} download>{zh ? "下载 PDF" : "Download PDF"} ↓</a>
+                  ) : (
+                    <span className="disabled-action" title={zh ? "公开版本待确认" : "Public version pending"}>{zh ? "PDF 待补" : "PDF pending"}</span>
+                  )}
+                  <button type="button" onClick={() => copyBibTeX(publication)}>{copied === publication.title ? (zh ? "已复制" : "Copied") : "BibTeX"}</button>
+                  <button type="button" onClick={() => setExpanded(isOpen ? null : publication.title)}>{isOpen ? (zh ? "收起摘要" : "Hide abstract") : (zh ? "展开摘要" : "Show abstract")}</button>
+                </div>
+                {isOpen && (
+                <div className="abstract-panel">
+                    <strong>{zh ? "摘要" : "Abstract"}</strong>
+                    <p>{(zh ? publication.abstractZh : publication.abstract) ?? (zh ? "暂无摘要。" : "Abstract not available.")}</p>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+          {filtered.length === 0 && <div className="empty-state">{zh ? "没有匹配结果，请调整关键词或筛选条件。" : "No matching results. Try another keyword or filter."}</div>}
+        </div>
+      </section>
+      </div>
+    </>
+  );
+}
