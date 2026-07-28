@@ -113,7 +113,9 @@ _type in ["profile", "publication", "talk", "person"]
 
 只能存在服务端：Sanity写入令牌、webhook secret、DeepSeek密钥、OSS/COS密钥。原始PPT、未公开论文、原始CV和内部资料不能进入Sanity公共资产库或公开Git仓库。
 
-公开AI问答使用Upstash Redis REST计数实现跨Vercel实例的单IP与全站每日限额。开发环境未配置时使用内存计数；生产环境若缺少配置或限流服务异常会拒绝模型请求，避免失控费用。部署前必须配置`UPSTASH_REDIS_REST_URL`和`UPSTASH_REDIS_REST_TOKEN`。
+公开 AI 问答使用 Upstash Redis REST 实现跨 Vercel 实例的分层原子限流：匿名浏览器标识每日 8 次、匿名网络每日 32 次、全站每日 120 次，并增加浏览器与网络的分钟级突发保护。浏览器标识保存在 HttpOnly、SameSite=Lax 的第一方 Cookie 中；网络地址经 `RATE_LIMIT_SALT` 做 HMAC 后才参与计数，不把原始 IP 写入 Redis。开发环境未配置时使用内存计数；生产环境缺少 Redis、盐值或限流服务异常时拒绝模型请求。部署前必须配置 `UPSTASH_REDIS_REST_URL`、`UPSTASH_REDIS_REST_TOKEN` 和 `RATE_LIMIT_SALT`。
+
+模型只返回结构化短条目，服务端会再次限制条目数量和长度、清除 Markdown 标记及固定套话，并根据回答主题附上个人信息、学术成果、学术报告或团队成员页面。若回答点名论文，模型只能返回站内成果 ID，服务端再从已发布成果数据读取 `sourceUrl` 或 DOI，禁止直接采用模型生成的链接。问答不保存对话历史，也不会把前一轮内容重新发送给模型。
 
 ## Validation
 

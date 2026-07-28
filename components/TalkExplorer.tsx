@@ -23,13 +23,17 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
   }, [query, talks, type, year]);
 
   return (
-    <div className="archive-layout">
-      <aside className="filter-panel">
+    <>
+      <div className="archive-search">
         <label className="search-box">
-          <span>{zh ? "检索" : "Search"}</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={zh ? "报告题目、主办方或类型" : "Title, host, or type"} />
+          <span>{zh ? "检索学术报告" : "Search talks"}</span>
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={zh ? "输入报告题目、主办方或类型" : "Enter a title, host, or talk type"} />
           {query && <button type="button" onClick={() => setQuery("")} aria-label={zh ? "清空检索" : "Clear search"}>×</button>}
         </label>
+      </div>
+
+      <div className="archive-layout">
+      <aside className="filter-panel">
         <div className="filter-group">
           <p>{zh ? "年份" : "Year"}</p>
           <button className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
@@ -59,6 +63,7 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
           {filtered.length === 0 && <div className="empty-state">{zh ? "没有匹配结果，请调整关键词或筛选条件。" : "No matching results. Try another keyword or filter."}</div>}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

@@ -145,10 +145,6 @@ function fallbackProfile(lang: Language): PublicProfile {
       {year: "2024", title: zh ? "QS 重塑教育奖（E-Learning 赛道 - FLoRA）银奖，QS Quacquarelli Symonds" : "QS Reimagine Education Award (E-Learning Project - FLoRA), Silver Winner, QS Quacquarelli Symonds"},
       {year: "2024", title: zh ? "最佳论文奖（指导研究生），第 17 届国际混合式学习会议（ICBL）" : "Best Paper Award, 17th International Conference on Blended Learning (ICBL)"},
       {year: "2023", title: zh ? "新锐学者奖，国际学习分析研究学会（SoLAR）" : "Emerging Scholar Award, Society for Learning Analytics Research (SoLAR)"},
-      {year: "2019", title: zh ? "“教师如何做研究”慕课国家级精品在线开放课程，教育部" : "National Excellent MOOC Award, Ministry of Education, China"},
-      {year: "2019", title: zh ? "全国教育实证研究优秀学位论文奖，教育实证研究评审委员会" : "Excellent Doctoral Dissertation Award, Review Committee for Empirical Research in Education"},
-      {year: "2017", title: zh ? "研究生国家奖学金，教育部" : "National Scholarship for Graduate Students, Ministry of Education, China"},
-      {year: "2013", title: zh ? "北京公益先锋，北京市学生联合会" : "Beijing Public Welfare Pioneer, Beijing Students' Federation"},
     ],
     publicProjects: [
       {year: "2025-2027", title: zh ? "国家自然科学基金 · 基于生成式人工智能的元认知脚手架研究" : "NSFC · Metacognitive scaffolding based on generative AI"},

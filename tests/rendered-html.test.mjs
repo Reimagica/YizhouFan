@@ -37,6 +37,7 @@ test("uses the English profile as the default language landing page", async () =
   assert.match(html, /Best Student Paper Nomination/);
   assert.match(html, /Peking University postgraduate course/);
   assert.match(html, /fyz@pku.edu.cn/);
+  assert.doesNotMatch(html, /National Excellent MOOC Award|Excellent Doctoral Dissertation Award|National Scholarship for Graduate Students|Beijing Public Welfare Pioneer/);
   assert.doesNotMatch(html, /Selected work|codex-preview|react-loading-skeleton/i);
 });
 
@@ -47,6 +48,7 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   assert.match(html, /个人简介/);
   assert.match(html, /开设课程/);
   assert.match(html, /最佳学生论文提名/);
+  assert.doesNotMatch(html, /国家级精品在线开放课程，教育部|全国教育实证研究优秀学位论文奖|研究生国家奖学金|北京公益先锋/);
   assert.doesNotMatch(html, /公开白名单|仅展示已通过/);
   assert.match(html, /AI 问答/);
 });
@@ -63,6 +65,16 @@ test("renders searchable publication controls and PDF status", async () => {
   assert.match(html, /BibTeX/);
 });
 
+test("places the talk search before filters and results", async () => {
+  const response = await request("/en/talks");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const searchIndex = html.indexOf("Enter a title, host, or talk type");
+  const yearIndex = html.indexOf(">Year<");
+  assert.ok(searchIndex >= 0);
+  assert.ok(yearIndex > searchIndex);
+});
+
 test("renders three static people categories", async () => {
   const response = await request("/en/people");
   assert.equal(response.status, 200);
@@ -75,7 +87,10 @@ test("renders three static people categories", async () => {
 test("renders the live AI Q&A surface and fails safely without a key", async () => {
   const page = await request("/en/ask");
   assert.equal(page.status, 200);
-  assert.match(await page.text(), /Ask the AI assistant/);
+  const html = await page.text();
+  assert.match(html, /Ask the AI assistant/);
+  assert.match(html, /This browser may ask up to 8 questions per day/);
+  assert.doesNotMatch(html, /Each visitor may ask/);
 
   const api = await request("/api/ask", {
     method: "POST",

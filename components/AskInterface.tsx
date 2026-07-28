@@ -4,7 +4,8 @@ import { FormEvent, useState } from "react";
 import type { Language } from "../lib/content";
 
 type Source = { label: string; url: string };
-type Message = { role: "user" | "assistant"; text: string; sources?: Source[] };
+type Answer = { status: "answered" | "insufficient"; items: string[]; note?: string };
+type Message = { role: "user" | "assistant"; text?: string; answer?: Answer; publicationLinks?: Source[]; sources?: Source[] };
 
 export function AskInterface({ lang }: { lang: Language }) {
   const zh = lang === "zh";
@@ -28,9 +29,9 @@ export function AskInterface({ lang }: { lang: Language }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: text, lang }),
       });
-      const result = await response.json() as { answer?: string; error?: string; sources?: Source[] };
+      const result = await response.json() as { answer?: Answer; error?: string; publicationLinks?: Source[]; sources?: Source[] };
       if (!response.ok || !result.answer) throw new Error(result.error || (zh ? "暂时无法回答。" : "Unable to answer right now."));
-      setMessages((current) => [...current, { role: "assistant", text: result.answer!, sources: result.sources }]);
+      setMessages((current) => [...current, { role: "assistant", answer: result.answer!, publicationLinks: result.publicationLinks, sources: result.sources }]);
     } catch (error) {
       setMessages((current) => [...current, { role: "assistant", text: error instanceof Error ? error.message : (zh ? "暂时无法回答。" : "Unable to answer right now.") }]);
     } finally {
@@ -54,10 +55,23 @@ export function AskInterface({ lang }: { lang: Language }) {
             {messages.map((message, index) => (
               <article className={`message message--${message.role}`} key={`${message.role}-${index}`}>
                 <span>{message.role === "user" ? (zh ? "访客" : "You") : "AI"}</span>
-                <p>{message.text}</p>
+                {message.text && <p>{message.text}</p>}
+                {message.answer && (
+                  <div className="answer-content">
+                    {message.answer.status === "insufficient" && <small>{zh ? "现有资料不足" : "Insufficient public evidence"}</small>}
+                    <ul>{message.answer.items.map((item, itemIndex) => <li key={`${itemIndex}-${item}`}>{item}</li>)}</ul>
+                    {message.answer.note && <p className="answer-note">{message.answer.note}</p>}
+                  </div>
+                )}
+                {message.publicationLinks && message.publicationLinks.length > 0 && (
+                  <div className="answer-sources answer-publications">
+                    <strong>{zh ? "相关论文原文" : "Publication links"}</strong>
+                    {message.publicationLinks.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.label} ↗</a>)}
+                  </div>
+                )}
                 {message.sources && message.sources.length > 0 && (
                   <div className="answer-sources">
-                    <strong>{zh ? "公开来源" : "Public sources"}</strong>
+                    <strong>{zh ? "相关页面" : "Related pages"}</strong>
                     {message.sources.map((source) => <a key={source.url} href={source.url} target={source.url.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{source.label} ↗</a>)}
                   </div>
                 )}
@@ -74,7 +88,7 @@ export function AskInterface({ lang }: { lang: Language }) {
           <textarea id="question" maxLength={800} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={zh ? "询问导师的研究、成果、报告、教学或课题组…" : "Ask about research, publications, talks, teaching, or the lab…"} />
           <button type="submit" disabled={loading || !question.trim()}>{loading ? (zh ? "回答中" : "Answering") : (zh ? "发送" : "Send")}</button>
         </div>
-        <p>{zh ? "回答仅基于本站公开材料；信息不足时会明确说明。每位访客每天最多提问 8 次。" : "Answers use only public site content and state when evidence is insufficient. Each visitor may ask up to 8 questions per day."}</p>
+        <p>{zh ? "回答仅基于本站公开材料；资料不足时会明确说明。本浏览器每天最多提问 8 次，并设有网络与全站保护额度。" : "Answers use only public site content and state when evidence is insufficient. This browser may ask up to 8 questions per day, with additional network and site-wide safeguards."}</p>
       </form>
     </div>
   );
