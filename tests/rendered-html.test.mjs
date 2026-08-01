@@ -33,12 +33,15 @@ test("uses the English profile as the default language landing page", async () =
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /Biography/);
+  assert.match(html, /范逸洲/);
+  assert.match(html, /Yizhou Fan/);
   assert.match(html, /Courses taught/);
   assert.match(html, /Best Student Paper Nomination/);
   assert.match(html, /Peking University postgraduate course/);
   assert.match(html, /fyz@pku.edu.cn/);
   assert.doesNotMatch(html, /National Excellent MOOC Award|Excellent Doctoral Dissertation Award|National Scholarship for Graduate Students|Beijing Public Welfare Pioneer/);
   assert.doesNotMatch(html, /Selected work|codex-preview|react-loading-skeleton/i);
+  assert.doesNotMatch(html, /Studying how learners retain judgment, reflection, and agency in the age of AI/);
 });
 
 test("uses the Chinese profile as the Chinese landing page", async () => {
@@ -46,9 +49,12 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /个人简介/);
+  assert.match(html, /范逸洲/);
+  assert.match(html, /Yizhou Fan/);
   assert.match(html, /开设课程/);
   assert.match(html, /最佳学生论文提名/);
   assert.doesNotMatch(html, /国家级精品在线开放课程，教育部|全国教育实证研究优秀学位论文奖|研究生国家奖学金|北京公益先锋/);
+  assert.doesNotMatch(html, /研究学习者如何在人工智能时代保持判断、反思与能动性|我的研究关注学习者如何在与人工智能互动中进行调节、理解与成长/);
   assert.doesNotMatch(html, /公开白名单|仅展示已通过/);
   assert.match(html, /AI 问答/);
 });

@@ -41,8 +41,7 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
       <div className="profile-content">
         <header className="profile-heading">
           <p className="eyebrow">{copy.heroEyebrow}</p>
-          <h2>{zh ? "研究学习者如何在人工智能时代保持判断、反思与能动性。" : "Studying how learners retain judgment, reflection, and agency in the age of AI."}</h2>
-          <p>{profile.researchStatement}</p>
+          <h2>范逸洲 <span>· Yizhou Fan</span></h2>
         </header>
 
         <section className="content-card long-copy">
