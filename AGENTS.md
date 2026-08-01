@@ -368,3 +368,8 @@ npm run build
 ### 2026-08-01 - Development indicator
 
 - 在 `next.config.ts` 设置 `devIndicators: false`，隐藏本地开发环境左下角的 Next.js 调试按钮；错误输出、开发服务和生产构建行为保持不变。
+
+### 2026-08-01 - Vercel TypeScript build boundary
+
+- 修复 Vercel 根项目构建误检查 `studio/actions/automationActions.tsx`、但根安装未包含 `@sanity/ui` 的失败：根 `tsconfig.json` 明确排除 `studio/`。
+- Next.js 公开站与 Sanity Studio 继续使用各自的 TypeScript 配置和依赖；Studio 由 `studio/tsconfig.json` 与 `studio/package.json` 独立构建，禁止为掩盖边界问题把 `@sanity/ui` 安装到根项目。
