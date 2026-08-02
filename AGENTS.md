@@ -423,4 +423,4 @@ npm run build
 - 学术报告取消 PPT 解析与 AI 草稿，改为人工维护“基本信息—双语 Portable Text 正文—公开附件”。正文支持二/三级标题、图片、引用、外部链接、脚注和提示框，不设置封面图片；前台新增 `/{lang}/talks/{id}` 详情页。
 - 上传限制采用本地选择预检与 Sanity Asset 元数据二次校验：正文图仅 JPEG/PNG/WebP 且 ≤8 MB，论文仅 PDF 且 ≤40 MB，报告仅 PDF/PPTX 且 ≤80 MB；关闭原始文件名存储，前台只查询 `copyrightCleared == true` 的文件。
 - 删除旧 PPTX 解析模块、DeepSeek 报告摘要模块及 `jszip` 依赖。最终 Next.js 与 Sanity Studio 生产构建、两套 TypeScript、ESLint、6 项 AI 守卫测试、11 项页面/API 回归均通过；公开站 `npm audit --omit=dev` 为 0 漏洞。
-- 代码提交 `eed5ec3` 已推送 GitHub `main`。Sanity Studio 已重新部署至 `https://yizhoufan.sanity.studio/`；Vercel Production 部署 `dpl_7dT24mvpFR6aVwza7qpCje5oqnPx` 状态 Ready，并已将 `https://yizhoufan.vercel.app` 指向新版本。当前执行环境直连 `*.vercel.app` 会被上游重置，因此线上验收以 Vercel 控制面 Ready 状态、完整成功构建日志和本地生产回归共同确认。
+- 功能提交及部署记录均已推送 GitHub `main`。Sanity Studio 已重新部署至 `https://yizhoufan.sanity.studio/`；手动部署与 GitHub 集成触发的 Vercel Production 构建均为 Ready，稳定别名 `https://yizhoufan.vercel.app` 已指向最新 `main`。当前执行环境直连 `*.vercel.app` 会被上游重置，因此线上验收以 Vercel 控制面 Ready 状态、完整成功构建日志和本地生产回归共同确认。
