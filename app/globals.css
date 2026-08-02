@@ -7,7 +7,7 @@
   --surface-soft: #f8f5ef;
   --ink: #1f2523;
   --muted: #67706b;
-  --faint: #909892;
+  --faint: #717973;
   --line: #e4dfd5;
   --line-strong: #cbc3b7;
   --pku-red: #8f1d2c;
@@ -221,7 +221,7 @@ textarea:focus-visible {
 }
 
 .profile-photo {
-  aspect-ratio: 4 / 5;
+  width: 100%;
   height: clamp(250px, 36vh, 310px);
   overflow: hidden;
   background: var(--paper-deep);
@@ -283,7 +283,7 @@ textarea:focus-visible {
 
 .profile-contact span {
   color: var(--faint);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -341,17 +341,13 @@ textarea:focus-visible {
   margin-bottom: 22px;
 }
 
-.section-title-row > span {
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
+.section-title-row::before {
+  width: 3px;
+  height: 22px;
+  content: "";
   flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--pku-red-soft);
-  color: var(--pku-red);
-  font-family: var(--serif);
-  font-size: 11px;
+  border-radius: 999px;
+  background: var(--pku-red);
 }
 
 .section-title-row h2 {
@@ -555,7 +551,7 @@ textarea:focus-visible {
   display: block;
   margin: 0 0 9px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -780,7 +776,7 @@ textarea:focus-visible {
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.06);
   padding: 1px 6px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .people-tabs button.active span {
@@ -912,7 +908,7 @@ textarea:focus-visible {
   display: block;
   margin-bottom: 6px;
   color: var(--faint);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -945,7 +941,7 @@ textarea:focus-visible {
   background: var(--pku-red-soft);
   padding: 4px 8px;
   color: var(--pku-red);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -1101,7 +1097,13 @@ textarea:focus-visible {
     display: flex;
     gap: 4px;
     overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
     padding-block: 5px 8px;
+  }
+
+  .mobile-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .profile-page {
@@ -1141,6 +1143,7 @@ textarea:focus-visible {
   }
 
   .profile-photo {
+    aspect-ratio: 4 / 5;
     height: auto;
     grid-row: span 2;
   }
@@ -1187,6 +1190,16 @@ textarea:focus-visible {
   .wordmark__role,
   .scholar-link {
     display: none;
+  }
+
+  .mobile-nav {
+    gap: 2px;
+  }
+
+  .mobile-nav .nav-link {
+    flex: 0 0 auto;
+    padding-inline: 7px;
+    font-size: 12px;
   }
 
   .profile-card {

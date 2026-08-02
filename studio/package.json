@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "sanity dev",
-    "build": "sanity build"
+    "build": "sanity build",
+    "deploy": "sanity deploy --schema-required"
   },
   "dependencies": {
     "@sanity/ui": "^3.5.0",
@@ -18,5 +19,8 @@
   "devDependencies": {
     "@types/react": "^19.0.0",
     "typescript": "^5.9.0"
+  },
+  "overrides": {
+    "@emotion/is-prop-valid": "1.3.1"
   }
 }

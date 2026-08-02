@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import { content, isLanguage, profileLinks } from "../../lib/content";
 import { getProfile } from "../../lib/cms/content";
 
+function displayPeriod(period: string, zh: boolean) {
+  const normalized = period.replace(/(\d{4})-(?=\d{4}|present)/gi, "$1–");
+  return zh ? normalized.replace(/present/gi, "至今") : normalized;
+}
+
 export default async function LanguageHome({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLanguage(lang)) notFound();
@@ -45,23 +50,23 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
         </header>
 
         <section className="content-card long-copy">
-          <div className="section-title-row"><span>01</span><h2>{zh ? "个人简介" : "Biography"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "个人简介" : "Biography"}</h2></div>
           {profile.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </section>
 
         <section className="content-card">
-          <div className="section-title-row"><span>02</span><h2>{zh ? "研究方向" : "Research interests"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "研究方向" : "Research interests"}</h2></div>
           <div className="interest-grid">
             {profile.researchInterests.map((item) => <span key={item}>{item}</span>)}
           </div>
         </section>
 
         <section className="content-card">
-          <div className="section-title-row"><span>03</span><h2>{zh ? "任职经历" : "Appointments"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "任职经历" : "Appointments"}</h2></div>
           <ol className="timeline-list">
             {profile.appointments.map((item) => (
               <li key={`${item.year}-${item.institution}`}>
-                <time>{item.year}</time>
+                <time>{displayPeriod(item.year, zh)}</time>
                 <p><strong>{item.institution}</strong><span>{item.role}</span></p>
               </li>
             ))}
@@ -69,28 +74,28 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
         </section>
 
         <section className="content-card">
-          <div className="section-title-row"><span>04</span><h2>{zh ? "荣誉奖励" : "Honors & awards"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "荣誉奖励" : "Honors & awards"}</h2></div>
           <ol className="timeline-list timeline-list--compact">
             {profile.honors.map((item) => <li key={`${item.year}-${item.title}`}><time>{item.year}</time><p><strong>{item.title}</strong></p></li>)}
           </ol>
         </section>
 
         <section className="content-card">
-          <div className="section-title-row"><span>05</span><h2>{zh ? "科研项目" : "Research projects"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "科研项目" : "Research projects"}</h2></div>
           <ol className="timeline-list timeline-list--compact">
-            {profile.publicProjects.map((item) => <li key={`${item.year}-${item.title}`}><time>{item.year}</time><p><strong>{item.title}</strong></p></li>)}
+            {profile.publicProjects.map((item) => <li key={`${item.year}-${item.title}`}><time>{displayPeriod(item.year, zh)}</time><p><strong>{item.title}</strong></p></li>)}
           </ol>
         </section>
 
         <section className="content-card" id="teaching">
-          <div className="section-title-row"><span>06</span><h2>{zh ? "开设课程" : "Courses taught"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "开设课程" : "Courses taught"}</h2></div>
           <ul className="course-list">
             {profile.courses.map((course) => <li key={`${course.title}-${course.nature}`}><strong>{course.title}</strong><span>{course.nature}</span></li>)}
           </ul>
         </section>
 
         <section className="content-card">
-          <div className="section-title-row"><span>07</span><h2>{zh ? "学术服务" : "Academic service"}</h2></div>
+          <div className="section-title-row"><h2>{zh ? "学术服务" : "Academic service"}</h2></div>
           <p className="section-lead">{profile.academicService}</p>
         </section>
       </div>

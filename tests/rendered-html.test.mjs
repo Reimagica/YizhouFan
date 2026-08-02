@@ -56,6 +56,8 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   assert.doesNotMatch(html, /国家级精品在线开放课程，教育部|全国教育实证研究优秀学位论文奖|研究生国家奖学金|北京公益先锋/);
   assert.doesNotMatch(html, /研究学习者如何在人工智能时代保持判断、反思与能动性|我的研究关注学习者如何在与人工智能互动中进行调节、理解与成长/);
   assert.doesNotMatch(html, /公开白名单|仅展示已通过/);
+  assert.doesNotMatch(html, />0[1-7]</);
+  assert.match(html, /至今/);
   assert.match(html, /AI 问答/);
 });
 
@@ -71,6 +73,14 @@ test("renders searchable publication controls and PDF status", async () => {
   assert.match(html, /BibTeX/);
 });
 
+test("localizes publication types and exposes filter state in Chinese", async () => {
+  const response = await request("/zh/publications");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /期刊论文|会议论文|学术著作/);
+  assert.match(html, /aria-pressed="true"/);
+});
+
 test("places the talk search before filters and results", async () => {
   const response = await request("/en/talks");
   assert.equal(response.status, 200);
@@ -81,6 +91,14 @@ test("places the talk search before filters and results", async () => {
   assert.ok(yearIndex > searchIndex);
 });
 
+test("localizes talk types and exposes filter state in Chinese", async () => {
+  const response = await request("/zh/talks");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /主旨演讲|受邀报告|工作坊|圆桌讨论/);
+  assert.match(html, /aria-pressed="true"/);
+});
+
 test("renders three static people categories", async () => {
   const response = await request("/en/people");
   assert.equal(response.status, 200);
@@ -88,6 +106,8 @@ test("renders three static people categories", async () => {
   assert.match(html, /Postdoctoral fellows/);
   assert.match(html, /Current students/);
   assert.match(html, /Alumni/);
+  assert.match(html, /aria-pressed="true"/);
+  assert.doesNotMatch(html, /role="tab(?:list|panel)?"|aria-selected=/);
 });
 
 test("renders the live AI Q&A surface and fails safely without a key", async () => {

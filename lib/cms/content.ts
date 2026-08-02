@@ -112,7 +112,7 @@ export async function getPeople(): Promise<PublicPerson[]> {
   return (await sanityQuery<PublicPerson[]>(peopleQuery)) ?? fallbackPeopleRows();
 }
 
-function fallbackProfile(lang: Language): PublicProfile {
+export function fallbackProfile(lang: Language): PublicProfile {
   const zh = lang === "zh";
   return {
     name: content[lang].name,

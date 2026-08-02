@@ -12,7 +12,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | GitHub `main` 已发布；等待 Sanity、对象存储与 Vercel 部署配置 |
+| 当前阶段 | GitHub `main`、Sanity Studio、首批公开内容及 Vercel Sanity 配置已上线；等待自定义域名、DeepSeek/Upstash、对象存储与内容文件 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity 已发布内容为正式数据源；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -253,11 +253,11 @@ studio/
 ## 后续优先事项
 
 1. 选择阿里云 OSS 或腾讯云 COS，并实现 `privateSource.objectKey` 到短时签名下载 URL 的唯一供应商适配器；当前服务端在未配置适配器时明确返回 `501`，不会误读私有文件。
-2. 创建 Sanity 项目，配置公开读取、服务端写令牌、两个签名 webhook，并把已核对的静态内容导入为首批已发布文档。
+2. Sanity 项目 `mb3w1o0y`、`production` 数据集、公开读取、Studio、首批内容、Editor 服务端写令牌及两个签名 webhook 均已完成；后续只在接口权限变化时轮换令牌与 Secret。
 3. 收集导师正式头像、成员授权头像、可公开论文 PDF 和报告 PPT/PDF，逐项确认版权与文件命名后再进入 public 存储层。
 4. 配置 DeepSeek 与 Upstash Redis REST；在服务商控制台设置费用告警/硬上限并验证限流失败时拒绝调用。
-5. GitHub 首次发布已完成；下一步连接 Vercel，配置环境变量、webhook、`yizhoufan.com` DNS、HTTPS 与 CDN。
-6. Sanity Studio 当前官方 CLI 依赖树的 `npm audit` 有 20 个传递依赖告警；现有 Studio 构建通过，但审计建议的自动修复会跨 Sanity 主版本。部署 Studio 前应升级到官方发布的兼容修复版并重新构建，禁止直接执行 `npm audit fix --force`。
+5. Vercel 已绑定 `ma-j/yizhoufan` 并配置 Sanity 项目 ID、服务端写令牌与 webhook secret；下一步配置轮换后的 DeepSeek 密钥、Upstash 环境变量，以及 `yizhoufan.com` DNS、HTTPS 与 CDN。
+6. Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。非破坏性 `npm audit fix` 后官方 CLI 依赖树仍有 7 个传递依赖告警（3 moderate、4 high），剩余自动修复会跨 Sanity 主版本；禁止执行 `npm audit fix --force`，等待官方兼容修复并在升级后重新构建部署。
 
 ---
 
@@ -373,3 +373,34 @@ npm run build
 
 - 修复 Vercel 根项目构建误检查 `studio/actions/automationActions.tsx`、但根安装未包含 `@sanity/ui` 的失败：根 `tsconfig.json` 明确排除 `studio/`。
 - Next.js 公开站与 Sanity Studio 继续使用各自的 TypeScript 配置和依赖；Studio 由 `studio/tsconfig.json` 与 `studio/package.json` 独立构建，禁止为掩盖边界问题把 `@sanity/ui` 安装到根项目。
+
+### 2026-08-01 - Sanity production project and initial content
+
+- 使用 Google 账号完成 Sanity CLI 授权，核验项目 `yizhoufan`（project ID `mb3w1o0y`）及 `production` 数据集；项目初始内容为空，仅包含 Sanity 系统文档。
+- 根站和独立 Studio 的 Git 忽略环境文件已绑定项目 ID 与数据集；公开站不配置 Sanity 时仍保留受控静态回退，线上密钥继续禁止进入 Git。
+- Sanity Studio 已构建并部署至 `https://yizhoufan.sanity.studio/`，发布 profile、publication、talk、person 四类 Schema；CLI 固定 Studio hostname 与 deployment app ID，后续可重复无交互部署。
+- 首次部署遇到 `@emotion/is-prop-valid@1.4.0` 发布包缺少其声明的 CommonJS 文件，导致 Manifest 提取失败；Studio 使用 npm override 固定到文件完整的 `1.3.1` 后构建、Schema 发布与托管部署均通过。
+- 新增可重复执行的 `sanity:seed` 迁移脚本，从受控公开数据生成 28 条文档：1 个个人档案、12 项成果、6 场报告、9 位成员。导入前完成保密关键词扫描，明确不含海外引进博士后内部项目；使用 `--missing` 模式导入，不覆盖已有内容。
+- 配置 Sanity 后的 Next.js 生产构建、ESLint 与 13 项回归测试全部通过，证明中英文页面可从 Content Lake 静态生成；公开站生产依赖审计为 0 漏洞。
+- Studio 执行非破坏性安全更新后仍有 7 个官方 CLI 传递依赖告警（3 moderate、4 high）；剩余建议需要跨 Sanity 主版本，因此不执行强制修复。
+- Vercel 已登录账号 `reimagica-2258` 并绑定团队项目 `ma-j/yizhoufan`。Production、Preview、Development 均配置公开 Sanity 项目参数；Production 另配置加密的 `SANITY_API_WRITE_TOKEN` 与 `SANITY_WEBHOOK_SECRET`。
+- Sanity 只保留一枚标签为 `YizhouFan Vercel automation` 的 Editor Token，足以回写自动化草稿但不具备项目级 Webhook 管理权限；创建 Webhook 时使用一次性的已登录管理会话，运行时不保存高权限管理令牌。
+- 已创建 `YizhouFan content automation` 与 `YizhouFan content revalidation` 两个签名 Webhook，当前目标分别为 `https://yizhoufan.vercel.app/api/cms/automation` 和 `/api/cms/revalidate`；前者包含草稿并使用窄过滤器，后者只监听已发布四类内容。自定义域名尚未解析，因此暂不使用 `yizhoufan.com` 作为回调域名。
+- 配置后重新部署 Vercel Production，部署状态为 Ready，稳定别名为 `https://yizhoufan.vercel.app`。当前执行环境访问 `*.vercel.app` 被上游重置，未能完成外部 HTTP 抓取验收；本地读取真实 Sanity 的生产构建、Vercel 构建与部署均已通过。
+- 初次真实投递测试发现通过标准输入写入的 Sensitive Secret 与 Sanity 签名不匹配，内容刷新返回 401；随后轮换随机 Secret，改用 Vercel `--value` 显式写入，精确替换两个 Webhook 并再次部署。幂等更新测试确认 revalidation Webhook 返回 200。
+- 论文自动化完成端到端验收：为 `publication-001` 创建临时草稿并设置 `automation.status=requested` 后，Vercel 成功执行多源检索并回写 `candidates-ready` 与 3 条候选；测试草稿随后删除，已发布论文未修改。这同时验证了 Webhook 签名、Production Editor Token 和 Sanity 草稿回写链路。
+- DeepSeek 正式密钥与 Upstash Redis 尚未写入 Vercel。此前在对话中出现过的 DeepSeek 密钥必须先轮换，禁止直接用于生产；完成前 AI 问答按生产安全边界拒绝付费调用。
+
+### 2026-08-02 - UI clarity and responsive polish
+
+- 桌面端个人信息卡的头像容器改为与 300px 侧栏同宽，移除固定纵横比与紧凑高度同时生效造成的右侧留白；平板与手机断点继续显式使用适合各自布局的图片比例。
+- 移动端导航压缩链接横向内边距与间距，并隐藏浏览器原生水平滚动条；极窄屏仍保留触摸横向滚动能力，常见手机宽度下优先完整呈现五个入口。
+- 个人信息页七个区块移除无语义的 `01`—`07` 圆形编号，统一使用北大红短竖线强化标题层级，不把纯装饰编号暴露给读屏器。
+- 中文站的成果类型与报告类型改为本地化展示，后台枚举值继续保持英文；任职和项目时间范围统一使用连接号，中文 `present` 显示为“至今”。报告日期兼容 Sanity ISO 日期和静态回退的点分格式，年份筛选不再依赖单一格式。
+- 提高联系方式、检索/筛选标签、问答角色标签和状态徽标的字号与弱文本对比度；成果、报告和成员分类按钮增加 `aria-pressed`，成员分类从不完整的 ARIA Tab 模式改为与真实交互一致的筛选按钮语义，头像占位增加图片角色。
+- 新增双语渲染回归断言，覆盖无编号标题、“至今”、成果/报告类型本地化和筛选状态语义。本轮 ESLint、TypeScript `noEmit` 与 6 项 AI 输出守卫单测通过；自动化生产构建因当前执行环境拒绝写入 `.next`、浏览器视觉回归因本地地址安全偏好被阻止，需在下一次本地/Vercel 构建时完成最终截图与全量渲染测试。
+
+### 2026-08-02 - GitHub sync pending
+
+- 已准备将 Sanity 正式项目配置、Studio 托管部署参数、首次公开内容迁移脚本、Vercel/Webhook 文档、Studio 依赖兼容修复与本轮 UI 优化合并为同一轮稳定更新；当前执行环境的 Git 写入授权服务连接失败，尚未创建提交或同步至 GitHub `main`。
+- 待推送范围不包含 `.env.local`、`studio/.env.local`、DeepSeek/Sanity/Webhook 密钥、原始 CV、构建缓存、Studio 构建产物或依赖目录；线上 Sanity 与 Vercel 中的加密环境变量不得写入仓库。

@@ -12,7 +12,8 @@
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern studio/dist",
     "studio:dev": "npm --prefix studio run dev",
-    "studio:build": "npm --prefix studio run build"
+    "studio:build": "npm --prefix studio run build",
+    "sanity:seed": "tsx scripts/generate-sanity-seed.mjs"
   },
   "dependencies": {
     "@sanity/webhook": "^4.0.4",
@@ -29,6 +30,7 @@
     "eslint": "9.39.4",
     "eslint-config-next": "^16.2.12",
     "tailwindcss": "4.2.1",
+    "tsx": "4.23.1",
     "typescript": "5.9.3"
   },
   "overrides": {

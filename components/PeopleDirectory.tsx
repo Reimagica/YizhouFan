@@ -18,13 +18,12 @@ export function PeopleDirectory({ lang, people }: { lang: Language; people: Publ
 
   return (
     <>
-      <div className="people-tabs" role="tablist" aria-label={zh ? "成员分类" : "People categories"}>
+      <div className="people-tabs" aria-label={zh ? "成员分类" : "People categories"}>
         {categories.map((item) => (
           <button
             key={item}
             type="button"
-            role="tab"
-            aria-selected={category === item}
+            aria-pressed={category === item}
             className={category === item ? "active" : ""}
             onClick={() => setCategory(item)}
           >
@@ -32,11 +31,12 @@ export function PeopleDirectory({ lang, people }: { lang: Language; people: Publ
           </button>
         ))}
       </div>
-      <div className="people-grid" role="tabpanel">
+      <div className="people-grid" aria-live="polite">
         {visible.map((person) => (
           <article className="person-card" key={person.id}>
             <div
               className={person.portraitUrl ? "portrait-slot portrait-slot--image" : "portrait-slot"}
+              role="img"
               aria-label={zh ? person.nameZh : person.name}
               style={person.portraitUrl ? {backgroundImage: `url(${person.portraitUrl})`} : undefined}
             >

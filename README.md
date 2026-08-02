@@ -42,11 +42,23 @@ npm run dev
 
 Sanity作为独立子项目运行，避免后台依赖进入公开网站的浏览器包：
 
+- 已部署后台：`https://yizhoufan.sanity.studio/`
+- Sanity project ID：`mb3w1o0y`
+- Dataset：`production`
+
 ```bash
 cd studio
 npm install
 cp .env.example .env.local
 npm run dev
+```
+
+首次迁移受控静态公开内容时，可生成临时 NDJSON 后使用 Sanity CLI 的 `--missing` 模式导入；该模式不会覆盖已有文档：
+
+```bash
+npm run sanity:seed
+cd studio
+npx sanity dataset import /private/tmp/yizhoufan-initial-content.ndjson production --missing
 ```
 
 当前内容模型包括：
@@ -64,7 +76,7 @@ npm run dev
 
 ### Automation webhook
 
-- URL：`https://yizhoufan.com/api/cms/automation`
+- 当前 URL：`https://yizhoufan.vercel.app/api/cms/automation`（`yizhoufan.com` 完成 DNS 绑定后也可使用同一路径）
 - Trigger on：Create、Update
 - Include drafts：开启
 - Filter：
@@ -97,7 +109,7 @@ npm run dev
 
 ### Content revalidation webhook
 
-- URL：`https://yizhoufan.com/api/cms/revalidate`
+- 当前 URL：`https://yizhoufan.vercel.app/api/cms/revalidate`（`yizhoufan.com` 完成 DNS 绑定后也可使用同一路径）
 - Trigger on：Create、Update、Delete
 - Filter：
 
@@ -106,6 +118,8 @@ _type in ["profile", "publication", "talk", "person"]
 ```
 
 该接口使Vercel上的静态/ISR页面在内容发布后失效并读取新内容。
+
+当前生产配置已通过真实投递验收：内容刷新 Webhook 返回 200；论文自动化请求成功完成多源检索并向临时 Sanity 草稿回写候选。
 
 ## Environment boundaries
 
@@ -126,4 +140,4 @@ npm test
 npm run studio:build
 ```
 
-本阶段不包含GitHub推送、Sanity项目创建、Vercel发布、域名切换或OSS/COS账号配置。
+GitHub、Sanity Studio、Vercel Sanity 环境变量和两个签名 webhook 已发布；`yizhoufan.com` 域名切换、DeepSeek 新密钥、Upstash Redis 和 OSS/COS 仍需完成。

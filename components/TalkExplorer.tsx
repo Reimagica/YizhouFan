@@ -4,13 +4,34 @@ import { useMemo, useState } from "react";
 import type { Language } from "../lib/content";
 import type { PublicTalk } from "../lib/cms/types";
 
+const typeLabels: Record<string, string> = {
+  Keynote: "主旨演讲",
+  "Invited talk": "受邀报告",
+  Workshop: "工作坊",
+  Lecture: "讲座",
+  Panel: "圆桌讨论",
+};
+
+function talkYear(date: string) {
+  return date.match(/^\d{4}/)?.[0] ?? date;
+}
+
+function displayTalkDate(date: string) {
+  const match = date.match(/^(\d{4})[-.](\d{2})/);
+  return match ? `${match[1]}.${match[2]}` : date;
+}
+
+function localizedType(type: string, zh: boolean) {
+  return zh ? (typeLabels[type] ?? type) : type;
+}
+
 export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTalk[] }) {
   const zh = lang === "zh";
   const [query, setQuery] = useState("");
   const [year, setYear] = useState<string | null>(null);
   const [type, setType] = useState<string | null>(null);
 
-  const years = [...new Set(talks.map((talk) => talk.date.split(".")[0]))].sort((a, b) => b.localeCompare(a));
+  const years = [...new Set(talks.map((talk) => talkYear(talk.date)))].sort((a, b) => b.localeCompare(a));
   const types = [...new Set(talks.map((talk) => talk.type))];
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -36,13 +57,13 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
       <aside className="filter-panel">
         <div className="filter-group">
           <p>{zh ? "年份" : "Year"}</p>
-          <button className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
-          {years.map((item) => <button className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
+          <button aria-pressed={!year} className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
+          {years.map((item) => <button aria-pressed={year === item} className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
         </div>
         <div className="filter-group">
           <p>{zh ? "类型" : "Type"}</p>
-          <button className={!type ? "active" : ""} type="button" onClick={() => setType(null)}>{zh ? "全部" : "All"}</button>
-          {types.map((item) => <button className={type === item ? "active" : ""} type="button" key={item} onClick={() => setType(type === item ? null : item)}>{item}</button>)}
+          <button aria-pressed={!type} className={!type ? "active" : ""} type="button" onClick={() => setType(null)}>{zh ? "全部" : "All"}</button>
+          {types.map((item) => <button aria-pressed={type === item} className={type === item ? "active" : ""} type="button" key={item} onClick={() => setType(type === item ? null : item)}>{localizedType(item, zh)}</button>)}
         </div>
       </aside>
 
@@ -51,7 +72,7 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
         <div className="result-list">
           {filtered.map((talk) => (
             <article className="result-card talk-card" key={`${talk.date}-${talk.title}`}>
-              <div className="result-card__meta"><span className="type-pill">{talk.type}</span><time>{talk.date}</time></div>
+              <div className="result-card__meta"><span className="type-pill">{localizedType(talk.type, zh)}</span><time>{displayTalkDate(talk.date)}</time></div>
               <h2>{zh && talk.titleZh ? talk.titleZh : talk.title}</h2>
               <p className="result-card__authors">{zh && talk.hostZh ? talk.hostZh : talk.host}</p>
               <div className="result-card__actions">

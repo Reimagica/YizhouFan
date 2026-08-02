@@ -4,6 +4,19 @@ import { useMemo, useState } from "react";
 import { profileLinks, type Language } from "../lib/content";
 import type { PublicPublication } from "../lib/cms/types";
 
+const kindLabels: Record<string, string> = {
+  "Journal article": "期刊论文",
+  "Conference paper": "会议论文",
+  Book: "学术著作",
+  "Book chapter": "书籍章节",
+  Preprint: "预印本",
+  Thesis: "学位论文",
+};
+
+function localizedKind(kind: string, zh: boolean) {
+  return zh ? (kindLabels[kind] ?? kind) : kind;
+}
+
 function localizedTitle(publication: PublicPublication, lang: Language) {
   return lang === "zh" && publication.titleZh ? publication.titleZh : publication.title;
 }
@@ -61,14 +74,14 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
       <aside className="filter-panel">
         <div className="filter-group">
           <p>{zh ? "年份" : "Year"}</p>
-          <button className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
-          {years.map((item) => <button className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
+          <button aria-pressed={!year} className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
+          {years.map((item) => <button aria-pressed={year === item} className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
         </div>
 
         <div className="filter-group">
           <p>{zh ? "类型" : "Type"}</p>
-          <button className={!kind ? "active" : ""} type="button" onClick={() => setKind(null)}>{zh ? "全部" : "All"}</button>
-          {kinds.map((item) => <button className={kind === item ? "active" : ""} type="button" key={item} onClick={() => setKind(kind === item ? null : item)}>{item}</button>)}
+          <button aria-pressed={!kind} className={!kind ? "active" : ""} type="button" onClick={() => setKind(null)}>{zh ? "全部" : "All"}</button>
+          {kinds.map((item) => <button aria-pressed={kind === item} className={kind === item ? "active" : ""} type="button" key={item} onClick={() => setKind(kind === item ? null : item)}>{localizedKind(item, zh)}</button>)}
         </div>
       </aside>
 
@@ -88,7 +101,7 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
             return (
               <article className="result-card" key={`${publication.year}-${publication.title}`}>
                 <div className="result-card__meta">
-                  <span className="type-pill">{publication.kind}</span>
+                  <span className="type-pill">{localizedKind(publication.kind, zh)}</span>
                   <span>{publication.venue}</span>
                   <time>{publication.year}</time>
                 </div>
