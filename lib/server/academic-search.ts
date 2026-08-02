@@ -18,10 +18,25 @@ function similarity(left: string, right: string) {
   return (2 * overlap) / (a.size + b.size);
 }
 
+function cleanDoi(value?: string) {
+  return normalized(value?.replace(/^https?:\/\/(dx\.)?doi\.org\//i, "") ?? "");
+}
+
+function authorMatches(expectedAuthors: string[], candidateAuthors: string[]) {
+  if (!expectedAuthors.length) return {score: 1, matched: [] as string[], missing: [] as string[]};
+  const normalizedCandidates = candidateAuthors.map(normalized);
+  const matched = expectedAuthors.filter((expected) => {
+    const needle = normalized(expected);
+    return needle && normalizedCandidates.some((candidate) => candidate.includes(needle) || needle.includes(candidate));
+  });
+  return {score: matched.length / expectedAuthors.length, matched, missing: expectedAuthors.filter((author) => !matched.includes(author))};
+}
+
 function score(queryTitle: string, candidateTitle: string, expectedDoi?: string, candidateDoi?: string) {
   const titleScore = similarity(queryTitle, candidateTitle);
-  const doiMatch = expectedDoi && candidateDoi && normalized(expectedDoi) === normalized(candidateDoi) ? 1 : 0;
-  return Math.min(1, titleScore * 0.8 + doiMatch * 0.2);
+  const doiMatch = expectedDoi && candidateDoi && cleanDoi(expectedDoi) === cleanDoi(candidateDoi) ? 1 : 0;
+  if (doiMatch) return 1;
+  return titleScore;
 }
 
 async function getJson<T>(url: URL): Promise<T> {
@@ -138,17 +153,30 @@ async function searchDblp(title: string): Promise<AcademicCandidate[]> {
   });
 }
 
-export async function lookupAcademicWork(title: string, doi?: string) {
+export async function lookupAcademicWork(title: string, doi?: string, authors: string[] = []) {
   const results = await Promise.allSettled([
     searchCrossref(title, doi),
     searchOpenAlex(title, doi),
     searchSemanticScholar(title),
     searchDblp(title),
   ]);
-  const candidates = results.flatMap((result) => result.status === "fulfilled" ? result.value : []);
+  const candidates = results.flatMap((result) => result.status === "fulfilled" ? result.value : []).map((candidate) => {
+    const titleScore = similarity(title, candidate.title);
+    const doiMatch = Boolean(doi && candidate.doi && cleanDoi(doi) === cleanDoi(candidate.doi));
+    const authorResult = authorMatches(authors, candidate.authors);
+    const confidence = doiMatch ? Math.max(0.95, 0.95 + titleScore * 0.05) : Math.min(1, candidate.confidence * 0.82 + authorResult.score * 0.18);
+    const matchedFields = [titleScore >= 0.65 ? "title" : "", doiMatch ? "doi" : "", ...authorResult.matched.map(() => "author")].filter(Boolean);
+    const missingFields = [...(!doiMatch && doi ? ["doi"] : []), ...authorResult.missing.map((author) => `author:${author}`)];
+    const warnings = [
+      ...(doiMatch && titleScore < 0.45 ? ["DOI 完全匹配，但题名相似度较低，请人工核对。"] : []),
+      ...(authorResult.missing.length ? [`未匹配作者：${authorResult.missing.join("、")}`] : []),
+    ];
+    return {...candidate, confidence, matchedFields, missingFields, warnings};
+  });
   const deduplicated = new Map<string, AcademicCandidate>();
   for (const candidate of candidates) {
-    if (!candidate.title || candidate.confidence < 0.35) continue;
+    if (!candidate.title || candidate.confidence < 0.42) continue;
+    if (authors.length && candidate.missingFields?.some((field) => field.startsWith("author:")) && candidate.confidence < 0.8) continue;
     const key = candidate.doi ? `doi:${normalized(candidate.doi)}` : `title:${normalized(candidate.title)}`;
     const current = deduplicated.get(key);
     if (!current || candidate.confidence > current.confidence) deduplicated.set(key, candidate);

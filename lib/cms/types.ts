@@ -29,6 +29,33 @@ export type PublicTalk = {
   keywords?: string[];
   slidesUrl?: string;
   slidesFormat?: "pptx" | "pdf";
+  body?: PortableBlock[];
+  bodyZh?: PortableBlock[];
+  attachments?: Array<{
+    label?: string;
+    labelZh?: string;
+    note?: string;
+    noteZh?: string;
+    url: string;
+    mimeType?: string;
+  }>;
+};
+
+export type PortableSpan = {_type: "span"; _key: string; text: string; marks?: string[]};
+export type PortableMarkDef = {_key: string; _type: "externalLink" | "footnote"; href?: string; newTab?: boolean; text?: string};
+export type PortableBlock = {
+  _type: "block" | "reportImage" | "reportNote";
+  _key: string;
+  style?: "normal" | "h2" | "h3" | "blockquote";
+  children?: PortableSpan[];
+  markDefs?: PortableMarkDef[];
+  imageUrl?: string;
+  alt?: {en?: string; zh?: string};
+  caption?: {en?: string; zh?: string};
+  credit?: string;
+  sourceUrl?: string;
+  title?: string;
+  text?: string;
 };
 
 export type PublicPerson = {
@@ -68,14 +95,8 @@ export type AcademicCandidate = {
   url?: string;
   abstract?: string;
   citationCount?: number;
-};
-
-export type TalkSummaryDraft = {
-  summaryZh: string;
-  summaryEn: string;
-  keywordsZh: string[];
-  keywordsEn: string[];
-  outlineZh: string[];
-  outlineEn: string[];
-  warnings: string[];
+  kind?: string;
+  matchedFields?: string[];
+  missingFields?: string[];
+  warnings?: string[];
 };

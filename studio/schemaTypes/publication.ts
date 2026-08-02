@@ -6,7 +6,6 @@ export const publication = defineType({
   type: "document",
   groups: [
     {name: "content", title: "公开内容", default: true},
-    {name: "automation", title: "检索与AI"},
     {name: "file", title: "文件与版权"},
   ],
   fields: [
@@ -22,7 +21,6 @@ export const publication = defineType({
     defineField({name: "bibtex", title: "BibTeX", type: "text", rows: 8, group: "content"}),
     defineField({name: "featured", title: "代表成果", type: "boolean", group: "content", initialValue: false}),
     defineField({name: "publicFile", title: "公开 PDF", type: "publicFile", group: "file"}),
-    defineField({name: "automation", title: "检索任务", type: "automationState", group: "automation"}),
     defineField({name: "status", title: "发布状态", type: "string", group: "content", options: {list: ["draft", "reviewed", "published"]}, initialValue: "draft"}),
   ],
   preview: {select: {title: "title.en", subtitle: "venue", year: "year"}, prepare: ({title, subtitle, year}) => ({title, subtitle: [year, subtitle].filter(Boolean).join(" · ")})},

@@ -2,7 +2,7 @@ import {defineConfig} from "sanity";
 import {structureTool} from "sanity/structure";
 import {visionTool} from "@sanity/vision";
 import {schemaTypes} from "./schemaTypes";
-import {ApplyPublicationCandidateAction, RequestAutomationAction} from "./actions/automationActions";
+import {PublicationCreateTool} from "./tools/PublicationCreateTool";
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 if (!projectId) throw new Error("SANITY_STUDIO_PROJECT_ID is required");
@@ -13,12 +13,6 @@ export default defineConfig({
   projectId,
   dataset: process.env.SANITY_STUDIO_DATASET ?? "production",
   plugins: [structureTool(), visionTool()],
+  tools: [{name: "add-publication", title: "添加学术成果", component: PublicationCreateTool}],
   schema: {types: schemaTypes},
-  document: {
-    actions: (previous, context) => {
-      if (context.schemaType === "publication") return [RequestAutomationAction, ApplyPublicationCandidateAction, ...previous];
-      if (context.schemaType === "talk") return [RequestAutomationAction, ...previous];
-      return previous;
-    },
-  },
 });

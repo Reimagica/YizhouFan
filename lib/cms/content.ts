@@ -16,7 +16,7 @@ const publicationQuery = `*[_type == "publication" && status == "published"] | o
   "abstractZh": abstract.zh,
   keywords,
   sourceUrl,
-  "pdfUrl": publicFile.url,
+  "pdfUrl": select(publicFile.copyrightCleared == true => coalesce(publicFile.file.asset->url, publicFile.url)),
   bibtex
 }`;
 
@@ -31,8 +31,24 @@ const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc
   "summary": summary.en,
   "summaryZh": summary.zh,
   keywords,
-  "slidesUrl": publicFile.url,
-  "slidesFormat": publicFile.format
+  "body": body.en[]{..., _type == "reportImage" => {..., "imageUrl": asset->url}},
+  "bodyZh": body.zh[]{..., _type == "reportImage" => {..., "imageUrl": asset->url}},
+  "attachments": attachments[copyrightCleared == true && defined(file.asset)][]{
+    "label": label.en,
+    "labelZh": label.zh,
+    "note": note.en,
+    "noteZh": note.zh,
+    "url": file.asset->url,
+    "mimeType": file.asset->mimeType
+  },
+  "slidesUrl": coalesce(attachments[copyrightCleared == true && defined(file.asset)][0].file.asset->url, select(publicFile.copyrightCleared == true => coalesce(publicFile.file.asset->url, publicFile.url))),
+  "slidesFormat": select(
+    attachments[copyrightCleared == true && defined(file.asset)][0].file.asset->mimeType == "application/pdf" => "pdf",
+    defined(attachments[copyrightCleared == true && defined(file.asset)][0].file.asset) => "pptx",
+    defined(publicFile.format) => publicFile.format,
+    publicFile.file.asset->mimeType == "application/pdf" => "pdf",
+    "pptx"
+  )
 }`;
 
 const peopleQuery = `*[_type == "person" && status == "published"] | order(order asc, name.en asc) {
@@ -106,6 +122,11 @@ export async function getPublications(): Promise<PublicPublication[]> {
 
 export async function getTalks(): Promise<PublicTalk[]> {
   return (await sanityQuery<PublicTalk[]>(talkQuery)) ?? fallbackTalkRows();
+}
+
+export async function getTalkById(id: string): Promise<PublicTalk | null> {
+  const talks = await getTalks();
+  return talks.find((talk) => talk.id === id) ?? null;
 }
 
 export async function getPeople(): Promise<PublicPerson[]> {

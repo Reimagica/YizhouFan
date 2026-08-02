@@ -1,4 +1,5 @@
-import {defineField, defineType} from "sanity";
+import {defineArrayMember, defineField, defineType} from "sanity";
+import {PublicationPdfInput, ReportAttachmentInput, ReportImageInput} from "../components/RestrictedAssetInputs";
 
 export const localizedString = defineType({
   name: "localizedString",
@@ -22,60 +23,100 @@ export const localizedText = defineType({
 
 export const publicFile = defineType({
   name: "publicFile",
-  title: "已确认公开文件",
+  title: "已确认公开的论文 PDF",
   type: "object",
   fields: [
-    defineField({name: "url", title: "公开下载 URL", type: "url", description: "仅填写已通过版权与公开范围确认、位于 OSS/COS public 区域的地址。"}),
-    defineField({name: "format", title: "格式", type: "string", options: {list: ["pdf", "pptx"]}}),
-    defineField({name: "copyrightCleared", title: "已确认可公开", type: "boolean", initialValue: false}),
+    defineField({name: "file", title: "PDF 文件", type: "file", options: {accept: "application/pdf", storeOriginalFilename: false}, components: {input: PublicationPdfInput}, description: "上传前请将文件改为不含个人信息的简洁名称；最大 40 MB。", validation: (rule) => rule.custom(async (value, context) => {
+      const reference = (value as {asset?: {_ref?: string}} | undefined)?.asset?._ref;
+      if (!reference) return true;
+      const asset = await context.getClient({apiVersion: "2026-08-01"}).fetch<{size?: number; mimeType?: string} | null>(`*[_id == $id][0]{size,mimeType}`, {id: reference});
+      if (asset?.mimeType !== "application/pdf") return "论文附件仅支持 PDF。";
+      return !asset?.size || asset.size <= 40 * 1024 * 1024 ? true : "论文 PDF 不能超过 40 MB。";
+    })}),
+    defineField({name: "url", title: "旧版外部 URL", type: "url", hidden: true, description: "兼容已录入数据，新文件请直接上传到上方 Sanity 文件字段。"}),
+    defineField({name: "copyrightCleared", title: "已确认版权与公开范围", type: "boolean", initialValue: false, validation: (rule) => rule.required().custom((value, context) => {
+      const parent = context.parent as {file?: unknown; url?: string} | undefined;
+      return !parent?.file && !parent?.url ? true : value === true ? true : "有文件时必须确认可公开，前台才会显示下载入口。";
+    })}),
   ],
 });
 
-export const privateSource = defineType({
-  name: "privateSource",
-  title: "私有处理源文件",
+export const reportAttachment = defineType({
+  name: "reportAttachment",
+  title: "报告附件",
   type: "object",
   fields: [
-    defineField({name: "objectKey", title: "OSS/COS 私有对象键", type: "string", description: "只保存对象键，不保存长期有效的下载 URL。"}),
-    defineField({name: "originalName", title: "原始文件名", type: "string"}),
-    defineField({name: "mimeType", title: "MIME 类型", type: "string"}),
-    defineField({name: "size", title: "文件大小（字节）", type: "number"}),
-    defineField({name: "sha256", title: "SHA-256", type: "string"}),
+    defineField({name: "label", title: "附件名称", type: "localizedString", description: "例如：演示文稿 / Presentation slides"}),
+    defineField({name: "file", title: "PDF 或 PPTX", type: "file", options: {accept: "application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation", storeOriginalFilename: false}, components: {input: ReportAttachmentInput}, validation: (rule) => rule.required().custom(async (value, context) => {
+      const reference = (value as {asset?: {_ref?: string}} | undefined)?.asset?._ref;
+      if (!reference) return true;
+      const asset = await context.getClient({apiVersion: "2026-08-01"}).fetch<{size?: number; mimeType?: string} | null>(`*[_id == $id][0]{size,mimeType}`, {id: reference});
+      const accepted = ["application/pdf", "application/vnd.openxmlformats-officedocument.presentationml.presentation"];
+      if (asset?.mimeType && !accepted.includes(asset.mimeType)) return "报告附件仅支持 PDF 或 PPTX。";
+      return !asset?.size || asset.size <= 80 * 1024 * 1024 ? true : "报告附件不能超过 80 MB。";
+    }), description: "最大 80 MB；建议优先提供 PDF，确保访客无需特定软件也能查看。"}),
+    defineField({name: "copyrightCleared", title: "已确认版权与公开范围", type: "boolean", initialValue: false, validation: (rule) => rule.required().custom((value) => value === true ? true : "只有确认可公开的附件才会显示在网站上。")}),
+    defineField({name: "note", title: "附件说明", type: "localizedString"}),
+  ],
+  preview: {select: {title: "label.zh", subtitle: "file.asset.originalFilename"}},
+});
+
+export const reportImage = defineType({
+  name: "reportImage",
+  title: "正文图片",
+  type: "image",
+  options: {accept: "image/jpeg,image/png,image/webp", storeOriginalFilename: false, hotspot: true},
+  components: {input: ReportImageInput},
+  validation: (rule) => rule.custom(async (value, context) => {
+    const reference = (value as {asset?: {_ref?: string}} | undefined)?.asset?._ref;
+    if (!reference) return true;
+    const asset = await context.getClient({apiVersion: "2026-08-01"}).fetch<{size?: number; mimeType?: string} | null>(`*[_id == $id][0]{size,mimeType}`, {id: reference});
+    if (asset?.mimeType && !["image/jpeg", "image/png", "image/webp"].includes(asset.mimeType)) return "正文图片仅支持 JPEG、PNG 或 WebP，不接受 SVG。";
+    return !asset?.size || asset.size <= 8 * 1024 * 1024 ? true : "正文图片不能超过 8 MB。";
+  }),
+  fields: [
+    defineField({name: "alt", title: "替代文本", type: "localizedString", validation: (rule) => rule.required(), description: "简要说明图片内容，供无障碍访问和图片加载失败时使用。"}),
+    defineField({name: "caption", title: "图注", type: "localizedString"}),
+    defineField({name: "credit", title: "来源 / 版权说明", type: "string"}),
+    defineField({name: "sourceUrl", title: "来源链接", type: "url"}),
   ],
 });
 
-export const publicationCandidate = defineType({
-  name: "publicationCandidate",
-  title: "论文候选",
+export const reportNote = defineType({
+  name: "reportNote",
+  title: "提示框",
   type: "object",
   fields: [
-    defineField({name: "source", title: "来源", type: "string"}),
-    defineField({name: "sourceId", title: "来源 ID", type: "string"}),
-    defineField({name: "confidence", title: "匹配置信度", type: "number"}),
-    defineField({name: "title", title: "题名", type: "string"}),
-    defineField({name: "authors", title: "作者", type: "array", of: [{type: "string"}]}),
-    defineField({name: "year", title: "年份", type: "number"}),
-    defineField({name: "venue", title: "期刊/会议", type: "string"}),
-    defineField({name: "doi", title: "DOI", type: "string"}),
-    defineField({name: "url", title: "来源 URL", type: "url"}),
-    defineField({name: "abstract", title: "摘要", type: "text", rows: 5}),
-    defineField({name: "citationCount", title: "引用数（仅作核对）", type: "number"}),
+    defineField({name: "title", title: "标题", type: "string"}),
+    defineField({name: "text", title: "内容", type: "text", rows: 4, validation: (rule) => rule.required()}),
   ],
-  preview: {select: {title: "title", subtitle: "source", confidence: "confidence"}, prepare: ({title, subtitle, confidence}) => ({title, subtitle: `${subtitle ?? "unknown"} · ${Math.round((confidence ?? 0) * 100)}%`})},
 });
 
-export const automationState = defineType({
-  name: "automationState",
-  title: "自动化任务状态",
-  type: "object",
-  readOnly: true,
-  fields: [
-    defineField({name: "status", title: "状态", type: "string"}),
-    defineField({name: "requestId", title: "请求 ID", type: "string"}),
-    defineField({name: "requestedAt", title: "发起时间", type: "datetime"}),
-    defineField({name: "completedAt", title: "完成时间", type: "datetime"}),
-    defineField({name: "sourceCharacterCount", title: "解析字符数", type: "number"}),
-    defineField({name: "candidates", title: "检索候选", type: "array", of: [{type: "publicationCandidate"}]}),
-    defineField({name: "error", title: "错误", type: "text", rows: 3}),
+export const reportBody = defineType({
+  name: "reportBody",
+  title: "报告正文",
+  type: "array",
+  of: [
+    defineArrayMember({type: "block", styles: [
+      {title: "正文", value: "normal"},
+      {title: "二级标题", value: "h2"},
+      {title: "三级标题", value: "h3"},
+      {title: "引用", value: "blockquote"},
+    ], marks: {
+      decorators: [{title: "加粗", value: "strong"}, {title: "斜体", value: "em"}],
+      annotations: [
+        defineArrayMember({name: "externalLink", title: "外部链接", type: "object", fields: [defineField({name: "href", title: "URL", type: "url", validation: (rule) => rule.required()}), defineField({name: "newTab", title: "新标签页打开", type: "boolean", initialValue: true})]}),
+        defineArrayMember({name: "footnote", title: "脚注", type: "object", fields: [defineField({name: "text", title: "脚注内容", type: "text", rows: 3, validation: (rule) => rule.required()})]}),
+      ],
+    }}),
+    defineArrayMember({type: "reportImage"}),
+    defineArrayMember({type: "reportNote"}),
   ],
+});
+
+export const localizedReportBody = defineType({
+  name: "localizedReportBody",
+  title: "中英文报告正文",
+  type: "object",
+  fields: [defineField({name: "en", title: "English", type: "reportBody"}), defineField({name: "zh", title: "中文", type: "reportBody"})],
 });

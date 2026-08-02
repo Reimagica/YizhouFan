@@ -41,7 +41,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
             {links.map(([path, label]) => (
               <Link
                 key={path || "home"}
-                className={resolvedActivePath === path ? "nav-link nav-link--active" : "nav-link"}
+                className={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "nav-link nav-link--active" : "nav-link"}
                 href={pathFor(lang, path)}
               >
                 {label}
@@ -63,7 +63,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
           {links.map(([path, label]) => (
             <Link
               key={path || "home"}
-              className={resolvedActivePath === path ? "nav-link nav-link--active" : "nav-link"}
+              className={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "nav-link nav-link--active" : "nav-link"}
               href={pathFor(lang, path)}
             >
               {label}

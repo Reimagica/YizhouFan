@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { Language } from "../lib/content";
 import type { PublicTalk } from "../lib/cms/types";
 
@@ -73,9 +74,10 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
           {filtered.map((talk) => (
             <article className="result-card talk-card" key={`${talk.date}-${talk.title}`}>
               <div className="result-card__meta"><span className="type-pill">{localizedType(talk.type, zh)}</span><time>{displayTalkDate(talk.date)}</time></div>
-              <h2>{zh && talk.titleZh ? talk.titleZh : talk.title}</h2>
+              <h2><Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{zh && talk.titleZh ? talk.titleZh : talk.title}</Link></h2>
               <p className="result-card__authors">{zh && talk.hostZh ? talk.hostZh : talk.host}</p>
               <div className="result-card__actions">
+                <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{zh ? "查看报告详情" : "View details"} →</Link>
                 {talk.slidesUrl ? <a href={talk.slidesUrl} download>{zh ? "下载报告文件" : "Download slides"} ↓</a> : <span className="disabled-action">{zh ? "暂无课件" : "Slides unavailable"}</span>}
               </div>
               {(zh ? talk.summaryZh : talk.summary) && <div className="abstract-panel"><strong>{zh ? "报告简介" : "Summary"}</strong><p>{zh ? talk.summaryZh : talk.summary}</p></div>}

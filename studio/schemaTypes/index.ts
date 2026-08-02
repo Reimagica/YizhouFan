@@ -1,4 +1,4 @@
-import {automationState, localizedString, localizedText, privateSource, publicFile, publicationCandidate} from "./shared";
+import {localizedReportBody, localizedString, localizedText, publicFile, reportAttachment, reportBody, reportImage, reportNote} from "./shared";
 import {person} from "./person";
 import {profile} from "./profile";
 import {publication} from "./publication";
@@ -8,9 +8,11 @@ export const schemaTypes = [
   localizedString,
   localizedText,
   publicFile,
-  privateSource,
-  publicationCandidate,
-  automationState,
+  reportAttachment,
+  reportImage,
+  reportNote,
+  reportBody,
+  localizedReportBody,
   profile,
   publication,
   talk,

@@ -96,33 +96,32 @@ Sanity Studio
 ├── 导师浏览器端可视化内容管理
 ├── 双语个人信息、成果、报告、教学与成员数据
 ├── 草稿、人工复核与发布状态
-└── 发起 AI/学术检索任务并展示候选结果
+├── 论文候选检索与手动录入工具
+└── 已确认公开的图片与下载文件
 
 Vercel / Next.js 服务端
 ├── 站点静态生成与内容更新
 ├── 学术数据库检索和候选合并
-├── PPT 文本提取与 AI 任务编排
-├── Sanity webhook 接收、鉴权和结果回写
+├── 只读学术数据库检索与候选合并
+├── Sanity 内容刷新 webhook 接收与鉴权
 └── 公开 AI 问答、限流、费用控制与审计
 
 DeepSeek
-└── 摘要、改写、关键词提取与中英文翻译；不得作为论文事实来源
+└── 公开 AI 问答；不得作为论文事实来源，也不生成学术报告草稿
 
-OSS/COS
-├── private：未确认公开的原始 PPT/PDF，仅使用短时签名访问
-├── processing：临时解析文件与中间结果，任务结束后清理
-└── public：导师确认版权和公开范围后的正式下载文件
+Sanity Asset CDN
+└── 只保存已确认公开的正文图片、论文 PDF 和报告 PDF/PPTX
 ```
 
 实现原则：
 
 - Sanity 是内容管理后台，不承载公开网站的自定义业务接口；普通访客仍以静态页面为主。
 - 论文补全先查询 Crossref、OpenAlex、Semantic Scholar、DBLP 等可验证来源，再由导师选择候选；DeepSeek 只做规范化、摘要和翻译，禁止凭空补造书目信息。
-- 学术报告 PPT 只在导师主动发起任务时解析；提取文本按不可信输入处理，生成结果只写入草稿，必须支持人工二次修改。
-- AI、学术检索和文件处理不得直接发布内容。所有自动化结果必须保留来源、状态、时间和错误信息，并经过导师人工确认。
-- DeepSeek、Sanity 写入令牌、对象存储密钥和 webhook 密钥只存在服务端环境变量，禁止进入浏览器包、Git 仓库或 Sanity 公共字段。
-- 未公开文件不得上传到默认公开的 Sanity Asset CDN；在最终确认公开前使用私有 OSS/COS。Sanity 中只保存对象键、处理状态和公开后的下载 URL。
-- 首版由 Sanity webhook 触发 Vercel 任务。服务端必须验证 webhook，限制文件类型、大小、来源主机、执行时间、重试次数和每日费用。
+- 学术报告不使用 AI 生成草稿，也不解析 PPT；由导师直接编辑双语富文本和上传已确认公开的附件。
+- 学术检索不得直接发布内容。候选选择与手动录入都只创建草稿，并经过导师人工确认。
+- DeepSeek 密钥、webhook secret 与限流密钥只存在服务端环境变量，禁止进入浏览器包、Git 仓库或 Sanity 公共字段。
+- Sanity 原生 image/file 只允许公开文件：正文图片 JPEG/PNG/WebP ≤ 8 MB，论文 PDF ≤ 40 MB，报告 PDF/PPTX ≤ 80 MB；前台只读取勾选版权确认的附件。
+- 论文检索接口只读、限制 Studio Origin，不持有 Sanity 写令牌；当前登录的 Studio 用户负责创建草稿。
 - 双语内容仍遵循“同一提交检查两种语言”；AI 翻译只是草稿，职务、项目、论文、奖项和人员状态必须人工核对。
 
 ### 上线前开发阶段计划
@@ -132,8 +131,8 @@ OSS/COS
 1. 将现有 Sites/vinext 本地骨架整理为标准 Next.js 项目，保留当前页面与视觉效果。
 2. 建立独立 Sanity Studio 配置和个人信息、成果、报告、成员等内容模型。
 3. 前台增加 Sanity 读取层；未配置 Sanity 时继续使用当前受控静态数据，保证本地构建和测试可运行。
-4. 建立受保护的 Sanity webhook 接口、论文多源候选检索、PPTX 文本提取和 DeepSeek 结构化摘要骨架。
-5. 建立私有/公开文件字段与对象存储适配边界；具体 OSS/COS SDK 和账号配置待供应商选择后接入。
+4. 建立只读论文多源候选检索与 Studio 草稿创建工具；学术报告保持人工富文本编辑，不接入 AI 草稿。
+5. 使用 Sanity 原生 image/file 管理已确认公开的图片和附件，并实现格式、大小与版权确认校验。
 6. 补充环境变量模板、安全说明、内容发布检查和自动化测试。
 
 推送和部署阶段另行执行：创建/核对 Git 仓库，配置 Sanity 项目、webhook 和服务端令牌，选择 OSS 或 COS，配置 Vercel 环境变量、域名与持续部署。未经用户明确指示，本地准备阶段不得代为推送或发布。
@@ -176,12 +175,14 @@ OSS/COS
 | `/en`、`/zh` | 默认个人信息页：左侧粘性头像/身份/联系，右侧 Bio、研究、任职、荣誉、项目、教学与服务 |
 | `/[lang]/profile` | 兼容旧链接，重定向至 `/[lang]` |
 | `/[lang]/publications` | 可检索、按年份/类型筛选的论文与著作；来源、PDF、BibTeX、摘要操作 |
-| `/[lang]/talks` | 可检索、按年份/类型筛选的报告；预留 PPT/PDF 下载字段 |
+| `/[lang]/talks` | 可检索、按年份/类型筛选的报告列表；详情页展示富文本正文与公开附件 |
+| `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
 | `/[lang]/teaching` | 兼容旧链接，重定向至 `/[lang]#teaching` |
 | `/[lang]/people` | 博士后/在读学生/毕业生三类静态概览，不提供详情页 |
 | `/[lang]/ask` | AI 问答客户端；调用 `/api/ask` |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
-| `/api/cms/automation` | 验证 Sanity webhook；论文多源检索或 PPTX 摘要并回写草稿，永不直接发布 |
+| `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
+| `/api/cms/automation` | 已停用的旧自动化入口；签名请求返回 410，待线上旧 Webhook 删除后可移除 |
 | `/api/cms/revalidate` | 验证 Sanity webhook；发布内容变更后使公开页面缓存失效 |
 
 主要实现文件：
@@ -243,7 +244,7 @@ studio/
 
 - 正式内容通过 `studio/` 中的 Sanity 后台维护；`lib/content.ts` 只作为未配置 Sanity 时的受控回退，不应在正式上线后形成第二套长期数据源。
 - 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。
-- 新增报告：核对日期、类型、主办方、地点、题名和公开文件；没有文件时保留“待补充”。
+- 新增报告：核对日期、类型、主办方、地点、题名、双语正文和公开附件；不需要封面图，也不使用 AI 生成正文。
 - 成员：只维护公开姓名、照片、状态；状态变化需双方确认。
 - 所有公开项目必须由人工白名单录入，不允许从简历整段自动导入。
 - 内容更新完成后至少运行 `npm run lint`、`npm run build`，并检查 `/en`、`/zh` 与受影响子页面。
@@ -252,9 +253,9 @@ studio/
 
 ## 后续优先事项
 
-1. 选择阿里云 OSS 或腾讯云 COS，并实现 `privateSource.objectKey` 到短时签名下载 URL 的唯一供应商适配器；当前服务端在未配置适配器时明确返回 `501`，不会误读私有文件。
-2. Sanity 项目 `mb3w1o0y`、`production` 数据集、公开读取、Studio、首批内容、Editor 服务端写令牌及两个签名 webhook 均已完成；后续只在接口权限变化时轮换令牌与 Secret。
-3. 收集导师正式头像、成员授权头像、可公开论文 PDF 和报告 PPT/PDF，逐项确认版权与文件命名后再进入 public 存储层。
+1. 重新部署 Sanity Studio 与 Vercel，使论文录入工具、富文本报告 Schema、原生 Asset 字段和详情页上线；随后停用旧自动化 Webhook，只保留内容刷新 Webhook。
+2. Sanity 项目 `mb3w1o0y`、`production` 数据集、公开读取、Studio 和首批内容均已完成；后续只在内容刷新接口权限变化时轮换 Secret。
+3. 收集导师正式头像、成员授权头像、可公开论文 PDF 和报告 PDF/PPTX，逐项确认版权与文件命名后上传 Sanity Asset CDN。
 4. 配置 DeepSeek 与 Upstash Redis REST；在服务商控制台设置费用告警/硬上限并验证限流失败时拒绝调用。
 5. Vercel 已绑定 `ma-j/yizhoufan` 并配置 Sanity 项目 ID、服务端写令牌与 webhook secret；下一步配置轮换后的 DeepSeek 密钥、Upstash 环境变量，以及 `yizhoufan.com` DNS、HTTPS 与 CDN。
 6. Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。非破坏性 `npm audit fix` 后官方 CLI 依赖树仍有 7 个传递依赖告警（3 moderate、4 high），剩余自动修复会跨 Sanity 主版本；禁止执行 `npm audit fix --force`，等待官方兼容修复并在升级后重新构建部署。
@@ -408,3 +409,17 @@ npm run build
 ### 2026-08-02 - Favicon initials
 
 - 网站小图标继续使用北大红圆角方形与白色衬线字母，将姓名缩写由 `YF` 调整为 `YZ`；Next.js 继续通过 `app/icon.svg` 自动生成站点 favicon。
+
+### 2026-08-02 - Sanity document action context fix
+
+- 修复 Sanity Studio 编辑成果或报告时出现的 `useFormValue must be used within a FormValueProvider`：自定义 `DocumentActionComponent` 不再调用仅限表单字段上下文的 `useFormValue`，改用动作参数自带的 `draft / published` 文档快照读取英文题名、私有 PPTX 对象键和论文候选。
+- 自动化按钮的启用条件、请求写入、候选弹窗和草稿回写行为保持不变；该修复需重新构建并部署 Sanity Studio 后才会在 `yizhoufan.sanity.studio` 生效。
+
+### 2026-08-02 - Publication intake and native Sanity assets
+
+- 按导师最终决定，公开论文 PDF、学术报告 PDF/PPTX 和报告正文图片统一改用 Sanity 原生 `file` / `image` 与 Asset CDN，不再等待 OSS/COS；该选择仅适用于已确认公开的文件，原始 CV、内部项目和未授权文件仍禁止上传。
+- Studio 新增独立“添加学术成果”工具：支持题名、DOI 与最多三位作者组合检索 Crossref、OpenAlex、Semantic Scholar、DBLP，返回多个带置信度和核对提示的候选；选中候选或手动填写均只创建 Sanity 草稿，并先按 DOI/规范化题名查重。
+- 删除成果文档中的“检索任务”字段和成果/报告自定义自动化动作。旧 `/api/cms/automation` 降级为签名后返回 410 的停用入口，线上旧自动化 Webhook 待部署时删除；论文候选改由只允许 `SANITY_STUDIO_ORIGIN` 的只读接口提供。
+- 学术报告取消 PPT 解析与 AI 草稿，改为人工维护“基本信息—双语 Portable Text 正文—公开附件”。正文支持二/三级标题、图片、引用、外部链接、脚注和提示框，不设置封面图片；前台新增 `/{lang}/talks/{id}` 详情页。
+- 上传限制采用本地选择预检与 Sanity Asset 元数据二次校验：正文图仅 JPEG/PNG/WebP 且 ≤8 MB，论文仅 PDF 且 ≤40 MB，报告仅 PDF/PPTX 且 ≤80 MB；关闭原始文件名存储，前台只查询 `copyrightCleared == true` 的文件。
+- 删除旧 PPTX 解析模块、DeepSeek 报告摘要模块及 `jszip` 依赖。最终 Next.js 与 Sanity Studio 生产构建、两套 TypeScript、ESLint、6 项 AI 守卫测试、11 项页面/API 回归均通过；公开站 `npm audit --omit=dev` 为 0 漏洞。本轮尚未部署 Studio/Vercel，也未推送 GitHub。

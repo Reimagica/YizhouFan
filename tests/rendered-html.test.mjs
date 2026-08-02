@@ -99,6 +99,18 @@ test("localizes talk types and exposes filter state in Chinese", async () => {
   assert.match(html, /aria-pressed="true"/);
 });
 
+test("renders a public talk detail route without requiring a cover image", async () => {
+  const list = await request("/en/talks");
+  const listHtml = await list.text();
+  const detailPath = listHtml.match(/href="(\/en\/talks\/[^"]+)"/)?.[1];
+  assert.ok(detailPath);
+  const response = await request(detailPath);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Back to talks/);
+  assert.doesNotMatch(html, /cover image/i);
+});
+
 test("renders three static people categories", async () => {
   const response = await request("/en/people");
   assert.equal(response.status, 200);
@@ -134,4 +146,11 @@ test("rejects unsigned CMS automation requests", async () => {
     body: JSON.stringify({operation: "publication.lookup"}),
   });
   assert.equal(response.status, 401);
+});
+
+test("protects the academic lookup endpoint by Studio origin", async () => {
+  const forbidden = await request("/api/cms/publications/lookup?title=Learning");
+  assert.equal(forbidden.status, 403);
+  const invalid = await request("/api/cms/publications/lookup", {headers: {origin: "http://localhost:3333"}});
+  assert.equal(invalid.status, 400);
 });
