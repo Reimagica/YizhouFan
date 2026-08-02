@@ -404,3 +404,7 @@ npm run build
 
 - 已准备将 Sanity 正式项目配置、Studio 托管部署参数、首次公开内容迁移脚本、Vercel/Webhook 文档、Studio 依赖兼容修复与本轮 UI 优化合并为同一轮稳定更新；当前执行环境的 Git 写入授权服务连接失败，尚未创建提交或同步至 GitHub `main`。
 - 待推送范围不包含 `.env.local`、`studio/.env.local`、DeepSeek/Sanity/Webhook 密钥、原始 CV、构建缓存、Studio 构建产物或依赖目录；线上 Sanity 与 Vercel 中的加密环境变量不得写入仓库。
+
+### 2026-08-02 - Favicon initials
+
+- 网站小图标继续使用北大红圆角方形与白色衬线字母，将姓名缩写由 `YF` 调整为 `YZ`；Next.js 继续通过 `app/icon.svg` 自动生成站点 favicon。
