@@ -106,4 +106,4 @@ npm test
 npm run studio:build
 ```
 
-GitHub、Sanity Studio、Vercel Sanity 环境变量和内容刷新 Webhook 已配置；代码更新后还需重新部署 Studio 与 Vercel，并在 Sanity 后台停用旧自动化 Webhook。`yizhoufan.com` 域名切换、DeepSeek 新密钥和 Upstash Redis 仍需完成。
+GitHub、Sanity Studio、Vercel Production、Sanity 环境变量和内容刷新 Webhook 已配置，本轮原生 Asset 与新内容工具也已部署。仍需在 Sanity 后台停用旧自动化 Webhook；`yizhoufan.com` 域名切换、DeepSeek 新密钥和 Upstash Redis 仍需完成。
