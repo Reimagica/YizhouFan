@@ -12,7 +12,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | GitHub `main`、Sanity Studio、首批公开内容及 Vercel Sanity 配置已上线；等待自定义域名、DeepSeek/Upstash、对象存储与内容文件 |
+| 当前阶段 | GitHub `main`、Sanity Studio、首批公开内容、Vercel、DeepSeek 与 Upstash 限流已配置；等待浏览器端 AI 验收、自定义域名及公开内容文件补齐 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity 已发布内容为正式数据源；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -424,3 +424,10 @@ npm run build
 - 上传限制采用本地选择预检与 Sanity Asset 元数据二次校验：正文图仅 JPEG/PNG/WebP 且 ≤8 MB，论文仅 PDF 且 ≤40 MB，报告仅 PDF/PPTX 且 ≤80 MB；关闭原始文件名存储，前台只查询 `copyrightCleared == true` 的文件。
 - 删除旧 PPTX 解析模块、DeepSeek 报告摘要模块及 `jszip` 依赖。最终 Next.js 与 Sanity Studio 生产构建、两套 TypeScript、ESLint、6 项 AI 守卫测试、11 项页面/API 回归均通过；公开站 `npm audit --omit=dev` 为 0 漏洞。
 - 功能提交及部署记录均已推送 GitHub `main`。Sanity Studio 已重新部署至 `https://yizhoufan.sanity.studio/`；手动部署与 GitHub 集成触发的 Vercel Production 构建均为 Ready，稳定别名 `https://yizhoufan.vercel.app` 已指向最新 `main`。当前执行环境直连 `*.vercel.app` 会被上游重置，因此线上验收以 Vercel 控制面 Ready 状态、完整成功构建日志和本地生产回归共同确认。
+
+### 2026-08-03 - Production Redis rate limiting
+
+- Vercel Marketplace 的 Upstash Redis 集成已连接到 `ma-j/yizhoufan`，并向 Production、Preview、Development 注入带 `yizhoufan_` 前缀的连接变量。
+- Production 与 Preview 已配置服务端 Sensitive 变量 `RATE_LIMIT_SALT`；代码所读取的 `UPSTASH_REDIS_REST_URL` 与 `UPSTASH_REDIS_REST_TOKEN` 已切换到新连接的 Upstash 实例。只读 Token、TCP `REDIS_URL` 与 `KV_URL` 不用于当前 REST/Lua 限流实现。
+- 使用新环境变量重新部署 Vercel Production，完整 Next.js 构建、TypeScript 检查与 22 个静态页面生成均通过；部署状态为 Ready，稳定别名继续为 `https://yizhoufan.vercel.app`。
+- 当前执行环境连接 `*.vercel.app` 仍持续超时，因此未能从本机完成真实 `/api/ask` 响应验收；需在普通浏览器中提交一次问答，并在 Upstash 控制台确认出现 `yizhoufan:quota:*` 键。任何曾暴露在对话中的 Redis Token 都应在验收后轮换，并同步更新 Vercel 标准变量。
