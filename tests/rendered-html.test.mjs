@@ -85,7 +85,7 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(englishHtml, /institutional decision-making and governance/);
   assert.match(englishHtml, /academic integrity or authorial control/);
   assert.match(englishHtml, /View the companion MOOC/);
-  assert.match(englishHtml, /Find related courses on China University MOOC/);
+  assert.doesNotMatch(englishHtml, /Find related courses on China University MOOC/);
   assert.doesNotMatch(englishHtml, /Academic Writing in English|Peer Instruction|Flipped Classroom Pedagogy/);
 
   const chinese = await request("/zh/teaching");
@@ -97,7 +97,7 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(chineseHtml, /人机交互设计/);
   assert.match(chineseHtml, /面向学术的 AI 素养/);
   assert.match(chineseHtml, /访问配套 MOOC/);
-  assert.match(chineseHtml, /在中国大学 MOOC 检索相关课程/);
+  assert.doesNotMatch(chineseHtml, /在中国大学 MOOC 检索相关课程/);
 });
 
 test("renders searchable publication controls and PDF status", async () => {

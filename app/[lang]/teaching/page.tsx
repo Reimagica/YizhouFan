@@ -6,12 +6,8 @@ import {isLanguage} from "../../../lib/content";
 const academicWritingMoocUrl = "https://www.icourse163.org/course/PKU-1449486161";
 
 function courseMoocLink(course: {titleZh: string; moocUrl?: string}) {
-  if (course.moocUrl) return {href: course.moocUrl, exact: true};
-  if (course.titleZh === "智能时代的英文学术写作") return {href: academicWritingMoocUrl, exact: true};
-  return {
-    href: `https://www.icourse163.org/search.htm?search=${encodeURIComponent(course.titleZh)}`,
-    exact: false,
-  };
+  if (course.titleZh !== "智能时代的英文学术写作") return null;
+  return course.moocUrl || academicWritingMoocUrl;
 }
 
 export default async function TeachingPage({ params }: { params: Promise<{ lang: string }> }) {
@@ -39,11 +35,9 @@ export default async function TeachingPage({ params }: { params: Promise<{ lang:
               <div className="course-card__content">
                 <p>{zh ? course.descriptionZh : course.description}</p>
                 {(zh ? course.roleZh : course.role) && <span className="course-card__role">{zh ? course.roleZh : course.role}</span>}
-                <a href={moocLink.href} target="_blank" rel="noreferrer">
-                  {moocLink.exact
-                    ? (zh ? "访问配套 MOOC ↗" : "View the companion MOOC ↗")
-                    : (zh ? "在中国大学 MOOC 检索相关课程 ↗" : "Find related courses on China University MOOC ↗")}
-                </a>
+                {moocLink && <a href={moocLink} target="_blank" rel="noreferrer">
+                  {zh ? "访问配套 MOOC ↗" : "View the companion MOOC ↗"}
+                </a>}
               </div>
             </article>
           );
