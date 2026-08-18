@@ -5,11 +5,11 @@ export type AnswerTopic = "profile" | "teaching" | "publications" | "talks" | "p
 export type AnswerLink = {label: string; url: string};
 
 const siteSections = [
-  {label: "Personal profile", labelZh: "个人信息", url: "/en"},
-  {label: "Teaching", labelZh: "教学", url: "/en/teaching"},
+  {label: "Biography", labelZh: "个人简介", url: "/en"},
+  {label: "Courses", labelZh: "教授课程", url: "/en/teaching"},
   {label: "Publications", labelZh: "学术成果", url: "/en/publications"},
   {label: "Talks", labelZh: "学术报告", url: "/en/talks"},
-  {label: "People", labelZh: "团队成员", url: "/en/people"},
+  {label: "Team", labelZh: "团队成员", url: "/en/people"},
 ];
 
 export function selectPublicSources(question: string, lang: Language, topics: AnswerTopic[] = []): AnswerLink[] {

@@ -20,7 +20,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
   const pathname = usePathname();
   const resolvedActivePath = pathname.replace(`/${lang}`, "") || activePath;
   const otherLanguage = lang === "en" ? "zh" : "en";
-  const siteTitle = lang === "zh" ? "个人网站" : "Personal Website";
+  const siteTitle = "Yizhou Fan";
   const links = [
     ["", copy.nav.profile],
     ["/publications", copy.nav.publications],
@@ -91,10 +91,9 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
   );
 }
 
-export function PageIntro({ eyebrow, title, lead }: { eyebrow: string; title: string; lead: string }) {
+export function PageIntro({ title, lead }: { title: string; lead: string }) {
   return (
     <header className="page-intro">
-      <p className="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
       <p className="page-intro__lead">{lead}</p>
     </header>

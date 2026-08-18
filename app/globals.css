@@ -173,16 +173,6 @@ textarea:focus-visible {
   display: none;
 }
 
-.eyebrow {
-  margin: 0;
-  color: var(--pku-red);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
 .profile-page {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
@@ -451,16 +441,20 @@ textarea:focus-visible {
 
 .teaching-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
 }
 
 .course-card {
   min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);
+  gap: 34px;
+  align-items: start;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
-  padding: 27px;
+  padding: 30px 32px;
   box-shadow: 0 12px 34px rgba(42, 34, 28, 0.04);
 }
 
@@ -482,7 +476,7 @@ textarea:focus-visible {
   line-height: 1.2;
 }
 
-.course-card > p:not(.course-card__nature) {
+.course-card__content > p {
   margin: 0;
   color: #454e49;
   font-size: 14px;
@@ -496,7 +490,7 @@ textarea:focus-visible {
   font-size: 12px;
 }
 
-.course-card > a {
+.course-card__content > a {
   display: inline-flex;
   margin-top: 17px;
   color: var(--pku-red);
@@ -515,7 +509,7 @@ textarea:focus-visible {
 }
 
 .page-intro h1 {
-  margin: 11px 0 0;
+  margin: 0;
   font-family: var(--serif);
   font-size: clamp(40px, 5.4vw, 62px);
   font-weight: 500;
@@ -699,6 +693,28 @@ textarea:focus-visible {
   margin-left: auto;
   color: var(--pku-red);
   font-family: var(--serif);
+}
+
+.talk-card {
+  padding: 28px 26px 26px;
+}
+
+.talk-card .result-card__meta {
+  margin-bottom: 14px;
+}
+
+.talk-card .result-card__meta time {
+  font-size: 13px;
+}
+
+.talk-card h2 {
+  margin: 0 0 10px;
+  font-size: clamp(21px, 2.2vw, 26px);
+}
+
+.talk-card .result-card__authors {
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .type-pill {
@@ -1355,6 +1371,12 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .course-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 24px 22px;
+  }
+
   .timeline-list li,
   .timeline-list--compact li {
     grid-template-columns: 80px 1fr;
@@ -1371,6 +1393,10 @@ textarea:focus-visible {
 
   .result-card {
     padding: 18px;
+  }
+
+  .talk-card {
+    padding-top: 22px;
   }
 
   .result-card__meta time {

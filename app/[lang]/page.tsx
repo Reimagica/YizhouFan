@@ -38,7 +38,6 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
             />
           </div>
           <div className="profile-card__identity">
-            <p className="eyebrow">{zh ? "个人信息" : "Profile"}</p>
             <h1>{profile.name}</h1>
             <p className="profile-role">{profile.role}</p>
             <p className="profile-affiliation">{profile.affiliation}</p>

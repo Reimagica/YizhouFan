@@ -13,8 +13,7 @@ export default async function PublicationsPage({ params }: { params: Promise<{ l
   return (
     <div className="section-wrap page-body">
       <PageIntro
-        eyebrow={zh ? "学术成果" : "Publications"}
-        title={zh ? "论文与著作" : "Papers & books"}
+        title={zh ? "学术成果" : "Publications"}
         lead={zh
           ? "按标题、作者、期刊、年份与成果类型检索，并直接访问原文或可下载版本。"
           : "Search by title, author, venue, year, and publication type, with direct links to source pages and available files."}

@@ -13,8 +13,7 @@ export default async function PeoplePage({ params }: { params: Promise<{ lang: s
   return (
     <div className="section-wrap page-body">
       <PageIntro
-        eyebrow={zh ? "团队成员" : "People"}
-        title={zh ? "共同学习与研究" : "Learning and researching together"}
+        title={zh ? "团队成员" : "Team"}
         lead={zh
           ? "我们围绕学习科学、学习分析与人工智能教育开展共同研究。"
           : "We work together across learning sciences, learning analytics, and artificial intelligence in education."}

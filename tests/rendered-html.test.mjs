@@ -35,7 +35,7 @@ test("uses the English profile as the default language landing page", async () =
   assert.match(html, /Biography/);
   assert.match(html, /范逸洲/);
   assert.match(html, /Yizhou Fan/);
-  assert.match(html, /Personal Website/);
+  assert.doesNotMatch(html, /Personal Website/);
   assert.match(html, /Academic profile/);
   assert.match(html, /Works on this site/);
   assert.match(html, /3,301/);
@@ -57,7 +57,7 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   const html = await response.text();
   assert.match(html, /个人简介/);
   assert.match(html, /范逸洲/);
-  assert.match(html, /个人网站/);
+  assert.doesNotMatch(html, /个人网站/);
   assert.match(html, /学术数据/);
   assert.match(html, /本站学术成果/);
   assert.match(html, /最佳学生论文提名/);
@@ -75,7 +75,7 @@ test("renders the five-course bilingual teaching archive", async () => {
   const english = await request("/en/teaching");
   assert.equal(english.status, 200);
   const englishHtml = await english.text();
-  assert.match(englishHtml, /Courses taught/);
+  assert.match(englishHtml, /Courses/);
   assert.match(englishHtml, /Learning Analytics/);
   assert.match(englishHtml, /Information Technology and Higher Education Management/);
   assert.match(englishHtml, /English Academic Writing in the Age of AI/);
@@ -84,6 +84,8 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(englishHtml, /authentic multimodal learning data/);
   assert.match(englishHtml, /institutional decision-making and governance/);
   assert.match(englishHtml, /academic integrity or authorial control/);
+  assert.match(englishHtml, /View the companion MOOC/);
+  assert.match(englishHtml, /Find related courses on China University MOOC/);
   assert.doesNotMatch(englishHtml, /Academic Writing in English|Peer Instruction|Flipped Classroom Pedagogy/);
 
   const chinese = await request("/zh/teaching");
@@ -94,6 +96,8 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(chineseHtml, /智能时代的英文学术写作/);
   assert.match(chineseHtml, /人机交互设计/);
   assert.match(chineseHtml, /面向学术的 AI 素养/);
+  assert.match(chineseHtml, /访问配套 MOOC/);
+  assert.match(chineseHtml, /在中国大学 MOOC 检索相关课程/);
 });
 
 test("renders searchable publication controls and PDF status", async () => {

@@ -628,3 +628,11 @@ npm run studio:build
 - 浏览器确认 `https://yizhoufan.vercel.app/en` 仍运行旧 GitHub `06889b4`：缺 Teaching 导航、Scholar 指标卡和新版课程页。本地生产版本已正确显示 Scholar 3301/27/45、本站成果 92、Teaching 导航、5 门课程简介和 11 场 Talks；桌面与 390px 页面无横向溢出。
 - 验证：`npm run lint` 0 error/0 warning；`npm test` 含 Next production build，30/30 通过；`npm run studio:build` 通过；Talk 白名单迁移二次 dry-run 0 create/0 update/0 archive；`git diff --check` 干净。用户已明确授权发布本轮完整工作区，People 留到下一轮。
 - 发布：完整功能提交 `d84bc7d` 已推送 `Reimagica/YizhouFan` 的 `main`。Sanity Studio 已成功部署至 `https://yizhoufan.sanity.studio/`，浏览器实查 Talk 表单显示“报告年月”字符串输入框与 `2026-07`。本地 Vercel CLI 59.1.4 的旧授权已失效，但 GitHub 集成自动完成 Production 发布；浏览器实查 `https://yizhoufan.vercel.app` 已显示 Scholar 3301/27/45、本站成果 92、Teaching 导航、5 门课程简介，以及无类型/无空详情入口的 11 场 Talks。
+
+### 2026-08-18 - 导航标题与课程版式统一（待发布）
+
+- 六个主导航及对应页面主标题统一为：个人简介 / 学术成果 / 学术报告 / 教授课程 / 团队成员 / AI 问答（英文为 Biography / Publications / Talks / Courses / Team / AI Q&A）。`PageIntro` 删除 eyebrow 参数和重复眉题，首页人物卡也删除“个人信息 / Profile”眉题；左上角品牌名中英文统一显示 `Yizhou Fan`。
+- 学术报告卡片在移除类型标签后重新校准：加大卡片顶部留白、日期、题名和主办方字号，题名不再继承为类型标签预留的上边距。
+- 教授课程从双列卡片改为每行一门课的单列结构；桌面端卡片内部使用“课程名称 / 简介与链接”双区布局，窄屏回落为单列。
+- 对公开课程链接进行联网核验：仅“英文学术写作实战”可确认范逸洲老师参与的中国大学 MOOC 官方页（`https://www.icourse163.org/course/PKU-1449486161`），作为“智能时代的英文学术写作”的配套 MOOC 直链；其余四门未发现可核验的导师官方 MOOC，提供按课程原名进入中国大学 MOOC 的相关课程检索入口，按钮文案明确区分，禁止将第三方同名课程冒充导师课程。
+- AI 问答返回的站内栏目标签同步为个人简介 / 教授课程 / 学术成果 / 学术报告 / 团队成员，避免导航改名后链接文案漂移。

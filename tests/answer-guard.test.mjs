@@ -83,6 +83,6 @@ test("returns relevant internal section links", () => {
     {label: "学术报告", url: "/zh/talks"},
   ]);
   assert.deepEqual(selectPublicSources("请介绍学习分析课程", "zh", ["teaching"]), [
-    {label: "教学", url: "/zh/teaching"},
+    {label: "教授课程", url: "/zh/teaching"},
   ]);
 });
