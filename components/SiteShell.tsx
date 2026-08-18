@@ -20,10 +20,12 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
   const pathname = usePathname();
   const resolvedActivePath = pathname.replace(`/${lang}`, "") || activePath;
   const otherLanguage = lang === "en" ? "zh" : "en";
+  const siteTitle = lang === "zh" ? "个人网站" : "Personal Website";
   const links = [
     ["", copy.nav.profile],
     ["/publications", copy.nav.publications],
     ["/talks", copy.nav.talks],
+    ["/teaching", copy.nav.teaching],
     ["/people", copy.nav.people],
     ["/ask", copy.nav.ask],
   ] as const;
@@ -32,9 +34,8 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
     <div className="site-shell" lang={lang === "zh" ? "zh-CN" : "en"}>
       <header className="site-header">
         <div className="site-header__inner">
-          <Link className="wordmark" href={pathFor(lang)} aria-label={`${copy.name} - ${copy.nav.profile}`}>
-            <span className="wordmark__name">{copy.name}</span>
-            <span className="wordmark__role">{copy.role}</span>
+          <Link className="wordmark" href={pathFor(lang)} aria-label={`${siteTitle} - ${copy.nav.profile}`}>
+            <span className="wordmark__name">{siteTitle}</span>
           </Link>
 
           <nav className="desktop-nav" aria-label={lang === "zh" ? "主导航" : "Primary navigation"}>

@@ -1,5 +1,5 @@
 import {writeFile} from "node:fs/promises";
-import {fallbackProfile} from "../lib/cms/content.ts";
+import {fallbackCourses, fallbackProfile} from "../lib/cms/content.ts";
 import {people, publications, talks} from "../lib/content.ts";
 
 const outputPath = process.argv[2] ?? "/private/tmp/yizhoufan-initial-content.ndjson";
@@ -33,13 +33,24 @@ const profile = {
     title: localized(item.title, zh.publicProjects[index]?.title),
     publiclyConfirmed: true,
   })),
-  courses: en.courses.map((item, index) => keyed("course", index, {
-    title: localized(item.title, zh.courses[index]?.title),
-    nature: localized(item.nature, zh.courses[index]?.nature),
-  })),
+  scholarMetrics: en.scholarMetrics,
   academicService: localized(en.academicService, zh.academicService),
   status: "published",
 };
+
+const courseDocuments = fallbackCourses.map((item) => ({
+  _id: item.id,
+  _type: "course",
+  title: localized(item.title, item.titleZh),
+  nature: localized(item.nature, item.natureZh),
+  description: localized(item.description, item.descriptionZh),
+  role: item.role || item.roleZh ? localized(item.role, item.roleZh) : undefined,
+  offeredSince: item.offeredSince,
+  mooc: item.mooc ?? false,
+  moocUrl: item.moocUrl,
+  order: item.order,
+  status: "published",
+}));
 
 const publicationDocuments = publications.map((item, index) => ({
   _id: `publication-${String(index + 1).padStart(3, "0")}`,
@@ -54,12 +65,12 @@ const publicationDocuments = publications.map((item, index) => ({
   status: "published",
 }));
 
-const talkDocuments = talks.map((item, index) => ({
-  _id: `talk-${String(index + 1).padStart(3, "0")}`,
+const talkDocuments = talks.map((item) => ({
+  _id: item.id,
   _type: "talk",
   title: localized(item.title, undefined),
-  date: `${item.date.replace(".", "-")}-01`,
-  type: item.type,
+  date: item.date.replace(".", "-"),
+  displayOrder: item.displayOrder,
   host: localized(item.host, undefined),
   status: "published",
 }));
@@ -74,7 +85,7 @@ const personDocuments = people.map((item, index) => ({
   status: "published",
 }));
 
-const documents = [profile, ...publicationDocuments, ...talkDocuments, ...personDocuments];
+const documents = [profile, ...courseDocuments, ...publicationDocuments, ...talkDocuments, ...personDocuments];
 const json = documents.map((document) => JSON.stringify(document)).join("\n") + "\n";
 await writeFile(outputPath, json, "utf8");
 console.log(`Generated ${documents.length} public documents at ${outputPath}`);

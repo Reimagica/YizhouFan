@@ -1,15 +1,20 @@
-import { content, people as fallbackPeople, publications as fallbackPublications, talks as fallbackTalks, type Language } from "../content";
+import { content, people as fallbackPeople, publications as fallbackPublications, scholarSnapshot, talks as fallbackTalks, type Language } from "../content";
 import { sanityQuery } from "./sanity";
-import type { PublicPerson, PublicProfile, PublicPublication, PublicTalk } from "./types";
+import type { PublicCourse, PublicPerson, PublicProfile, PublicPublication, PublicTalk } from "./types";
 
 const publicationQuery = `*[_type == "publication" && status == "published"] | order(year desc, title.en asc) {
   "id": _id,
   year,
   kind,
-  "title": title.en,
+  language,
+  "title": coalesce(title.en, title.zh),
   "titleZh": title.zh,
   authors,
   venue,
+  volume,
+  issue,
+  pages,
+  articleNumber,
   featured,
   doi,
   "abstract": abstract.en,
@@ -20,15 +25,15 @@ const publicationQuery = `*[_type == "publication" && status == "published"] | o
   bibtex
 }`;
 
-const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc) {
+const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc, displayOrder asc) {
   "id": _id,
   date,
-  type,
-  "title": title.en,
+  displayOrder,
+  "title": coalesce(title.en, title.zh),
   "titleZh": title.zh,
-  "host": host.en,
+  "host": coalesce(host.en, host.zh),
   "hostZh": host.zh,
-  "summary": summary.en,
+  "summary": coalesce(summary.en, summary.zh),
   "summaryZh": summary.zh,
   keywords,
   "body": body.en[]{..., _type == "reportImage" => {..., "imageUrl": asset->url}},
@@ -61,6 +66,22 @@ const peopleQuery = `*[_type == "person" && status == "published"] | order(order
   "portraitUrl": portrait.asset->url
 }`;
 
+const courseQuery = `*[_type == "course" && status == "published"] | order(order asc, title.en asc) {
+  "id": _id,
+  "title": title.en,
+  "titleZh": title.zh,
+  "nature": nature.en,
+  "natureZh": nature.zh,
+  "description": description.en,
+  "descriptionZh": description.zh,
+  "role": role.en,
+  "roleZh": role.zh,
+  offeredSince,
+  mooc,
+  moocUrl,
+  order
+}`;
+
 const profileQuery = `*[_type == "profile" && status == "published"][0] {
   "name": select($lang == "zh" => name.zh, name.en),
   "role": select($lang == "zh" => role.zh, role.en),
@@ -72,12 +93,64 @@ const profileQuery = `*[_type == "profile" && status == "published"][0] {
   "appointments": appointments[]{year, "institution": select($lang == "zh" => institution.zh, institution.en), "role": select($lang == "zh" => role.zh, role.en)},
   "honors": honors[]{year, "title": select($lang == "zh" => title.zh, title.en)},
   "publicProjects": publicProjects[publiclyConfirmed == true]{year, "title": select($lang == "zh" => title.zh, title.en)},
-  "courses": courses[]{
-    "title": select($lang == "zh" => title.zh, title.en),
-    "nature": select($lang == "zh" => nature.zh, nature.en)
-  },
+  scholarMetrics,
   "academicService": select($lang == "zh" => academicService.zh, academicService.en)
 }`;
+
+export const fallbackCourses: PublicCourse[] = [
+  {
+    id: "course-learning-analytics",
+    title: "Learning Analytics",
+    titleZh: "学习分析",
+    nature: "Peking University postgraduate course",
+    natureZh: "北京大学研究生课程",
+    description: "A research-methods course that combines flipped learning with project-based practice. Students work with authentic multimodal learning data and learn to select, apply, and critically compare methods including sequence mining, predictive analytics, feature engineering, unsupervised learning, and network analysis.",
+    descriptionZh: "面向硕博研究生的研究方法课程，采用翻转课堂与项目式教学。学生基于真实的多模态学习数据，学习序列挖掘、预测分析、特征工程、无监督机器学习和网络分析等方法，并在实践中判断不同技术的适用范围与局限。",
+    offeredSince: "2023",
+    order: 10,
+  },
+  {
+    id: "course-information-technology-management",
+    title: "Information Technology and Higher Education Management",
+    titleZh: "信息技术与高校管理",
+    nature: "Peking University EdD course",
+    natureZh: "北京大学 EdD 课程",
+    description: "An EdD course examining how information technology, data, and artificial intelligence are reshaping higher education management. It helps education leaders develop a grounded framework for evaluating digital change and applying technology to institutional decision-making and governance.",
+    descriptionZh: "面向教育博士的课程，从高校管理场景出发讨论信息技术、数据与人工智能对组织治理和决策的影响，帮助学习者形成理解数字化变革、评估技术方案并联系管理实践的基本框架。",
+    offeredSince: "2023",
+    order: 20,
+  },
+  {
+    id: "course-academic-writing-ai",
+    title: "English Academic Writing in the Age of AI",
+    titleZh: "智能时代的英文学术写作",
+    nature: "Peking University undergraduate course",
+    natureZh: "北京大学本科生课程",
+    description: "A flipped course for students across disciplines that develops academic reading and writing through structure, logic, style, audience, and storytelling. It also builds critical judgment about when and how generative AI can support writing without compromising academic integrity or authorial control.",
+    descriptionZh: "面向不同学科本科生的翻转课堂，围绕学术论文的结构、逻辑、风格、受众与叙事训练英文读写能力，同时培养学生对生成式人工智能的批判性判断，理解如何在保持学术诚信与作者主导的前提下规范使用相关工具。",
+    order: 30,
+  },
+  {
+    id: "course-human-computer-interaction",
+    title: "Human-Computer Interaction Design",
+    titleZh: "人机交互设计",
+    nature: "Peking University postgraduate course",
+    natureZh: "北京大学研究生课程",
+    description: "A project-based course connecting educational technology theory, research, and product practice. Students move from user modelling and needs analysis to prototyping, evaluation, and iterative design while working on authentic educational technology development projects.",
+    descriptionZh: "以真实教育技术产品研发项目为载体，将理论、研究与产品实践结合起来。学生从用户建模和需求分析出发，完成原型设计、评估与迭代，在项目协作中掌握教育技术产品的人机交互设计方法。",
+    order: 40,
+  },
+  {
+    id: "course-ai-literacy-academic",
+    title: "AI Literacy for Academic Purposes",
+    titleZh: "面向学术的 AI 素养",
+    nature: "Peking University postgraduate course",
+    natureZh: "北京大学研究生课程",
+    description: "A graduate course cultivating durable foundations for research with AI rather than short-term tool proficiency. Through cases, projects, and human-AI interaction, students develop skills in questioning, feedback, computational thinking, ethical judgment, creativity, collaboration, and connecting knowledge across disciplines.",
+    descriptionZh: "面向研究生培养智能时代开展科研所需的底层素养，而非追求工具速成。课程通过案例、项目和人机互动，训练发问、反馈、计算思维、伦理判断、创造力、协同合作与跨学科知识连接等能力。",
+    order: 50,
+  },
+];
 
 function fallbackPublicationRows(): PublicPublication[] {
   return fallbackPublications.map((item, index) => {
@@ -101,11 +174,13 @@ function fallbackPublicationRows(): PublicPublication[] {
 
 function fallbackTalkRows(): PublicTalk[] {
   return fallbackTalks.map((item, index) => ({
-    id: `fallback-talk-${index}`,
+    id: "id" in item && typeof item.id === "string" ? item.id : `fallback-talk-${index}`,
     date: item.date,
-    type: item.type,
+    displayOrder: "displayOrder" in item && typeof item.displayOrder === "number" ? item.displayOrder : index + 1,
     title: item.title,
+    titleZh: "titleZh" in item && typeof item.titleZh === "string" ? item.titleZh : undefined,
     host: item.host,
+    hostZh: "hostZh" in item && typeof item.hostZh === "string" ? item.hostZh : undefined,
   }));
 }
 
@@ -133,6 +208,11 @@ export async function getPeople(): Promise<PublicPerson[]> {
   return (await sanityQuery<PublicPerson[]>(peopleQuery)) ?? fallbackPeopleRows();
 }
 
+export async function getCourses(): Promise<PublicCourse[]> {
+  const rows = await sanityQuery<PublicCourse[]>(courseQuery);
+  return rows?.length ? rows : fallbackCourses;
+}
+
 export function fallbackProfile(lang: Language): PublicProfile {
   const zh = lang === "zh";
   return {
@@ -141,22 +221,22 @@ export function fallbackProfile(lang: Language): PublicProfile {
     affiliation: content[lang].affiliation,
     email: "fyz@pku.edu.cn",
     bio: zh ? [
-      "范逸洲博士是北京大学教育学院助理教授、研究员，教育技术系副主任，并任莫纳什大学信息技术学院兼职研究员。他的研究聚焦人工智能教育、学习分析、元认知、自我调节学习与人机协同。",
-      "他的工作从学习过程测量出发，解释学习机制，设计智能干预，并把研究带回真实课堂与教育公平实践。他强调，人工智能支持学习的价值不应只由任务完成效率衡量，更要看学习者是否仍在形成自己的判断。",
+      "范逸洲博士是北京大学教育学院助理教授、研究员，教育技术系副主任，并任莫纳什大学信息技术学院兼职研究员。",
+      "其研究围绕教育与人工智能、人机交互与协同、学习分析、元认知与自我调节学习、科研智能和模拟学习展开，关注学习过程测量、机制解释与智能干预在真实教育场景中的应用。",
     ] : [
-      "Dr. Yizhou Fan is an Assistant Professor and Research Fellow at the Graduate School of Education, Peking University, Deputy Director of the Department of Educational Technology, and an Adjunct Research Fellow at Monash University. His research focuses on AI in education, learning analytics, metacognition, self-regulated learning, and human-AI collaboration.",
-      "His work moves from measuring learning processes to explaining mechanisms, designing intelligent interventions, and translating evidence into classrooms and educational equity practice. A central concern is whether learners continue to develop judgment as AI becomes more capable.",
+      "Dr. Yizhou Fan is an Assistant Professor and Research Fellow at the Graduate School of Education, Peking University, Deputy Director of the Department of Educational Technology, and an Adjunct Research Fellow at Monash University.",
+      "His research spans AI in education, human-AI interaction and collaboration, learning analytics, metacognition and self-regulated learning, scientific intelligence, and simulated learning, connecting the measurement of learning processes with mechanism-building and intelligent interventions in authentic educational settings.",
     ],
     researchStatement: content[lang].heroBody,
     researchInterests: zh
-      ? ["人工智能教育", "人机交互与协同", "学习分析", "元认知与自我调节学习", "模拟学习", "教育公平与数字鸿沟"]
-      : ["AI in Education", "Human-AI Interaction and Synergy", "Learning Analytics", "Metacognition and Self-regulated Learning", "Simulated Learning", "Educational Equity and the Digital Divide"],
+      ? ["教育与人工智能", "人机交互与协同", "学习分析", "元认知", "自我调节学习", "科研智能", "模拟学习"]
+      : ["AI in Education", "Human-AI Interaction and Collaboration", "Learning Analytics", "Metacognition", "Self-regulated Learning", "Scientific Intelligence", "Simulated Learning"],
     appointments: [
       {year: "2023-present", institution: zh ? "北京大学" : "Peking University", role: zh ? "教育学院助理教授、研究员" : "Assistant Professor and Research Fellow, Graduate School of Education"},
       {year: "2025-present", institution: zh ? "北京大学" : "Peking University", role: zh ? "教育技术系副主任" : "Deputy Director, Department of Educational Technology"},
       {year: "2022-present", institution: zh ? "莫纳什大学" : "Monash University", role: zh ? "信息技术学院兼职研究员" : "Adjunct Research Fellow, Faculty of Information Technology"},
       {year: "2026", institution: zh ? "伦敦大学学院" : "University College London", role: zh ? "UCL Knowledge Lab 访问学者" : "Visiting Scholar, UCL Knowledge Lab"},
-      {year: "2019-2023", institution: zh ? "爱丁堡大学" : "The University of Edinburgh", role: zh ? "信息学院助理研究员、博士后" : "Post-doctoral Research Associate, School of Informatics"},
+      {year: "2019-2023", institution: zh ? "爱丁堡大学" : "The University of Edinburgh", role: zh ? "信息学院博士后研究员" : "Post-doctoral Research Associate, School of Informatics"},
     ],
     honors: [
       {year: "2026", title: zh ? "最佳学生论文提名（指导研究生），第 30 届全球华人计算机教育应用大会（GCCCE）" : "Best Student Paper Nomination, 30th Global Chinese Conference on Computers in Education (GCCCE)"},
@@ -168,36 +248,12 @@ export function fallbackProfile(lang: Language): PublicProfile {
       {year: "2023", title: zh ? "新锐学者奖，国际学习分析研究学会（SoLAR）" : "Emerging Scholar Award, Society for Learning Analytics Research (SoLAR)"},
     ],
     publicProjects: [
-      {year: "2025-2027", title: zh ? "国家自然科学基金 · 基于生成式人工智能的元认知脚手架研究" : "NSFC · Metacognitive scaffolding based on generative AI"},
-      {year: "2026-2028", title: zh ? "北京市自然科学基金 · 人机协同中的元认知动态诊断与自适应干预" : "Beijing Natural Science Foundation · Adaptive metacognitive intervention in human-AI collaboration"},
-      {year: "2023-2027", title: zh ? "阿里巴巴公益基金会 · 资源薄弱地区师生人工智能素养研究" : "Alibaba Foundation · AI literacy in under-resourced areas"},
-      {year: "2023-2024", title: zh ? "SoLAR 青年学者基金 · 人机混合调节的测量与支持" : "SoLAR Early Career Research Grant · Hybrid human-AI regulation"},
+      {year: "2025-2027", title: zh ? "国家自然科学基金（NSFC）青年课题 · 基于生成式人工智能建构元认知脚手架的关键技术及实证应用研究" : "National Natural Science Foundation of China (NSFC) · Research on Key Technologies and Empirical Applications of Metacognitive Scaffolding Based on Generative Artificial Intelligence"},
+      {year: "2026-2028", title: zh ? "北京市自然科学基金-副中心联合基金（培育项目） · 人机协同情境下元认知能力的复杂系统建模、动态诊断与自适应干预研究" : "Beijing Natural Science Foundation–Municipal Administrative Center Joint Fund (Cultivation Project) · Complex-systems Modelling, Dynamic Diagnosis, and Adaptive Intervention of Metacognitive Ability in Human-AI Collaboration"},
+      {year: "2023-2027", title: zh ? "阿里巴巴公益基金会 · 欠发达地区师生人工智能素养提升项目" : "Alibaba Foundation · Project to Improve the AI Literacy of Teachers and Students in Underdeveloped Areas"},
+      {year: "2023-2024", title: "SoLAR Early Career Research (ECR) Grant · Measuring and Scaffolding Hybrid Human-AI Regulation: Comparing Learning Processes Facilitated by ChatGPT and Human Experts"},
     ],
-    courses: zh ? [
-      {title: "学习分析", nature: "北京大学研究生课程"},
-      {title: "信息技术与高校管理", nature: "北京大学 EdD 课程"},
-      {title: "人工智能时代的英文学术写作", nature: "北京大学本科生课程"},
-      {title: "学术写作（英文）", nature: "北京大学研究生课程"},
-      {title: "人机交互设计", nature: "北京大学研究生课程"},
-      {title: "面向学术的 AI 素养", nature: "北京大学研究生课程"},
-      {title: "教育技术学博士生研讨课", nature: "北京大学研究生课程"},
-      {title: "英文学术写作实战", nature: "MOOC · 课程负责人"},
-      {title: "同伴教学法", nature: "MOOC · 课程负责人"},
-      {title: "教师如何做研究", nature: "国家级精品在线开放课程 · 核心成员"},
-      {title: "翻转课堂教学法", nature: "MOOC · 核心成员"},
-    ] : [
-      {title: "Learning Analytics", nature: "Peking University postgraduate course"},
-      {title: "Information Technology and Higher Education Management", nature: "Peking University EdD course"},
-      {title: "English Academic Writing in the Age of AI", nature: "Peking University undergraduate course"},
-      {title: "Academic Writing in English", nature: "Peking University postgraduate course"},
-      {title: "Human-Computer Interaction Design", nature: "Peking University postgraduate course"},
-      {title: "AI Literacy for Academic Purposes", nature: "Peking University postgraduate course"},
-      {title: "Doctoral Seminar on Educational Technology", nature: "Peking University postgraduate course"},
-      {title: "English Academic Writing in Practice", nature: "MOOC · Course lead"},
-      {title: "Peer Instruction", nature: "MOOC · Course lead"},
-      {title: "How Do Teachers Do Research", nature: "National Excellent MOOC · Core team member"},
-      {title: "Flipped Classroom Pedagogy", nature: "MOOC · Core team member"},
-    ],
+    scholarMetrics: scholarSnapshot,
     academicService: zh
       ? "担任 British Journal of Educational Technology 与 Journal of Learning Analytics 编委，并参与人工智能教育、自我调节学习与学习分析相关专刊及国际会议组织。"
       : "Editorial board member for the British Journal of Educational Technology and Journal of Learning Analytics, with guest-editing and conference leadership across AI in education, self-regulated learning, and learning analytics.",
@@ -205,5 +261,6 @@ export function fallbackProfile(lang: Language): PublicProfile {
 }
 
 export async function getProfile(lang: Language): Promise<PublicProfile> {
-  return (await sanityQuery<PublicProfile | null>(profileQuery, {lang})) ?? fallbackProfile(lang);
+  const profile = await sanityQuery<PublicProfile | null>(profileQuery, {lang});
+  return profile ? {...profile, scholarMetrics: profile.scholarMetrics ?? scholarSnapshot} : fallbackProfile(lang);
 }

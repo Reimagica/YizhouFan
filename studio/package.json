@@ -6,7 +6,17 @@
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
-    "deploy": "sanity deploy --schema-required"
+    "deploy": "sanity deploy --schema-required",
+    "migrate:0817": "sanity exec scripts/migrate-0817-profile-courses.mjs --with-user-token",
+    "migrate:publications": "sanity exec scripts/migrate-publications.mjs --with-user-token",
+    "check:publications": "sanity exec scripts/check-publications-consistency.mjs --with-user-token",
+    "check:accessibility": "sanity exec scripts/check-publications-accessibility.mjs --with-user-token",
+    "patch:publications": "sanity exec scripts/patch-publications-audit.mjs --with-user-token",
+    "backup:publications": "sanity exec scripts/backup-publications.mjs --with-user-token",
+    "backup:talks": "sanity exec scripts/backup-talks.mjs --with-user-token",
+    "migrate:talks": "sanity exec scripts/migrate-talks-whitelist.mjs --with-user-token",
+    "patch:publications:finalize": "sanity exec scripts/patch-publications-finalize.mjs --with-user-token",
+    "publish:publications": "sanity exec scripts/publish-publications.mjs --with-user-token"
   },
   "dependencies": {
     "@sanity/ui": "^3.5.0",

@@ -87,7 +87,7 @@ textarea:focus-visible {
 .site-header__inner {
   min-height: 72px;
   display: grid;
-  grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
   align-items: center;
   gap: 24px;
 }
@@ -103,14 +103,6 @@ textarea:focus-visible {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.02em;
-}
-
-.wordmark__role {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .desktop-nav,
@@ -302,27 +294,6 @@ textarea:focus-visible {
   min-width: 0;
 }
 
-.profile-heading {
-  padding: 12px 10px 24px;
-}
-
-.profile-heading h2 {
-  max-width: 850px;
-  margin: 13px 0 0;
-  font-family: var(--serif);
-  font-size: clamp(32px, 4.1vw, 48px);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1.09;
-}
-
-.profile-heading h2 span {
-  display: inline-block;
-  color: var(--muted);
-  font-size: 0.72em;
-  font-weight: 400;
-}
-
 .content-card {
   margin-bottom: 18px;
   padding: 30px;
@@ -435,33 +406,102 @@ textarea:focus-visible {
   line-height: 1.65;
 }
 
-.course-list {
+.scholar-metrics__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0 24px;
-  margin: 22px 0 0;
-  padding: 0;
-  list-style: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.course-list li {
+.scholar-metrics__grid a {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-  font-size: 14px;
-  line-height: 1.5;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface-soft);
+  padding: 15px;
+  transition: border-color 160ms ease, background 160ms ease;
 }
 
-.course-list li strong {
-  font-size: 14px;
-  font-weight: 700;
+.scholar-metrics__grid a:hover {
+  border-color: var(--line-strong);
+  background: var(--surface);
 }
 
-.course-list li span {
+.scholar-metrics__grid strong {
+  color: var(--pku-red);
+  font-family: var(--serif);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.scholar-metrics__grid span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.scholar-metrics__updated {
+  margin: 13px 0 0;
+  color: var(--faint);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.teaching-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.course-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  padding: 27px;
+  box-shadow: 0 12px 34px rgba(42, 34, 28, 0.04);
+}
+
+.course-card__nature {
+  margin: 0 0 10px !important;
+  color: var(--pku-red) !important;
+  font-size: 11px !important;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.course-card h2 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.course-card > p:not(.course-card__nature) {
+  margin: 0;
+  color: #454e49;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.course-card__role {
+  display: block;
+  margin-top: 15px;
   color: var(--muted);
   font-size: 12px;
+}
+
+.course-card > a {
+  display: inline-flex;
+  margin-top: 17px;
+  color: var(--pku-red);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .page-body {
@@ -1203,6 +1243,11 @@ textarea:focus-visible {
     gap: 0;
   }
 
+  .scholar-metrics__grid,
+  .teaching-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .person-card { flex-basis: 170px; }
 }
 
@@ -1275,7 +1320,6 @@ textarea:focus-visible {
     min-height: 64px;
   }
 
-  .wordmark__role,
   .scholar-link {
     display: none;
   }
@@ -1302,16 +1346,12 @@ textarea:focus-visible {
     object-position: center 30%;
   }
 
-  .profile-heading h2 {
-    font-size: 31px;
-  }
-
   .content-card,
   .chat-panel {
     padding: 22px;
   }
 
-  .course-list {
+  .teaching-grid {
     grid-template-columns: 1fr;
   }
 

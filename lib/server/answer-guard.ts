@@ -4,7 +4,7 @@ export type GuardedAnswer = {
   status: "answered" | "insufficient";
   items: string[];
   note?: string;
-  topics: Array<"profile" | "publications" | "talks" | "people">;
+  topics: Array<"profile" | "teaching" | "publications" | "talks" | "people">;
   publicationIds: string[];
 };
 
@@ -64,7 +64,7 @@ export function guardAnswer(raw: string, lang: Language): GuardedAnswer {
     .slice(0, 4)
     .map((item) => truncate(item, lang, 300, 150));
   const note = truncate(cleanText(rawNote), lang, 90, 36);
-  const allowedTopics = new Set(["profile", "publications", "talks", "people"]);
+  const allowedTopics = new Set(["profile", "teaching", "publications", "talks", "people"]);
   const topics = (Array.isArray(rawTopics) ? rawTopics : [])
     .filter((topic): topic is GuardedAnswer["topics"][number] => typeof topic === "string" && allowedTopics.has(topic))
     .slice(0, 4);

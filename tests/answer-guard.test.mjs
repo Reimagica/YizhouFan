@@ -62,9 +62,27 @@ test("uses only verified publication URLs from site data", () => {
   assert.deepEqual(ensurePublicationTitles(["这项研究讨论了学习过程。"], publications, ["publication-1"], "zh"), ["《已核实论文》：这项研究讨论了学习过程。"]);
 });
 
+test("falls back to a public PDF URL when no source or DOI is available", () => {
+  const publications = [{
+    id: "publication-2",
+    year: 2024,
+    kind: "Journal article",
+    title: "PDF-only paper",
+    titleZh: "仅 PDF 论文",
+    authors: "Yizhou Fan",
+    venue: "Journal",
+    pdfUrl: "https://cdn.sanity.io/files/mb3w1o0y/production/pdf-only.pdf",
+  }];
+  const links = selectPublicationLinks(publications, ["publication-2"], "Discussing the PDF-only paper", "Question", "en");
+  assert.deepEqual(links, [{label: "PDF-only paper", url: "https://cdn.sanity.io/files/mb3w1o0y/production/pdf-only.pdf"}]);
+});
+
 test("returns relevant internal section links", () => {
   assert.deepEqual(selectPublicSources("请介绍论文和报告", "zh", ["publications", "talks"]), [
     {label: "学术成果", url: "/zh/publications"},
     {label: "学术报告", url: "/zh/talks"},
+  ]);
+  assert.deepEqual(selectPublicSources("请介绍学习分析课程", "zh", ["teaching"]), [
+    {label: "教学", url: "/zh/teaching"},
   ]);
 });

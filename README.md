@@ -22,7 +22,7 @@ Sanity Asset CDN ──> 已确认公开的正文图片、论文 PDF、报告 PD
 ## Public routes
 
 - `/en`、`/zh`：个人信息、研究、履历、荣誉、公开项目、教学与服务
-- `/[lang]/publications`：检索、年份/类型筛选、来源、PDF、BibTeX和摘要
+- `/[lang]/publications`：检索、年份/类型/语言筛选、来源、PDF、BibTeX和摘要
 - `/[lang]/talks`：检索、年份/类型筛选、报告简介和公开课件；`/[lang]/talks/[id]` 展示富文本详情
 - `/[lang]/people`：博士后、在读学生和毕业生概览
 - `/[lang]/ask`：仅基于已发布公开内容的AI问答
@@ -63,7 +63,7 @@ npx sanity dataset import /private/tmp/yizhoufan-initial-content.ndjson producti
 当前内容模型包括：
 
 - `profile`：个人信息、研究、履历、荣誉、公开项目白名单、教学与服务
-- `publication`：书目信息、摘要、BibTeX、Sanity 原生公开 PDF 与审核状态
+- `publication`：题名、作者、年份、期刊/会议/出版社、卷期页码或文章号、语言、DOI、来源页面、摘要、BibTeX、Sanity 原生公开 PDF 与审核状态；语言字段仅用于成果页语言筛选，首页只统计全部成果总数
 - `talk`：报告信息、双语 Portable Text 正文、配图、注释、Sanity 原生公开附件与审核状态；不设封面图
 - `person`：个人站三类静态成员概览
 
@@ -80,7 +80,7 @@ Studio 顶部“添加学术成果”工具提供两条路径：题名/DOI/作�
 - Filter：
 
 ```groq
-_type in ["profile", "publication", "talk", "person"]
+_type in ["profile", "course", "publication", "talk", "person"]
 ```
 
 该接口使Vercel上的静态/ISR页面在内容发布后失效并读取新内容。

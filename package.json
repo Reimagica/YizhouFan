@@ -13,7 +13,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern studio/dist",
     "studio:dev": "npm --prefix studio run dev",
     "studio:build": "npm --prefix studio run build",
-    "sanity:seed": "tsx scripts/generate-sanity-seed.mjs"
+    "sanity:seed": "tsx scripts/generate-sanity-seed.mjs",
+    "sanity:migrate:0817": "npm --prefix studio run migrate:0817"
   },
   "dependencies": {
     "@sanity/webhook": "^4.0.4",

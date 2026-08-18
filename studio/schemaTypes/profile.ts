@@ -27,10 +27,13 @@ export const profile = defineType({
       defineField({name: "title", title: "项目", type: "localizedString"}),
       defineField({name: "publiclyConfirmed", title: "已确认公开", type: "boolean", initialValue: false}),
     ]}]}),
-    defineField({name: "courses", title: "开设课程", type: "array", of: [{type: "object", fields: [
-      defineField({name: "title", title: "课程名称", type: "localizedString"}),
-      defineField({name: "nature", title: "课程性质", type: "localizedString", description: "例如：北京大学研究生课程、北京大学本科生课程、MOOC。"}),
-    ]}]}),
+    defineField({name: "scholarMetrics", title: "Google Scholar 指标快照", type: "object", description: "手动或定时同步的缓存值。必须填写数据日期，不得作为访客请求时的实时抓取结果。", fields: [
+      defineField({name: "citations", title: "总引用", type: "number", validation: (rule) => rule.min(0).integer()}),
+      defineField({name: "hIndex", title: "h-index", type: "number", validation: (rule) => rule.min(0).integer()}),
+      defineField({name: "i10Index", title: "i10-index", type: "number", validation: (rule) => rule.min(0).integer()}),
+      defineField({name: "asOf", title: "数据截至", type: "date"}),
+      defineField({name: "sourceUrl", title: "来源页面", type: "url"}),
+    ]}),
     defineField({name: "academicService", title: "学术服务", type: "localizedText"}),
     defineField({name: "status", title: "发布状态", type: "string", options: {list: ["draft", "reviewed", "published"]}, initialValue: "draft"}),
   ],

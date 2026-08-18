@@ -1,4 +1,5 @@
 import {localizedReportBody, localizedString, localizedText, publicFile, reportAttachment, reportBody, reportImage, reportNote} from "./shared";
+import {course} from "./course";
 import {person} from "./person";
 import {profile} from "./profile";
 import {publication} from "./publication";
@@ -13,6 +14,7 @@ export const schemaTypes = [
   reportNote,
   reportBody,
   localizedReportBody,
+  course,
   profile,
   publication,
   talk,

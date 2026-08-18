@@ -10,16 +10,17 @@ export default async function TalkDetailPage({params}: {params: Promise<{lang: s
   const talk = await getTalkById(decodeURIComponent(id));
   if (!talk) notFound();
   const zh = lang === "zh";
-  const title = zh && talk.titleZh ? talk.titleZh : talk.title;
-  const host = zh && talk.hostZh ? talk.hostZh : talk.host;
-  const summary = zh ? (talk.summaryZh ?? talk.summary) : talk.summary;
-  const body = zh ? (talk.bodyZh?.length ? talk.bodyZh : talk.body) : talk.body;
+  const title = zh ? (talk.titleZh || talk.title) : (talk.title || talk.titleZh);
+  const host = zh ? (talk.hostZh || talk.host) : (talk.host || talk.hostZh);
+  const summary = zh ? (talk.summaryZh || talk.summary) : (talk.summary || talk.summaryZh);
+  const body = zh ? (talk.bodyZh?.length ? talk.bodyZh : talk.body) : (talk.body?.length ? talk.body : talk.bodyZh);
   const attachments = talk.attachments ?? [];
+  const displayDate = talk.date.match(/^(\d{4})[-.](\d{2})/)?.slice(1).join(".") ?? talk.date;
 
   return <div className="section-wrap page-body report-detail">
     <Link className="report-back" href={`/${lang}/talks`}>← {zh ? "返回学术报告" : "Back to talks"}</Link>
     <header className="report-detail__header">
-      <div className="result-card__meta"><span className="type-pill">{talk.type}</span><time>{talk.date}</time></div>
+      <div className="result-card__meta"><time>{displayDate}</time></div>
       <h1>{title}</h1>
       <p>{host}</p>
       {summary && <div className="report-summary">{summary}</div>}

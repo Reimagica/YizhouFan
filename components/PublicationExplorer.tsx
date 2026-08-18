@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { profileLinks, type Language } from "../lib/content";
 import type { PublicPublication } from "../lib/cms/types";
+import {publicationToBibTeX} from "../lib/bibtex";
 
 const kindLabels: Record<string, string> = {
   "Journal article": "期刊论文",
@@ -18,15 +19,10 @@ function localizedKind(kind: string, zh: boolean) {
 }
 
 function localizedTitle(publication: PublicPublication, lang: Language) {
-  return lang === "zh" && publication.titleZh ? publication.titleZh : publication.title;
-}
-
-function toBibTeX(publication: PublicPublication) {
-  if (publication.bibtex) return publication.bibtex;
-  const entryType = publication.kind === "Book" ? "book" : publication.kind === "Journal article" ? "article" : "inproceedings";
-  const venueField = publication.kind === "Book" ? "publisher" : publication.kind === "Journal article" ? "journal" : "booktitle";
-  const key = `Fan${publication.year}`;
-  return `@${entryType}{${key},\n  title = {${publication.title}},\n  author = {${publication.authors.replaceAll(", ", " and ")}},\n  ${venueField} = {${publication.venue}},\n  year = {${publication.year}}\n}`;
+  // Each locale prefers its own field, falling back to the other so a Chinese-only
+  // publication (no fabricated English title) still displays its original title on
+  // the English page, and vice versa.
+  return lang === "zh" ? (publication.titleZh || publication.title) : (publication.title || publication.titleZh);
 }
 
 export function PublicationExplorer({ lang, publications }: { lang: Language; publications: PublicPublication[] }) {
@@ -34,25 +30,28 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
   const [query, setQuery] = useState("");
   const [year, setYear] = useState<number | null>(null);
   const [kind, setKind] = useState<string | null>(null);
+  const [language, setLanguage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   const years = [...new Set(publications.map((item) => item.year))].sort((a, b) => b - a);
   const kinds = [...new Set(publications.map((item) => item.kind))];
+  const languages = [...new Set(publications.map((item) => item.language).filter(Boolean))] as string[];
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     return publications.filter((item) => {
       if (year && item.year !== year) return false;
       if (kind && item.kind !== kind) return false;
+      if (language && item.language !== language) return false;
       if (!term) return true;
       const target = [item.title, item.titleZh ?? "", item.authors, item.venue, item.kind, ...(item.keywords ?? [])].join(" ").toLowerCase();
       return target.includes(term);
     });
-  }, [kind, publications, query, year]);
+  }, [kind, language, publications, query, year]);
 
   const copyBibTeX = async (publication: PublicPublication) => {
-    await navigator.clipboard.writeText(toBibTeX(publication));
-    setCopied(publication.title);
+    await navigator.clipboard.writeText(publicationToBibTeX(publication));
+    setCopied(publication.id);
     window.setTimeout(() => setCopied(null), 1600);
   };
 
@@ -83,6 +82,14 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
           <button aria-pressed={!kind} className={!kind ? "active" : ""} type="button" onClick={() => setKind(null)}>{zh ? "全部" : "All"}</button>
           {kinds.map((item) => <button aria-pressed={kind === item} className={kind === item ? "active" : ""} type="button" key={item} onClick={() => setKind(kind === item ? null : item)}>{localizedKind(item, zh)}</button>)}
         </div>
+
+        {languages.length > 1 && (
+          <div className="filter-group">
+            <p>{zh ? "语言" : "Language"}</p>
+            <button aria-pressed={!language} className={!language ? "active" : ""} type="button" onClick={() => setLanguage(null)}>{zh ? "全部" : "All"}</button>
+            {languages.map((item) => <button aria-pressed={language === item} className={language === item ? "active" : ""} type="button" key={item} onClick={() => setLanguage(language === item ? null : item)}>{item === "zh" ? "中文" : "English"}</button>)}
+          </div>
+        )}
       </aside>
 
       <section className="archive-results" aria-live="polite">
@@ -94,12 +101,12 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
         <div className="result-list">
           {filtered.map((publication) => {
             const title = localizedTitle(publication, lang);
-            const isOpen = expanded === publication.title;
+            const isOpen = expanded === publication.id;
             const pdfUrl = publication.pdfUrl ?? null;
             const sourceUrl = publication.sourceUrl ?? (publication.doi ? `https://doi.org/${publication.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")}` : null);
 
             return (
-              <article className="result-card" key={`${publication.year}-${publication.title}`}>
+              <article className="result-card" key={publication.id}>
                 <div className="result-card__meta">
                   <span className="type-pill">{localizedKind(publication.kind, zh)}</span>
                   <span>{publication.venue}</span>
@@ -114,13 +121,13 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
                   ) : (
                     <span className="disabled-action" title={zh ? "公开版本待确认" : "Public version pending"}>{zh ? "PDF 待补" : "PDF pending"}</span>
                   )}
-                  <button type="button" onClick={() => copyBibTeX(publication)}>{copied === publication.title ? (zh ? "已复制" : "Copied") : "BibTeX"}</button>
-                  <button type="button" onClick={() => setExpanded(isOpen ? null : publication.title)}>{isOpen ? (zh ? "收起摘要" : "Hide abstract") : (zh ? "展开摘要" : "Show abstract")}</button>
+                  <button type="button" onClick={() => copyBibTeX(publication)}>{copied === publication.id ? (zh ? "已复制" : "Copied") : "BibTeX"}</button>
+                  <button type="button" onClick={() => setExpanded(isOpen ? null : publication.id)}>{isOpen ? (zh ? "收起摘要" : "Hide abstract") : (zh ? "展开摘要" : "Show abstract")}</button>
                 </div>
                 {isOpen && (
                 <div className="abstract-panel">
                     <strong>{zh ? "摘要" : "Abstract"}</strong>
-                    <p>{(zh ? publication.abstractZh : publication.abstract) ?? (zh ? "暂无摘要。" : "Abstract not available.")}</p>
+                    <p>{(zh ? (publication.abstractZh || publication.abstract) : (publication.abstract || publication.abstractZh)) ?? (zh ? "暂无摘要。" : "Abstract not available.")}</p>
                   </div>
                 )}
               </article>

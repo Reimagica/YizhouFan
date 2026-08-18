@@ -13,6 +13,14 @@ export const profileLinks = {
   orcid: "https://orcid.org/0000-0003-2777-1705",
 };
 
+export const scholarSnapshot = {
+  citations: 3301,
+  hIndex: 27,
+  i10Index: 45,
+  asOf: "2026-06-20",
+  sourceUrl: profileLinks.scholar,
+} as const;
+
 export const publications = [
   {
     year: 2026,
@@ -137,40 +145,81 @@ export const publications = [
 
 export const talks = [
   {
+    id: "talk-2026-07-bavaria",
     date: "2026.07",
-    type: "Invited talk",
+    displayOrder: 1,
     title: "A Metacognitive Approach to Learning and Performance in Human-AI Interaction",
-    host: "Bavarian Learning Analytics Network & University of Hagen, Germany",
+    host: "Bavarian Learning Analytics Network and University of Hagen, Germany",
   },
   {
+    id: "talk-002",
     date: "2026.04",
-    type: "Keynote",
+    displayOrder: 2,
     title: "Shifting From Product-Oriented to Process-Oriented Assessment with Learning Analytics",
-    host: "6th Workshop on Learning Analytics and Assessment, LAK 2026, Norway",
+    host: "The 6th Workshop on Learning Analytics and Assessment (LAK26), Norway",
   },
   {
+    id: "talk-003",
     date: "2026.04",
-    type: "Invited talk",
+    displayOrder: 3,
     title: "Beware of Metacognitive Laziness in Learning with GenAI",
-    host: "University of California, Riverside, USA",
+    host: "The University of California, Riverside, USA",
   },
   {
+    id: "talk-004",
     date: "2026.02",
-    type: "Invited talk",
+    displayOrder: 4,
     title: "Revealing and Avoiding Metacognitive Laziness while Learning with GenAI",
-    host: "UCL Knowledge Lab, United Kingdom",
+    host: "The University College of London, UK",
   },
   {
+    id: "talk-2025-12-new-liberal-arts",
+    date: "2025.12",
+    displayOrder: 5,
+    title: "Learning with GenAI to solve real-world and high-challenge tasks",
+    host: "1st International Conference on New Liberal Arts, Hong Kong, China",
+  },
+  {
+    id: "talk-005",
     date: "2025.11",
-    type: "Invited talk",
+    displayOrder: 6,
     title: "Designing, scaffolding, and coding complex human-AI interactions and collaboration processes",
-    host: "Faculty of Education, The University of Hong Kong",
+    host: "The University of Hong Kong, Hong Kong, China",
   },
   {
+    id: "talk-006",
     date: "2025.11",
-    type: "Keynote",
+    displayOrder: 7,
     title: "Learning with GenAI: Beware the Trap of Metacognitive Laziness",
-    host: "International Conference on Intelligent Education and Research, Wuhan",
+    host: "International Conference on Intelligent Education and Research, Wuhan, China",
+  },
+  {
+    id: "talk-2025-04-oulu",
+    date: "2025.04",
+    displayOrder: 8,
+    title: "Beware of Metacognitive Laziness in Learning with GenAI",
+    host: "University of Oulu, Finland",
+  },
+  {
+    id: "talk-2024-03-lak24",
+    date: "2024.03",
+    displayOrder: 9,
+    title: "Learning and Regulating with ChatGPT: What Experimental Study Tells Us?",
+    host: "LAK24 Conference, Japan",
+  },
+  {
+    id: "talk-2023-09-earli23",
+    date: "2023.09",
+    displayOrder: 10,
+    title: "When and why learners benefit from personalized scaffoldings for self-regulated learning",
+    host: "EARLI-23 Conference, Greece",
+  },
+  {
+    id: "talk-2022-09-sig27",
+    date: "2022.09",
+    displayOrder: 11,
+    title: "Improving the measurement of selfregulated learning using multichannel data: A FLoRA Case Study",
+    host: "SIG-27 Workshop, UK",
   },
 ] as const;
 
@@ -220,7 +269,7 @@ export const content = {
     selectedIntro: "Recent books and papers that anchor the current research agenda.",
     allPublications: "View publication archive",
     talksTitle: "Ideas in circulation",
-    talksIntro: "Recent invited talks and keynotes, with slide decks where available.",
+    talksIntro: "Search talks by title, host, or year.",
     allTalks: "View all talks",
     peopleTitle: "People I work with",
     peopleIntro: "Current advisees, collaborators, and alumni.",
@@ -262,7 +311,7 @@ export const content = {
     selectedIntro: "支撑当前研究议程的近期著作与论文。",
     allPublications: "查看全部成果",
     talksTitle: "流动中的思想",
-    talksIntro: "近期受邀报告与主旨演讲，部分报告附有可下载课件。",
+    talksIntro: "可按题目、主办方或年份检索学术报告。",
     allTalks: "查看全部报告",
     peopleTitle: "共同研究的人",
     peopleIntro: "一起开展学习科学与人工智能教育研究的团队成员。",

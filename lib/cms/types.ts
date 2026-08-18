@@ -14,12 +14,17 @@ export type PublicPublication = {
   pdfUrl?: string;
   sourceUrl?: string;
   bibtex?: string;
+  language?: "en" | "zh";
+  volume?: string;
+  issue?: string;
+  pages?: string;
+  articleNumber?: string;
 };
 
 export type PublicTalk = {
   id: string;
   date: string;
-  type: string;
+  displayOrder?: number;
   title: string;
   titleZh?: string;
   host: string;
@@ -68,6 +73,30 @@ export type PublicPerson = {
   portraitUrl?: string;
 };
 
+export type PublicCourse = {
+  id: string;
+  title: string;
+  titleZh: string;
+  nature: string;
+  natureZh: string;
+  description: string;
+  descriptionZh: string;
+  role?: string;
+  roleZh?: string;
+  offeredSince?: string;
+  mooc?: boolean;
+  moocUrl?: string;
+  order: number;
+};
+
+export type ScholarMetrics = {
+  citations: number;
+  hIndex: number;
+  i10Index: number;
+  asOf: string;
+  sourceUrl: string;
+};
+
 export type PublicProfile = {
   name: string;
   role: string;
@@ -79,7 +108,7 @@ export type PublicProfile = {
   appointments: Array<{year: string; institution: string; role: string}>;
   honors: Array<{year: string; title: string}>;
   publicProjects: Array<{year: string; title: string}>;
-  courses: Array<{title: string; nature: string}>;
+  scholarMetrics?: ScholarMetrics;
   academicService: string;
 };
 
