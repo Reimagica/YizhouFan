@@ -12,7 +12,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 线上代码基线仍为 GitHub `main` 提交 `06889b4`；Sanity Production 已完成 Profile、5 门课程、成果批量迁移与 11 场报告白名单收敛。成果与报告主体数据已写入并复核（2026-08-18），但本地工作区尚未 commit/push，也未部署 Vercel/Studio；线上前端仍运行 `06889b4`，报告页新结构只有发布新代码后才会上线 |
+| 当前阶段 | 2026-08-18 功能提交 `d84bc7d` 已推送 GitHub `main`；新版 Sanity Studio 与 Vercel Production 均已上线。Profile、5 门课程、92 项成果和 11 场报告已写入并复核；People 年份排序为下一轮工作 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；2026-08-18 只读实查为 118 份业务文档（1 Profile、5 Course、92 Publication、11 Talk、9 Person）与 90 个 Asset（89 file、1 image）。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -126,7 +126,7 @@ Sanity Asset CDN
 - 论文检索接口只读、限制 Studio Origin，不持有 Sanity 写令牌；当前登录的 Studio 用户负责创建草稿。
 - 双语内容仍遵循“同一提交检查两种语言”；职务、项目、论文、奖项和人员状态必须人工核对，任何机器生成文本都只能作为待复核草稿。
 
-### 当前部署与数据状态（2026-08-17）
+### 当前部署与数据状态（2026-08-18）
 
 已完成：
 
@@ -135,14 +135,14 @@ Sanity Asset CDN
 3. DeepSeek 问答、Upstash Redis REST 分层限流及 `RATE_LIMIT_SALT` 已接入 Vercel；生产环境缺配置或限流异常时会 fail closed。
 4. Profile、Publication、Talk、Person 的线上 Schema 和既有内容已发布；论文原生 PDF、报告多附件/富文本及成果候选录入工具已存在于线上基线。Sanity 只读实查为 11 个 Talk 文档（已收敛到导师白名单），不是旧记录中的 5 或 6 个。
 5. 2026-08-17 在 Sanity 写入 Profile 校正、Scholar 快照和 5 个已发布 Course 文档；迁移前完整备份位于 `private/课题组网站记录/网站资料/Sanity备份/yizhoufan-production-before-0817.tar.gz`。
+6. 成果批量迁移与最终发布完成：92 份 `publication` 全部 published，89 份原生 PDF 已上传并通过一致性、可达性和元数据审计；Talks 已收敛到导师指定的 11 场并上线。
+7. 2026-08-18 功能提交 `d84bc7d` 已推送 GitHub `main`；新版 Studio 与 Vercel Production 已发布，首页 Scholar 指标、独立 Teaching 页面和 Talks 新结构已完成线上浏览器验收。
 
 尚未完成：
 
-1. 当前工作区的首页精简、独立 Teaching 路由、Course Schema、AI `teaching` topic、测试和迁移脚本尚未 commit/push，也未部署新版 Studio/Vercel。
-2. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Studio 部署和 Vercel 发布后再删除 Profile 内遗留的旧 `courses` 数组。
-3. 成果批量迁移与最终发布已全部完成：Sanity 现有 92 份 `publication`（92 published、0 draft），89 份原生 PDF 已上传并 `copyrightCleared`；3 条扫描型 PDF 元数据已逐字校正（2024 系统综述、2018 中文 MOOC、2016 Peter Lang 章节改为 Book chapter + 显式 BibTeX）；写入前备份 `publications-pre-final-publish-0818.ndjson.gz`（92 条，SHA-256 `3dd7a6c10015a6015a13173d6d8eafc901cd71cd66f648f8881285051fa5d634`）。详见本文件“2026-08-18 Publications final publish”。
-4. Talks 已收敛到导师指定的 11 场（2026-08-18，工作区未提交、未部署）；People 尚未取消分类并改为按入学年份排列。
-5. 自定义域名、浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
+1. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Teaching 页面已上线，Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
+2. People 尚未取消分类并改为按入学年份排列。
+3. 自定义域名、浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
 
 未经用户明确指示，不得代为 Git commit/push、部署 Vercel/Studio、修改域名或发布尚未人工核对的批量成果草稿。成果模块的 8 条最终发布已由用户明确指示完成。
 
@@ -627,3 +627,4 @@ npm run studio:build
 - 只读核对 Sanity：Profile 已含 Scholar 快照（2026-06-20：citations 3301、h-index 27、i10-index 45）；5 门 Course 全部 published 且均有中英文简介。当前所选 5 门课均 `mooc=false`、无官方 MOOC URL，因此前台不显示 MOOC 按钮是数据口径，不是渲染故障。
 - 浏览器确认 `https://yizhoufan.vercel.app/en` 仍运行旧 GitHub `06889b4`：缺 Teaching 导航、Scholar 指标卡和新版课程页。本地生产版本已正确显示 Scholar 3301/27/45、本站成果 92、Teaching 导航、5 门课程简介和 11 场 Talks；桌面与 390px 页面无横向溢出。
 - 验证：`npm run lint` 0 error/0 warning；`npm test` 含 Next production build，30/30 通过；`npm run studio:build` 通过；Talk 白名单迁移二次 dry-run 0 create/0 update/0 archive；`git diff --check` 干净。用户已明确授权发布本轮完整工作区，People 留到下一轮。
+- 发布：完整功能提交 `d84bc7d` 已推送 `Reimagica/YizhouFan` 的 `main`。Sanity Studio 已成功部署至 `https://yizhoufan.sanity.studio/`，浏览器实查 Talk 表单显示“报告年月”字符串输入框与 `2026-07`。本地 Vercel CLI 59.1.4 的旧授权已失效，但 GitHub 集成自动完成 Production 发布；浏览器实查 `https://yizhoufan.vercel.app` 已显示 Scholar 3301/27/45、本站成果 92、Teaching 导航、5 门课程简介，以及无类型/无空详情入口的 11 场 Talks。
