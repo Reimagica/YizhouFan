@@ -12,7 +12,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-08-18 功能提交 `d84bc7d` 已推送 GitHub `main`；新版 Sanity Studio 与 Vercel Production 均已上线。Profile、5 门课程、92 项成果和 11 场报告已写入并复核；People 年份排序为下一轮工作 |
+| 当前阶段 | 2026-08-19 People 重构已完成复核：取消三类分组、按入学年份稳定排序、补齐成员资料占位与 Sanity 可选字段；代码随本轮推送 `main`，Vercel 由 GitHub 集成自动部署，Studio Schema 代码尚待单独部署，详见“2026-08-19 - People module refactor (Prompt 3)” |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；2026-08-18 只读实查为 118 份业务文档（1 Profile、5 Course、92 Publication、11 Talk、9 Person）与 90 个 Asset（89 file、1 image）。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -47,7 +47,7 @@
 - 学术成果：中英文成果列表，Google Scholar 作为引用信息的重要外部入口；93 份已确认公开的 PDF 将按正文抽取元数据、去重并补齐到 Sanity，首页只统计全部已发布成果总数，不拆分语言。
 - 学术报告：最终只保留导师指定的 11 场，前台不区分 Keynote/Invited talk；可为确认公开的场次附 PDF/PPTX，并保留人工富文本详情。
 - 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前只展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养五门课程，每门包含课程性质和一段克制的双语简介。
-- 团队成员概览：最终取消博士后、在读学生、毕业生分类，所有成员按入学年份排列；待本人材料到齐后显示公开照片、姓名、状态和 2–3 句简介，不做成员详情页，不承担课题组站的成果关联或编辑功能。
+- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列，同年按 `order` 升序、再按当前语言显示名稳定排序，无年份的成员排在末尾。每张卡片可选展示双语姓名、身份/状态、入学年份、2–3 句双语简介、授权公开头像与可选个人主页/邮箱；材料未收齐的字段使用克制占位文案（"入学年份待补充 / Enrollment year forthcoming"、"个人与研究简介待补充 / Profile forthcoming"、统一中性头像位），不显示成员详情页，不承担课题组站的成果关联或编辑功能。
 - AI 问答：导航名称固定为“AI 问答”；接入服务端大模型，回答导师或课题组的公开信息问题，并落实公开知识库、答案来源、无证据时拒答、按 IP/每日总量限流、费用上限和异常停用。
 
 ### 2026-07-27 第二轮页面与功能要求
@@ -141,7 +141,7 @@ Sanity Asset CDN
 尚未完成：
 
 1. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Teaching 页面已上线，Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
-2. People 尚未取消分类并改为按入学年份排列。
+2. People 代码重构已完成并通过复核：取消三类前台分组、改为按入学年份单页稳定排列、新增 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail` 可选字段与统一占位状态；Studio Schema 尚待部署，且未批量写入 Sanity Production。
 3. 自定义域名、浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
 
 未经用户明确指示，不得代为 Git commit/push、部署 Vercel/Studio、修改域名或发布尚未人工核对的批量成果草稿。成果模块的 8 条最终发布已由用户明确指示完成。
@@ -187,7 +187,7 @@ Sanity Asset CDN
 | `/[lang]/talks` | 可检索、按年份筛选的报告列表；详情页展示富文本正文与公开附件（已移除类型筛选与标签） |
 | `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
 | `/[lang]/teaching` | 独立双语课程栏目；五门课程的性质与简介从 Sanity `course` 文档读取 |
-| `/[lang]/people` | 博士后/在读学生/毕业生三类静态概览，不提供详情页 |
+| `/[lang]/people` | 团队成员单页概览：所有已发布成员按入学年份降序排列于同一网格，无分类 Tab、无详情页、无可点击假入口；缺失字段降级为克制占位文案 |
 | `/[lang]/ask` | AI 问答客户端；调用 `/api/ask` |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
 | `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
@@ -278,10 +278,10 @@ tests/
 
 ## 后续优先事项
 
-1. **发布当前本地迭代**：先复核 diff，再按用户明确指示 commit/push；部署新版 Sanity Studio 与 Vercel，确认导航和五门课程正常，并把 revalidation Webhook 过滤器更新为包含 `course`。稳定后清理 Profile 旧 `courses` 数组。Git 仍未 commit，不声称已建立 Git checkpoint。
+1. **发布 People 后台字段**：People 前端代码随本轮 `main` 推送并由 Vercel 自动部署；下一步单独部署新版 Sanity Studio，确认 `enrollmentYear`、长文本 `bio`、`profileUrl`、`publicEmail` 可编辑。不得在资料未确认前批量补写成员事实。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
-3. **学术报告收敛（Prompt 2，已完成）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。Git 仍未 commit，发布前需与成果、Profile、教学等本地迭代一并 commit/push 并部署 Vercel/Studio。
-4. **团队成员重构**：待收齐入学年份、公开照片及本人确认的双语简介后，取消三类前台分组并按入学年份稳定排列。
+3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
+4. **团队成员重构（Prompt 3，代码完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，新增 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail` 可选字段，缺失字段降级为占位文案，AI 知识不读取占位文案。Vercel 随 GitHub 推送自动部署；Studio Schema 仍需单独部署，且未批量写入 Sanity Production。待收齐本人确认的入学年份、授权头像与双语简介后，再由导师通过 Studio 逐人补全。
 5. **生产运维收尾**：在浏览器完成 AI 问答和 Upstash 键验证；核对费用告警/硬上限；轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据；完成 `yizhoufan.com` DNS、HTTPS 与正式域名切换。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
 
@@ -636,3 +636,59 @@ npm run studio:build
 - 教授课程从双列卡片改为每行一门课的单列结构；桌面端卡片内部使用“课程名称 / 简介与链接”双区布局，窄屏回落为单列。
 - 对公开课程链接进行联网核验：仅“英文学术写作实战”可确认范逸洲老师参与的中国大学 MOOC 官方页（`https://www.icourse163.org/course/PKU-1449486161`），作为“智能时代的英文学术写作”的配套 MOOC 直链；其余四门不显示 MOOC 按钮或检索跳转，禁止将第三方同名课程冒充导师课程。
 - AI 问答返回的站内栏目标签同步为个人简介 / 教授课程 / 学术成果 / 学术报告 / 团队成员，避免导航改名后链接文案漂移。
+
+### 2026-08-19 - People module refactor (Prompt 3)
+
+承接 Prompt 2（Talks 11 场白名单），重构团队成员模块：取消博士后/在读学生/毕业生三类前台分组，所有成员在同一页面按入学年份排列，缺失材料降级为克制占位状态。代码经独立复核后随本轮提交推送；Vercel 由 GitHub 集成自动部署，Sanity Studio 尚待单独部署。**未批量写入 Sanity Production、未修改现有成员姓名与身份事实、未删除任何 person 文档、未上传虚构头像。** 基线为 `61882c8 Limit MOOC link to writing course`。
+
+**Schema 与代码**
+- `studio/schemaTypes/person.ts`：标题改为“团队成员”；新增 `enrollmentYear`（number，可选，整数且限制 1900–2100）、`bio`（localizedText，适配 2–3 句长文本）、`profileUrl`（url）、`publicEmail`（带 email 校验）；`order` 标题改为“同年人工排序值”并限制为非负整数；`category` 改 `hidden: true` 并标注“旧数据兼容字段，前台不再依赖；不要新增或编辑”（保留既有数据，不删除）；保留 `position`（身份/状态）与 `status`（发布状态）。preview 用 `name.zh`/`position.zh`/`portrait`。
+- `lib/cms/types.ts`：`PublicPerson` 重命名 `status`/`statusZh` → `position`/`positionZh`（消除与 schema `status` 发布状态的语义重复），新增 `enrollmentYear?`、`bio?`、`bioZh?`、`profileUrl?`、`publicEmail?`、`order?`；不再投影 `category`。
+- `lib/cms/content.ts`：`peopleQuery` 投影 `position`/`positionZh`/`enrollmentYear`/`bio`/`bioZh`/`portraitUrl`/`order`/`profileUrl`/`publicEmail`，移除 `category`；`fallbackPeopleRows` 透传 `...item`，与回退数据形状一致。
+- `lib/content.ts`：回退 9 位成员保留真实姓名与身份（许家奇/夏梦雨/许明雪/马玲/李子健/朱桃林/肖琳霏/马郡阳/唐陆稇），`position`/`positionZh` 命名与 PublicPerson 一致，删除 `category`；未虚构入学年份、简介、照片或联系方式。
+- `lib/people-sort.ts`（新）：纯函数 `sortPeople(people, lang)`，规则为（1）有年份在前、无年份在后；（2）年份降序（近→远）；（3）`order` 升序；（4）当前语言显示名 `localeCompare` 稳定；（5）不依赖 Sanity 返回顺序；新增 3 项单测覆盖顺序、双语姓名 tie-break 与不修改输入数组。
+- `components/PeopleDirectory.tsx`（重写）：删除 Tab/按钮/计数/客户端状态与 `category` 依赖，组件改为无需客户端 JavaScript的静态渲染；单 `people-grid` 渲染全部已发布成员；卡片不可点击、无详情页、无登录/编辑/成果关联。头像有 `portraitUrl` 时使用 Next Image，并在 `next.config.ts` 仅允许 Sanity 图片 CDN；否则渲染统一中性占位（PKU 红首字母缩写，`aria-hidden`，不显示“暂无照片”）；空字符串简介也会降级为占位，避免空白卡片；`profileUrl`/`publicEmail` 仅在存在时渲染。
+- `app/[lang]/people/page.tsx`：保留 `PageIntro`（标题“团队成员 / Team”、无 dev-status 文案），直接传 `people` 给 `PeopleDirectory`；无分类 Tab 容器。
+- `app/globals.css`：移除旧 `people-tabs` 相关样式；新增 `.people-grid`（桌面 3 列 `repeat(3, minmax(0,1fr))`、`≤980px` 2 列、`≤560px` 1 列，`max-width: 1100px; margin-inline: auto`）与 `.person-card` 系列——边框 `1px solid var(--line)`、圆角 16px、背景 `--surface`、阴影 `0 12px 34px rgba(42,34,28,0.04)`（与课程/成果卡一致）；`.person-card__portrait` 用 `aspect-ratio: 4/5` 圆角矩形（非六边形），无图时渐变背景 + 首字母缩写；`.person-card__links a:focus-visible` 保留下划线，键盘焦点样式未移除。
+- `lib/public-knowledge.ts`：`peopleText` 只在 `enrollmentYear != null` 时拼“入学年份/Enrolled + 年份”、只在 `bio` 真实存在时拼简介；**不把“待补充”“forthcoming”等占位文案送入模型知识上下文**，占位文案不会成为 AI 回答中的成员事实。
+- `scripts/generate-sanity-seed.mjs`：`personDocuments` 用 `position`/`positionZh`（与回退数据一致），`order: (index+1)*10`，不写入虚构年份/简介/头像；保持幂等，不触碰 Production。
+
+**占位规则（当前）**
+- 入学年份缺失 → 卡片显示“入学年份待补充 / Enrollment year forthcoming”，`--muted` 色。
+- 简介缺失 → 卡片显示“个人与研究简介待补充 / Profile forthcoming”，`--muted` 色；支持未来 2–3 句简介自然换行，不强制等高留大空隙。
+- 头像缺失 → 统一中性位（PKU 红首字母缩写 + 渐变背景，`aria-hidden`），不显示“暂无照片”、不编造人物描述。
+- 无 `profileUrl`/`publicEmail` → 不渲染链接区，无空标签；存在时文案为可访问名称。
+- 页面顶部无“资料尚未收齐 / 纯静态 / 不提供交互”等开发状态文案；缺失材料仅以卡片占位呈现。
+
+**排序规则**
+1. 有 `enrollmentYear` 的成员在前，无年份的成员在末尾（全部无年份时仍正常渲染，不报错/不空）。
+2. 年份降序（近→远）。
+3. 同年按 `order` 升序（`order` 缺省按 0）。
+4. 再按当前语言显示名 `localeCompare`（zh 用 `zh-Hans`）稳定排序。
+5. 不依赖 Sanity 返回顺序，可测试。
+
+**AI 知识边界**
+- `buildPublicKnowledgeBundle` 只从已发布 person 文档读取真实字段：双语姓名、`position`、`enrollmentYear`（仅非空时）、`bio`（仅非空时）。
+- 占位文案（“待补充”“forthcoming”）不进入模型知识上下文；AI 不会把占位文案作为成员事实回答。
+- 未向 Sanity Production 批量写入虚构年份或简介；未修改现有成员姓名与身份事实；未删除 person 文档；未上传虚构头像；未部署 Studio。
+
+**测试与构建**
+- `tests/rendered-html.test.mjs`：将原“三类静态分类”测试替换为两项——（1）en：无 `people-tabs`/`aria-pressed`/Postdoctoral fellows/Current students，单 `people-grid` 至少一张卡，含 `Enrollment year forthcoming` 与 `Profile forthcoming`，无 `/en/people/<id>` 详情链接；（2）zh：无 `people-tabs`/`aria-pressed`，含“入学年份待补充”与“个人与研究简介待补充”，无 `/zh/people/<id>` 详情链接。
+- `npm run lint`：0 error、0 warning。
+- `npx tsc --noEmit --incremental false`：通过，0 error。
+- `npm test`（含 Next production build）：34/34 通过（含 2 项 People 页面测试与 3 项排序测试）。
+- `npm run studio:build`：通过。
+- `git diff --check`：干净（无空白错误）。
+- 生产构建静态生成 `/en/people` 与 `/zh/people`；页面测试确认单网格无 Tab、占位文案存在且无详情链接。响应式 CSS 为桌面 3 列、平板 2 列、移动 1 列；头像 `alt` 为成员姓名，无图位为 `aria-hidden` 首字母缩写；链接保留可访问名称与 `:focus-visible` 样式。
+
+**仍待收集的成员材料**
+- 每位成员的入学年份（用于排序与显示）。
+- 本人确认的授权公开头像。
+- 本人确认的 2–3 句中英文简介。
+- 可选：本人明确同意公开的个人主页 URL 与公开邮箱。
+- 以上由导师通过 Studio 逐人补全后再发布上线；本轮不代为写入。
+
+**Git 与部署状态**
+- 代码经用户授权随本轮提交并推送 `main`；Vercel 由 GitHub 集成自动部署。Sanity Studio 本轮只完成构建验证，尚未部署，因此新增字段需待 Studio 单独部署后才能在后台编辑。
+- 未向 Sanity Production 批量写入虚构年份/简介/头像；未修改现有成员姓名与身份事实；未删除 person 文档。
+- 未把本机密钥、私人材料路径中的敏感内容或未公开成员资料写入公开仓库。

@@ -79,8 +79,7 @@ const personDocuments = people.map((item, index) => ({
   _id: `person-${String(index + 1).padStart(3, "0")}`,
   _type: "person",
   name: localized(item.name, item.nameZh),
-  position: localized(item.status, item.statusZh),
-  category: item.category,
+  position: localized(item.position, item.positionZh),
   order: (index + 1) * 10,
   status: "published",
 }));

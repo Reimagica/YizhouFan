@@ -12,7 +12,15 @@ export async function buildPublicKnowledgeBundle(lang: Language) {
   ]);
   const publicationText = publications.map((item) => `ID=${item.id}; ${item.year}; ${item.language ?? "en"}; ${item.kind}; ${item.title}; ${item.titleZh ?? ""}; ${item.authors}; ${item.venue}`).join("\n");
   const talkText = talks.map((item) => `${item.date}; ${item.title}; ${item.titleZh ?? ""}; ${item.host}; ${item.hostZh ?? ""}`).join("\n");
-  const peopleText = people.map((item) => `${item.name} / ${item.nameZh}; ${item.status} / ${item.statusZh}; ${item.category}`).join("\n");
+  const peopleText = people.map((item) => {
+    const parts = [`${item.name} / ${item.nameZh}`];
+    const position = lang === "zh" ? (item.positionZh || item.position) : (item.position || item.positionZh);
+    if (position) parts.push(position);
+    if (item.enrollmentYear != null) parts.push(`${lang === "zh" ? "入学年份" : "Enrolled"} ${item.enrollmentYear}`);
+    const bio = lang === "zh" ? (item.bioZh || item.bio) : (item.bio || item.bioZh);
+    if (bio) parts.push(bio);
+    return parts.join("; ");
+  }).join("\n");
   const honorsText = profile.honors.map((item) => `${item.year}; ${item.title}`).join("\n");
   const projectsText = profile.publicProjects.map((item) => `${item.year}; ${item.title}`).join("\n");
   const courseText = courses.map((item) => lang === "zh"

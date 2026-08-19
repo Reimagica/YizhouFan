@@ -60,10 +60,15 @@ const peopleQuery = `*[_type == "person" && status == "published"] | order(order
   "id": _id,
   "name": name.en,
   "nameZh": name.zh,
-  "status": position.en,
-  "statusZh": position.zh,
-  category,
-  "portraitUrl": portrait.asset->url
+  "position": coalesce(position.en, position.zh),
+  "positionZh": position.zh,
+  enrollmentYear,
+  "bio": bio.en,
+  "bioZh": bio.zh,
+  "portraitUrl": portrait.asset->url,
+  order,
+  profileUrl,
+  publicEmail
 }`;
 
 const courseQuery = `*[_type == "course" && status == "published"] | order(order asc, title.en asc) {

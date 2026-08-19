@@ -885,93 +885,122 @@ textarea:focus-visible {
 .report-downloads a span { color: var(--muted); font-size: 12px; }
 .report-downloads a small { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--pku-red); font-weight: 700; }
 
-.people-tabs {
-  width: fit-content;
-  max-width: 100%;
-  display: flex;
-  gap: 5px;
-  margin: 0 auto 42px;
-  overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--surface);
-  padding: 5px;
-}
-
-.people-tabs button {
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  padding: 10px 16px;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.people-tabs button.active {
-  background: var(--pku-red);
-  color: var(--white);
-}
-
-.people-tabs button span {
-  margin-left: 5px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.06);
-  padding: 1px 6px;
-  font-size: 11px;
-}
-
-.people-tabs button.active span {
-  background: rgba(255, 255, 255, 0.18);
-}
-
 .people-grid {
   max-width: 1100px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 28px 22px;
   margin-inline: auto;
 }
 
 .person-card {
-  flex: 0 1 180px;
   min-width: 0;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 34px rgba(42, 34, 28, 0.04);
+  overflow: hidden;
 }
 
-.portrait-slot {
-  width: 118px;
-  height: 132px;
+.person-card__portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(145deg, var(--surface-soft), var(--paper-deep));
   display: grid;
   place-items: center;
-  margin: 0 auto;
-  clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
-  background: linear-gradient(145deg, var(--surface), var(--paper-deep));
+}
+
+.person-card__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.person-card__initials {
   color: var(--pku-red);
   font-family: var(--serif);
-  font-size: 20px;
-}
-
-.portrait-slot--image {
-  background-position: center;
-  background-size: cover;
-}
-
-.person-card h2 {
-  margin: 12px 0 4px;
-  font-family: var(--serif);
-  font-size: 17px;
+  font-size: 30px;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.person-card p {
+.person-card__body {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.person-card__body h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.person-card__position {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 13px;
+}
+
+.person-card__year {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.person-card__year.is-pending {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.person-card__bio {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.person-card__bio.is-pending {
+  color: var(--muted);
+}
+
+.person-card__links {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 13px;
+}
+
+.person-card__links a {
+  color: var(--pku-red);
+  text-decoration: none;
+}
+
+.person-card__links a:hover,
+.person-card__links a:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .people-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .people-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .page-body--chat {
@@ -1263,8 +1292,6 @@ textarea:focus-visible {
   .teaching-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .person-card { flex-basis: 170px; }
 }
 
 @media (max-width: 780px) {
@@ -1327,8 +1354,6 @@ textarea:focus-visible {
   .filter-group button {
     width: auto;
   }
-
-  .person-card { flex-basis: 160px; }
 }
 
 @media (max-width: 560px) {
@@ -1406,15 +1431,6 @@ textarea:focus-visible {
 
   .result-count {
     flex-wrap: wrap;
-  }
-
-  .people-grid { gap-inline: 16px; }
-
-  .person-card { flex-basis: calc(50% - 8px); }
-
-  .portrait-slot {
-    width: 106px;
-    height: 120px;
   }
 
   .message {

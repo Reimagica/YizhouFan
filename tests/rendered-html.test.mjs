@@ -198,15 +198,34 @@ test("keeps publications and talks as one record per work with locale fallback",
   assert.match(talkHtml, /A Metacognitive Approach to Learning and Performance in Human-AI Interaction/);
 });
 
-test("renders three static people categories", async () => {
+test("renders all members on one page without category tabs (en)", async () => {
   const response = await request("/en/people");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /Postdoctoral fellows/);
-  assert.match(html, /Current students/);
-  assert.match(html, /Alumni/);
-  assert.match(html, /aria-pressed="true"/);
-  assert.doesNotMatch(html, /role="tab(?:list|panel)?"|aria-selected=/);
+  // Category tab UI removed entirely.
+  assert.doesNotMatch(html, /people-tabs/);
+  assert.doesNotMatch(html, /aria-pressed="true"/);
+  assert.doesNotMatch(html, /Postdoctoral fellows|Current students/);
+  // All members render on one page in a single grid.
+  const cardCount = html.split('class="person-card"').length - 1;
+  assert.ok(cardCount >= 1, "expected at least one person card");
+  assert.doesNotMatch(html, /No public members/);
+  // Placeholders for missing year/bio (no fabricated facts).
+  assert.match(html, /Enrollment year forthcoming/);
+  assert.match(html, /Profile forthcoming/);
+  // No member detail route / no clickable fake entry.
+  assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
+});
+
+test("renders members in Chinese with placeholders and no tabs (zh)", async () => {
+  const response = await request("/zh/people");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.doesNotMatch(html, /people-tabs/);
+  assert.doesNotMatch(html, /aria-pressed="true"/);
+  assert.match(html, /入学年份待补充/);
+  assert.match(html, /个人与研究简介待补充/);
+  assert.doesNotMatch(html, /href="\/zh\/people\/[^"]+"/);
 });
 
 test("renders the live AI Q&A surface and fails safely without a key", async () => {

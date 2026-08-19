@@ -224,15 +224,15 @@ export const talks = [
 ] as const;
 
 export const people = [
-  { name: "Jiaqi Xu", nameZh: "许家奇", status: "Boya Postdoctoral Fellow", statusZh: "博雅博士后", category: "postdoc" },
-  { name: "Mengyu Xia", nameZh: "夏梦雨", status: "Ph.D. student", statusZh: "博士研究生", category: "student" },
-  { name: "Mingxue Xu", nameZh: "许明雪", status: "Ph.D. student", statusZh: "博士研究生", category: "student" },
-  { name: "Ling Ma", nameZh: "马玲", status: "Ph.D. student", statusZh: "博士研究生", category: "student" },
-  { name: "Zijian Li", nameZh: "李子健", status: "Master’s student", statusZh: "硕士研究生", category: "student" },
-  { name: "Taolin Zhu", nameZh: "朱桃林", status: "Master’s student", statusZh: "硕士研究生", category: "student" },
-  { name: "Linfei Xiao", nameZh: "肖琳霏", status: "Master’s student", statusZh: "硕士研究生", category: "student" },
-  { name: "Junyang Ma", nameZh: "马郡阳", status: "Master’s student", statusZh: "硕士研究生", category: "student" },
-  { name: "Luzhen Tang", nameZh: "唐陆稹", status: "Alumnus · Ph.D. student at HKU", statusZh: "毕业生 · 香港大学博士研究生", category: "alumni" },
+  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后" },
+  { name: "Mengyu Xia", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生" },
+  { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生" },
+  { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生" },
+  { name: "Zijian Li", nameZh: "李子健", position: "Master’s student", positionZh: "硕士研究生" },
+  { name: "Taolin Zhu", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生" },
+  { name: "Linfei Xiao", nameZh: "肖琳霏", position: "Master’s student", positionZh: "硕士研究生" },
+  { name: "Junyang Ma", nameZh: "马郡阳", position: "Master’s student", positionZh: "硕士研究生" },
+  { name: "Luzhen Tang", nameZh: "唐陆稹", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生" },
 ] as const;
 
 export const content = {

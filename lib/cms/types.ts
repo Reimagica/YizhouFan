@@ -67,10 +67,15 @@ export type PublicPerson = {
   id: string;
   name: string;
   nameZh: string;
-  status: string;
-  statusZh: string;
-  category: "postdoc" | "student" | "alumni";
+  position?: string;
+  positionZh?: string;
+  enrollmentYear?: number;
+  bio?: string;
+  bioZh?: string;
   portraitUrl?: string;
+  order?: number;
+  profileUrl?: string;
+  publicEmail?: string;
 };
 
 export type PublicCourse = {
