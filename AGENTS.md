@@ -717,7 +717,7 @@ npm run studio:build
 - 新增结构化响应解析、作者匹配、非负整数校验、last-known-good、基于 `_rev` 的已发布 Profile patch、同日数值不变幂等判断与异常跳变暂缓。Profile Schema 新增只读 `syncedAt`，页面仍仅显示数据日期和 Google Scholar 原始链接。
 - Vercel Production 已以 Sensitive/Secret 保存 `SERPAPI_API_KEY` 和新生成的高熵 `CRON_SECRET`；密钥未写入文件、Git、聊天输出或 Sanity。Cron 计划为 UTC 16:15（北京时间次日 00:15）。
 - 验证：ESLint 0 error/0 warning；TypeScript 通过；Next.js Production build 通过；完整测试 38/38 通过（新增 4 项 Scholar 解析/异常守卫测试）；Sanity Studio build 通过；`git diff --check` 无空白错误。
-- 新版 Studio Schema 已部署至 `https://yizhoufan.sanity.studio/`；最终 Vercel Production 部署 `dpl_7vT9shUQgZJqxihMmWFnytrBMRZY` 为 Ready，并绑定 `yizhoufan.vercel.app`、`yizhoufan-ma-j.vercel.app` 与待 DNS 生效的 `yizhoufan.com`。
+- 新版 Studio Schema 已部署至 `https://yizhoufan.sanity.studio/`；GitHub `main` 集成触发的 Vercel Production 部署为 Ready，并绑定 `yizhoufan.vercel.app`、`yizhoufan-ma-j.vercel.app` 与待 DNS 生效的 `yizhoufan.com`。
 - 首次 Cron 返回 409 `citation_change_exceeds_limit`，证明异常保护正常工作。Vercel 日志中的 SerpApi 结果为 3,962 / 30 / 46；同日通过 Chrome 直接读取 Google Scholar 官方主页，三项完全一致。人工确认后将其写为新基线，再运行 Cron 返回 200，随后刷新 `sanity-content`；英文首页实查显示 3,962 / 30 / 46 与日期 2026-08-25。
 - 原 Vercel `SANITY_API_WRITE_TOKEN` 已失效（401）；使用 Sanity 官方 `tokens create` 创建 `YizhouFan Scholar sync` Editor 服务令牌并以 Sensitive/Secret 覆盖 Production 变量，直连查询验证 200。临时生产环境文件均已删除；密钥未写入 Git、AGENTS、工具输出或 Sanity 公共字段。
 - 成功但数值未变的 Cron 也会刷新 `sanity-content`，避免人工确认首个异常基线后页面继续命中旧缓存。异常值只写入 Vercel warning 日志中的公开指标与原因，不记录任何密钥或私有内容。
