@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/internal/scholar-sync",
+      "schedule": "15 16 * * *"
+    }
+  ]
+}

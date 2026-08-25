@@ -3,8 +3,6 @@
 > 本文件是范逸洲老师个人学术主页的唯一项目记忆。任何后续开发 Agent 必须先完整阅读本文件，再修改代码。
 > 每次完成一轮内容、设计、功能或部署迭代，都必须同步更新本文件的“迭代记录”和受影响的决策；不要另建平行记忆文件。
 
----
-
 ## 项目概况
 
 | 字段 | 内容 |
@@ -12,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-08-19 People 重构已完成复核：取消三类分组、按入学年份稳定排序、补齐成员资料占位与 Sanity 可选字段；代码随本轮推送 `main`，Vercel 由 GitHub 集成自动部署，Studio Schema 代码尚待单独部署，详见“2026-08-19 - People module refactor (Prompt 3)” |
+| 当前阶段 | 2026-08-25 Google Scholar 指标自动同步已实现并完成 Production 密钥配置，正随本轮 `main` 发布；People 新版 Studio Schema 已部署。`yizhoufan.com` 已绑定到 Vercel，仍待阿里云 DNS 写入 Vercel 指定 A 记录并完成 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；2026-08-18 只读实查为 118 份业务文档（1 Profile、5 Course、92 Publication、11 Talk、9 Person）与 90 个 Asset（89 file、1 image）。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -141,8 +139,8 @@ Sanity Asset CDN
 尚未完成：
 
 1. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Teaching 页面已上线，Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
-2. People 代码重构已完成并通过复核：取消三类前台分组、改为按入学年份单页稳定排列、新增 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail` 可选字段与统一占位状态；Studio Schema 尚待部署，且未批量写入 Sanity Production。
-3. 自定义域名、浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
+2. People 代码重构与新版 Studio Schema 部署均已完成：取消三类前台分组、改为按入学年份单页稳定排列，后台可编辑 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail`；仍未批量写入 Sanity Production，待导师收齐本人确认材料后逐人补全。
+3. `yizhoufan.com` 已于 2026-08-23 绑定到 Vercel 项目，阿里云 DNS 当前仍无 apex/`www` 解析；需写入 Vercel `domains verify` 返回的两条 apex A 记录并完成 HTTPS 验收。浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
 
 未经用户明确指示，不得代为 Git commit/push、部署 Vercel/Studio、修改域名或发布尚未人工核对的批量成果草稿。成果模块的 8 条最终发布已由用户明确指示完成。
 
@@ -174,6 +172,15 @@ Sanity Asset CDN
 
 引用数、h-index 等 Scholar 指标必须注明数据日期；当前采用截至 2026-06-20 的 Sanity 可维护快照（3,301 / 27 / 45），不得伪装成实时值。成果数量不区分中英文，直接统计 Sanity 中全部已发布成果，并随内容发布和 revalidation 自动更新。
 
+### Google Scholar 指标自动同步方案（2026-08-25 已实现）
+
+- Google Scholar 没有面向个人主页指标的官方公开 API，禁止由每次访客请求直接抓取 Scholar HTML，也不在 Vercel Function 中自建无头浏览器爬虫；这类实现容易触发验证码/封禁，无法形成可靠 SLA，也会把“页面实时请求”错误等同于“Google Scholar 自身实时更新”。
+- 数据提供商采用 SerpApi Google Scholar Author API，固定 Scholar profile ID 为 `EBZdbGwAAAAJ`。Vercel Cron 每日 UTC 16:15（北京时间次日 00:15）调用一次；这是带日期的每日缓存快照，不得对外宣传为逐请求实时值。
+- 内部端点为 `GET /api/internal/scholar-sync`，只接受 Vercel 以 `CRON_SECRET` 发送的 Bearer 鉴权。`SERPAPI_API_KEY` 与 `CRON_SECRET` 只配置在 Vercel Production，均为 Sensitive/Secret，禁止写入 Git、浏览器包或 Sanity 公共字段。
+- 同步响应必须为 Success、作者 ID 必须匹配，`citations`、`hIndex`、`i10Index` 必须为非负安全整数。通过校验后只 patch 已发布 Profile 的 `scholarMetrics`，同时写入 `asOf`、只读 `syncedAt` 与 Google Scholar 原始主页，使用 `_rev` 防止覆盖并发修改，随后刷新 `sanity-content` 缓存。
+- 同步失败或数据异常时保留 last-known-good，不清零、不阻断首页。相对当前快照的引用数绝对变化超过 `max(250, 10%)`、h-index 超过 5、i10-index 超过 10 时返回 `review_required`，暂缓写入；允许阈值内下降，以兼容 Google Scholar 纠错。
+- 前台继续只读 Sanity 缓存、显示“截至 YYYY-MM-DD”并提供 Google Scholar 原始主页链接，不使用“实时”字样。OpenAlex/Semantic Scholar 只能辅助核对，不得冒充 Google Scholar 指标。
+
 ---
 
 ## 当前信息架构
@@ -193,6 +200,7 @@ Sanity Asset CDN
 | `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
 | `/api/cms/automation` | 已停用的旧自动化入口；签名请求返回 410，待线上旧 Webhook 删除后可移除 |
 | `/api/cms/revalidate` | 验证 Sanity webhook；发布内容变更后使公开页面缓存失效 |
+| `/api/internal/scholar-sync` | Vercel Cron 专用 Scholar 快照同步；Bearer 鉴权、SerpApi 校验、异常暂缓与 Sanity published Profile 原子 patch |
 
 主要实现文件：
 
@@ -237,6 +245,8 @@ lib/
     ├── answer-links.ts           ← 站内页面和论文原文链接选择
     ├── cms-auth.ts               ← Sanity 官方 webhook 签名验证
     ├── rate-limit.ts             ← Upstash 持久化费用边界
+    ├── scholar-metrics.ts        ← SerpApi 响应解析与异常变化守卫
+    ├── scholar-sync.ts           ← Scholar 拉取、Sanity 快照写回与幂等判断
     └── sanity-write.ts           ← 旧自动化兼容；当前成果录入由 Studio 用户直接写草稿
 studio/
 ├── sanity.config.ts
@@ -278,12 +288,13 @@ tests/
 
 ## 后续优先事项
 
-1. **发布 People 后台字段**：People 前端代码随本轮 `main` 推送并由 Vercel 自动部署；下一步单独部署新版 Sanity Studio，确认 `enrollmentYear`、长文本 `bio`、`profileUrl`、`publicEmail` 可编辑。不得在资料未确认前批量补写成员事实。
+1. **发布 People 后台字段 — 已完成**：2026-08-23 已部署新版 Sanity Studio，远端 production Schema 包含 `enrollmentYear`、长文本 `bio`、`profileUrl`、`publicEmail`。不得在资料未确认前批量补写成员事实。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
 4. **团队成员重构（Prompt 3，代码完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，新增 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail` 可选字段，缺失字段降级为占位文案，AI 知识不读取占位文案。Vercel 随 GitHub 推送自动部署；Studio Schema 仍需单独部署，且未批量写入 Sanity Production。待收齐本人确认的入学年份、授权头像与双语简介后，再由导师通过 Studio 逐人补全。
-5. **生产运维收尾**：在浏览器完成 AI 问答和 Upstash 键验证；核对费用告警/硬上限；轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据；完成 `yizhoufan.com` DNS、HTTPS 与正式域名切换。
+5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；另需在浏览器完成 AI 问答和 Upstash 键验证，核对费用告警/硬上限，并轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
+7. **Scholar 指标自动同步 — 已实现**：SerpApi 与 Vercel Cron 代码、Production 密钥和异常保护已完成；发布后执行首次同步并核对 Sanity/Profile 与首页日期。
 
 ---
 
@@ -692,3 +703,18 @@ npm run studio:build
 - 代码经用户授权随本轮提交并推送 `main`；Vercel 由 GitHub 集成自动部署。Sanity Studio 本轮只完成构建验证，尚未部署，因此新增字段需待 Studio 单独部署后才能在后台编辑。
 - 未向 Sanity Production 批量写入虚构年份/简介/头像；未修改现有成员姓名与身份事实；未删除 person 文档。
 - 未把本机密钥、私人材料路径中的敏感内容或未公开成员资料写入公开仓库。
+
+### 2026-08-19 - 跨电脑代码迁移交接
+
+- 在本文件顶部新增“临时任务转接提示词”，说明新电脑首次接手步骤、Git/Sanity/Vercel 当前状态、测试基线、People 下一步和安全边界；下一位 Agent 完整接手后可删除该临时节，并记录交接完成。
+- 迁移包按“源码 + Git 历史 + 非敏感 Vercel 项目绑定”制作，明确排除根目录与 Studio 的 `.env.local`、两套 `node_modules`、`.next`、`studio/dist`、`studio/.sanity`、日志与系统缓存。
+- 仓库外的简历、交流转录、论文处理台账和 Sanity 备份不属于代码包；如后续任务需要，必须由用户单独迁移，继续遵守不得上传私人资料到 Git 的边界。
+- 制包时 GitHub `main` 基线为 `be02bd6`；临时交接提示是迁移包内唯一预期的未提交工作区修改，不改变网站运行代码。
+
+### 2026-08-25 - Google Scholar 指标每日自动同步
+
+- 选用 SerpApi Google Scholar Author API，固定作者 ID `EBZdbGwAAAAJ`；新增每日一次的 Vercel Cron 与受 `CRON_SECRET` Bearer 保护的 `GET /api/internal/scholar-sync`，访客页面继续只读 Sanity 快照，不在请求时直抓 Scholar。
+- 新增结构化响应解析、作者匹配、非负整数校验、last-known-good、基于 `_rev` 的已发布 Profile patch、同日数值不变幂等判断与异常跳变暂缓。Profile Schema 新增只读 `syncedAt`，页面仍仅显示数据日期和 Google Scholar 原始链接。
+- Vercel Production 已以 Sensitive/Secret 保存 `SERPAPI_API_KEY` 和新生成的高熵 `CRON_SECRET`；密钥未写入文件、Git、聊天输出或 Sanity。Cron 计划为 UTC 16:15（北京时间次日 00:15）。
+- 验证：ESLint 0 error/0 warning；TypeScript 通过；Next.js Production build 通过；完整测试 38/38 通过（新增 4 项 Scholar 解析/异常守卫测试）；Sanity Studio build 通过；`git diff --check` 无空白错误。
+- 本条随实现提交发布；最终 Vercel/Studio/首次同步状态在部署后补记，不提前声称线上完成。

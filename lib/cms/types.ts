@@ -99,6 +99,7 @@ export type ScholarMetrics = {
   hIndex: number;
   i10Index: number;
   asOf: string;
+  syncedAt?: string;
   sourceUrl: string;
 };
 

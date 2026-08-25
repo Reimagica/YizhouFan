@@ -32,6 +32,7 @@ export const profile = defineType({
       defineField({name: "hIndex", title: "h-index", type: "number", validation: (rule) => rule.min(0).integer()}),
       defineField({name: "i10Index", title: "i10-index", type: "number", validation: (rule) => rule.min(0).integer()}),
       defineField({name: "asOf", title: "数据截至", type: "date"}),
+      defineField({name: "syncedAt", title: "最后同步时间", type: "datetime", readOnly: true}),
       defineField({name: "sourceUrl", title: "来源页面", type: "url"}),
     ]}),
     defineField({name: "academicService", title: "学术服务", type: "localizedText"}),
