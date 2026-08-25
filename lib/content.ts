@@ -14,10 +14,10 @@ export const profileLinks = {
 };
 
 export const scholarSnapshot = {
-  citations: 3301,
-  hIndex: 27,
-  i10Index: 45,
-  asOf: "2026-06-20",
+  citations: 3962,
+  hIndex: 30,
+  i10Index: 46,
+  asOf: "2026-08-25",
   sourceUrl: profileLinks.scholar,
 } as const;
 

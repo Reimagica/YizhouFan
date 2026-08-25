@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-08-25 Google Scholar 指标自动同步已实现并完成 Production 密钥配置，正随本轮 `main` 发布；People 新版 Studio Schema 已部署。`yizhoufan.com` 已绑定到 Vercel，仍待阿里云 DNS 写入 Vercel 指定 A 记录并完成 HTTPS 验收 |
+| 当前阶段 | 2026-08-25 Google Scholar 指标每日自动同步已上线并完成首次同步：首页快照为 3,962 / 30 / 46（2026-08-25），Vercel Cron 复检 200；People 新版 Studio Schema 已部署。`yizhoufan.com` 已绑定到 Vercel，仍待阿里云 DNS 写入 Vercel 指定 A 记录并完成 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；2026-08-18 只读实查为 118 份业务文档（1 Profile、5 Course、92 Publication、11 Talk、9 Person）与 90 个 Asset（89 file、1 image）。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -170,7 +170,7 @@ Sanity Asset CDN
 - 北京大学教育学院英文主页: `https://english.gse.pku.edu.cn/faculty/technology/1062jyxyyw164100.htm`
 - ORCID: `https://orcid.org/0000-0003-2777-1705`
 
-引用数、h-index 等 Scholar 指标必须注明数据日期；当前采用截至 2026-06-20 的 Sanity 可维护快照（3,301 / 27 / 45），不得伪装成实时值。成果数量不区分中英文，直接统计 Sanity 中全部已发布成果，并随内容发布和 revalidation 自动更新。
+引用数、h-index 等 Scholar 指标必须注明数据日期；当前 Sanity 快照为截至 2026-08-25 的 3,962 / 30 / 46，由 SerpApi 每日同步并经 Google Scholar 官方主页首次交叉核对，不得伪装成逐请求实时值。成果数量不区分中英文，直接统计 Sanity 中全部已发布成果，并随内容发布和 revalidation 自动更新。
 
 ### Google Scholar 指标自动同步方案（2026-08-25 已实现）
 
@@ -294,7 +294,7 @@ tests/
 4. **团队成员重构（Prompt 3，代码完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，新增 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail` 可选字段，缺失字段降级为占位文案，AI 知识不读取占位文案。Vercel 随 GitHub 推送自动部署；Studio Schema 仍需单独部署，且未批量写入 Sanity Production。待收齐本人确认的入学年份、授权头像与双语简介后，再由导师通过 Studio 逐人补全。
 5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；另需在浏览器完成 AI 问答和 Upstash 键验证，核对费用告警/硬上限，并轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
-7. **Scholar 指标自动同步 — 已实现**：SerpApi 与 Vercel Cron 代码、Production 密钥和异常保护已完成；发布后执行首次同步并核对 Sanity/Profile 与首页日期。
+7. **Scholar 指标自动同步 — 已完成并上线**：SerpApi、Vercel Cron、Production 密钥、异常保护与成功/unchanged 缓存刷新均已上线；首次指标经 SerpApi 与 Google Scholar 官方主页双重核对为 3,962 / 30 / 46（2026-08-25），Sanity、Cron 200 与英文首页均已验收。
 
 ---
 
@@ -717,4 +717,7 @@ npm run studio:build
 - 新增结构化响应解析、作者匹配、非负整数校验、last-known-good、基于 `_rev` 的已发布 Profile patch、同日数值不变幂等判断与异常跳变暂缓。Profile Schema 新增只读 `syncedAt`，页面仍仅显示数据日期和 Google Scholar 原始链接。
 - Vercel Production 已以 Sensitive/Secret 保存 `SERPAPI_API_KEY` 和新生成的高熵 `CRON_SECRET`；密钥未写入文件、Git、聊天输出或 Sanity。Cron 计划为 UTC 16:15（北京时间次日 00:15）。
 - 验证：ESLint 0 error/0 warning；TypeScript 通过；Next.js Production build 通过；完整测试 38/38 通过（新增 4 项 Scholar 解析/异常守卫测试）；Sanity Studio build 通过；`git diff --check` 无空白错误。
-- 本条随实现提交发布；最终 Vercel/Studio/首次同步状态在部署后补记，不提前声称线上完成。
+- 新版 Studio Schema 已部署至 `https://yizhoufan.sanity.studio/`；最终 Vercel Production 部署 `dpl_7vT9shUQgZJqxihMmWFnytrBMRZY` 为 Ready，并绑定 `yizhoufan.vercel.app`、`yizhoufan-ma-j.vercel.app` 与待 DNS 生效的 `yizhoufan.com`。
+- 首次 Cron 返回 409 `citation_change_exceeds_limit`，证明异常保护正常工作。Vercel 日志中的 SerpApi 结果为 3,962 / 30 / 46；同日通过 Chrome 直接读取 Google Scholar 官方主页，三项完全一致。人工确认后将其写为新基线，再运行 Cron 返回 200，随后刷新 `sanity-content`；英文首页实查显示 3,962 / 30 / 46 与日期 2026-08-25。
+- 原 Vercel `SANITY_API_WRITE_TOKEN` 已失效（401）；使用 Sanity 官方 `tokens create` 创建 `YizhouFan Scholar sync` Editor 服务令牌并以 Sensitive/Secret 覆盖 Production 变量，直连查询验证 200。临时生产环境文件均已删除；密钥未写入 Git、AGENTS、工具输出或 Sanity 公共字段。
+- 成功但数值未变的 Cron 也会刷新 `sanity-content`，避免人工确认首个异常基线后页面继续命中旧缓存。异常值只写入 Vercel warning 日志中的公开指标与原因，不记录任何密钥或私有内容。
