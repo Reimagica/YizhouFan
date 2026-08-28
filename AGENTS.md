@@ -738,3 +738,4 @@ npm run studio:build
 - 首次完整回归发现首页测试仍硬编码 Scholar 首次同步值 3,962 / 2026-08-25，而每日任务已正常更新为 3,965 / 2026-08-27。测试改为验证本地化引用数字格式、`Citations` 标签和 `Scholar metrics as of YYYY-MM-DD`，不再把每日变化的外部指标误判为回归；不降低页面结构与日期口径检查。
 - 最终验证：3个新 Sanity 图片 URL 均返回 HTTP 200；本地生产构建的中英文 People 页面包含3位已补全成员与6位占位；ESLint 0 error/0 warning、TypeScript 通过、Next.js Production build 通过、38/38 测试通过、`git diff --check` 干净。
 - 2026-08-28 用户明确授权推送本轮更新；推送范围仅包括1:1成员头像 CSS、Scholar 动态指标测试修正与本文件，Sanity 的 `Marine` 内容更新已先行写入 Production。迁移压缩包和临时处理文件不纳入提交。
+- 功能提交 `b860684 Publish first People profiles and square avatars` 已推送 GitHub `main`；GitHub 集成触发 Vercel Production `dpl_X56fkmUvauR14xM3SX6WeAopCAcF`，部署地址 `https://yizhoufan-gylkqnrji-ma-j.vercel.app` 状态为 Ready，并绑定 `yizhoufan.vercel.app`、`yizhoufan.com`、`www.yizhoufan.com` 等别名。自定义域名仍需 DNS 生效后才能访问。
