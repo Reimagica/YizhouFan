@@ -906,7 +906,7 @@ textarea:focus-visible {
 
 .person-card__portrait {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   background: linear-gradient(145deg, var(--surface-soft), var(--paper-deep));
   display: grid;
   place-items: center;

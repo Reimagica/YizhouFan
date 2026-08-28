@@ -38,8 +38,8 @@ test("uses the English profile as the default language landing page", async () =
   assert.doesNotMatch(html, /Personal Website/);
   assert.match(html, /Academic profile/);
   assert.match(html, /Works on this site/);
-  assert.match(html, /3,962/);
-  assert.match(html, /2026-08-25/);
+  assert.match(html, /<strong>\d{1,3}(?:,\d{3})*<\/strong><span>Citations<\/span>/);
+  assert.match(html, /Scholar metrics as of \d{4}-\d{2}-\d{2}/);
   assert.match(html, /h-index/);
   assert.match(html, /i10-index/);
   assert.match(html, />92</);
