@@ -10,10 +10,10 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-08-28 People 首批成员资料已写入 Sanity Production：许家奇、夏梦雨、朱桃林、马郡阳已补齐年份、双语简介和授权头像，夏梦雨英文显示名为 `Marine`，其余5位保留待补状态；成员头像前端已改为1:1并发布。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-02 People 9位成员资料已全部写入 Sanity Production，均具备年份、双语简介与授权头像；唐陆禛姓名用字已按最新材料校正，头像保留原图并由前端以1:1居中裁切展示。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-08-28 People 首批4位资料写入后共有 94 个 Asset（89 file、5 image）；9位 Person 全部 published，其中4位资料完整、5位保留简介/头像待补状态。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-02 People 全员资料写入后共有 99 个 Asset（89 file、10 image）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -139,8 +139,7 @@ Sanity Asset CDN
 尚未完成：
 
 1. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Teaching 页面已上线，Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
-2. People 代码重构与新版 Studio Schema 部署均已完成：取消三类前台分组、改为按入学年份单页稳定排列，后台可编辑 `enrollmentYear`/`bio`/`profileUrl`/`publicEmail`。2026-08-28 已按本人提交材料补齐许家奇、夏梦雨、朱桃林、马郡阳四位的年份、双语简介和头像；其余5位继续保留真实待补状态。
-3. `yizhoufan.com` 已于 2026-08-23 绑定到 Vercel 项目，阿里云 DNS 当前仍无 apex/`www` 解析；需写入 Vercel `domains verify` 返回的两条 apex A 记录并完成 HTTPS 验收。浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
+2. `yizhoufan.com` 已于 2026-08-23 绑定到 Vercel 项目，阿里云 DNS 当前仍无 apex/`www` 解析；需写入 Vercel `domains verify` 返回的两条 apex A 记录并完成 HTTPS 验收。浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
 
 未经用户明确指示，不得代为 Git commit/push、部署 Vercel/Studio、修改域名或发布尚未人工核对的批量成果草稿。成果模块的 8 条最终发布已由用户明确指示完成。
 
@@ -280,7 +279,7 @@ tests/
 - 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。
 - 新增报告：核对日期、主办方、地点、题名、双语正文和公开附件；不需要封面图，也不使用 AI 生成正文。导师最新要求不再区分 Keynote/Invited talk；11 场白名单迁移已完成（2026-08-18），`type` 已置为 `hidden` 旧数据兼容字段，前台、查询与 AI 知识均不依赖或展示。
 - 新增课程：通过独立 `course` 文档维护双语名称、性质、简介、排序和发布状态；Profile 内旧课程数组只为线上兼容暂时保留，不得继续编辑。
-- 成员：前台为9位成员单网格并按入学年份排序。只在收到本人确认材料后维护年份、双语简介与公开照片；当前许家奇、夏梦雨、朱桃林已补齐，其余6位不得编造缺失内容。
+- 成员：前台为9位成员单网格并按入学年份排序。只在收到本人确认材料后维护年份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
 - 所有公开项目必须由人工白名单录入，不允许从简历整段自动导入。
 - 内容更新完成后至少运行 `npm run lint`、`npm run build`，并检查 `/en`、`/zh` 与受影响子页面。
 
@@ -291,7 +290,7 @@ tests/
 1. **发布 People 后台字段 — 已完成**：2026-08-23 已部署新版 Sanity Studio，远端 production Schema 包含 `enrollmentYear`、长文本 `bio`、`profileUrl`、`publicEmail`。不得在资料未确认前批量补写成员事实。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
-4. **团队成员重构（Prompt 3，持续补全）**：已取消三类前台分组并改为按入学年份单页稳定排列，Studio Schema 已部署，缺失字段降级为占位文案，AI 知识不读取占位文案。2026-08-28 已补齐许家奇、夏梦雨、朱桃林、马郡阳；其余5位待收到本人确认材料后再逐人补全。1:1头像前端改动已发布。
+4. **团队成员重构与资料补全（Prompt 3，已完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，Studio Schema 已部署，缺失字段降级为占位文案，AI 知识不读取占位文案。2026-09-02 已补齐全部9位成员的年份、双语简介与授权头像；1:1头像前端改动已发布。
 5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；另需在浏览器完成 AI 问答和 Upstash 键验证，核对费用告警/硬上限，并轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
 7. **Scholar 指标自动同步 — 已完成并上线**：SerpApi、Vercel Cron、Production 密钥、异常保护与成功/unchanged 缓存刷新均已上线；首次指标经 SerpApi 与 Google Scholar 官方主页双重核对为 3,962 / 30 / 46（2026-08-25），Sanity、Cron 200 与英文首页均已验收。
@@ -741,3 +740,12 @@ npm run studio:build
 - 功能提交 `b860684 Publish first People profiles and square avatars` 已推送 GitHub `main`；GitHub 集成触发 Vercel Production `dpl_X56fkmUvauR14xM3SX6WeAopCAcF`，部署地址 `https://yizhoufan-gylkqnrji-ma-j.vercel.app` 状态为 Ready，并绑定 `yizhoufan.vercel.app`、`yizhoufan.com`、`www.yizhoufan.com` 等别名。自定义域名仍需 DNS 生效后才能访问。
 - 复用现有 `person-008` 补齐马郡阳资料，保持英文姓名 `Junyang Ma` 与硕士研究生身份，写入 2026 级、用户提供的中文简介、经事实对齐的英文简介及 1798×1798 JPEG 授权头像。写入前另行导出 119 份文档与 93 个资产至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-junyang-20260828.tar.gz`；写入后头像 CDN 返回 HTTP 200。9位 Person 仍全部 published，其中4位资料完整、5位保留占位；Asset 总数为94（89 file、5 image）。
 - 项目记录提交 `71fc6f4 Record Junyang Ma People profile` 已推送 GitHub `main`，触发 Vercel Production `dpl_6oExpyqMnMqdHrae14y3Xusq4xXj` 并达到 Ready；正式别名 `https://yizhoufan.vercel.app/en/people` 返回 HTTP 200，页面实查包含 `Junyang Ma`、英文简介与新头像资源。自定义域名仍受既有 DNS 待办约束。
+
+### 2026-09-02 - People 其余5位成员资料上线
+
+- 复用现有 `person-003`（许明雪）、`person-004`（马玲）、`person-005`（李子健）、`person-007`（肖琳霏）、`person-009`（唐陆禛），未新增、删除或复制 Person；唐陆禛中文姓名由旧记录“唐陆稹”按本人最新材料校正为“唐陆禛”。
+- 按用户提供顺序将5张授权照片对应为唐陆禛、李子健、许明雪、肖琳霏、马玲，原始尺寸依次为1280×1280、1440×962、960×1200、1280×1280、787×1036；照片未永久裁剪，原图上传至 Sanity Asset CDN，由前端既有1:1容器以 `object-fit: cover` 居中展示，便于后续人工裁图或替换。
+- 写入当前身份/年份与本人提供的中英文简介：唐陆禛为北京大学教育学院2026届硕士毕业生、香港大学教育学院2026级博士生；李子健为2024级硕士研究生；许明雪为2025级博士研究生；肖琳霏为2025级硕士研究生；马玲为2026级博士研究生。仅规范了少量标点与展示格式，未补造个人事实。
+- 写入前完整导出 Sanity Production（119份文档、94个资产）至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-people-five-20260902.tar.gz`。写入后9位 Person 全部 published，且均具备年份、双语简介与头像；Asset 总数为99（89 file、10 image）。
+- 新增原图 CDN：唐陆禛 `https://cdn.sanity.io/images/mb3w1o0y/production/d0fd7b218b92d9a0b3177bc87a01aeab6a42936c-1280x1280.jpg`；李子健 `https://cdn.sanity.io/images/mb3w1o0y/production/13f033552ab945177915304d287b728eaccdae64-1440x962.jpg`；许明雪 `https://cdn.sanity.io/images/mb3w1o0y/production/35a1eaa7823ea8f278b73f4e741cbc539c955f51-960x1200.jpg`；肖琳霏 `https://cdn.sanity.io/images/mb3w1o0y/production/ecf7583c72c85cc7dc5ad1d18ded7597c3ff6612-1280x1280.jpg`；马玲 `https://cdn.sanity.io/images/mb3w1o0y/production/84f19f807489880067e5394cb15ad702e3887219-787x1036.jpg`。5个地址均返回 HTTP 200 与 `image/jpeg`。
+- `tests/rendered-html.test.mjs` 移除“至少一张成员卡/必须存在待补占位”的旧断言，改为中英文页面均精确渲染9张成员卡、包含本轮5位姓名且不再出现年份/简介占位；继续验证无分类Tab与无虚假成员详情链接。ESLint 0 error/0 warning，Next.js Production build与TypeScript通过，38/38测试通过；首次并行回归遇到Windows `.next/export-detail.json` 短暂文件锁，顺序复跑通过，不属于代码或内容故障。

@@ -209,23 +209,32 @@ test("renders all members on one page without category tabs (en)", async () => {
   assert.doesNotMatch(html, /Postdoctoral fellows|Current students/);
   // All members render on one page in a single grid.
   const cardCount = html.split('class="person-card"').length - 1;
-  assert.ok(cardCount >= 1, "expected at least one person card");
+  assert.equal(cardCount, 9);
   assert.doesNotMatch(html, /No public members/);
-  // Placeholders for missing year/bio (no fabricated facts).
-  assert.match(html, /Enrollment year forthcoming/);
-  assert.match(html, /Profile forthcoming/);
+  assert.match(html, /Luzhen Tang/);
+  assert.match(html, /Zijian Li/);
+  assert.match(html, /Mingxue Xu/);
+  assert.match(html, /Linfei Xiao/);
+  assert.match(html, /Ling Ma/);
+  assert.doesNotMatch(html, /Enrollment year forthcoming|Profile forthcoming/);
   // No member detail route / no clickable fake entry.
   assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
 });
 
-test("renders members in Chinese with placeholders and no tabs (zh)", async () => {
+test("renders all completed member profiles in Chinese without tabs (zh)", async () => {
   const response = await request("/zh/people");
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.doesNotMatch(html, /people-tabs/);
   assert.doesNotMatch(html, /aria-pressed="true"/);
-  assert.match(html, /入学年份待补充/);
-  assert.match(html, /个人与研究简介待补充/);
+  const cardCount = html.split('class="person-card"').length - 1;
+  assert.equal(cardCount, 9);
+  assert.match(html, /唐陆禛/);
+  assert.match(html, /李子健/);
+  assert.match(html, /许明雪/);
+  assert.match(html, /肖琳霏/);
+  assert.match(html, /马玲/);
+  assert.doesNotMatch(html, /入学年份待补充|个人与研究简介待补充/);
   assert.doesNotMatch(html, /href="\/zh\/people\/[^"]+"/);
 });
 
