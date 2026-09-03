@@ -10,10 +10,10 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-02 People 9位成员资料已全部写入 Sanity Production，均具备年份、双语简介与授权头像；唐陆禛姓名用字已按最新材料校正，头像保留原图并由前端以1:1居中裁切展示。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-03 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。当前本地工作区已完成 Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板，尚未 commit/push/deploy。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-02 People 全员资料写入后共有 99 个 Asset（89 file、10 image）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-03 马郡阳换图后共有 100 个 Asset（89 file、11 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -45,7 +45,7 @@
 - 学术成果：中英文成果列表，Google Scholar 作为引用信息的重要外部入口；93 份已确认公开的 PDF 将按正文抽取元数据、去重并补齐到 Sanity，首页只统计全部已发布成果总数，不拆分语言。
 - 学术报告：最终只保留导师指定的 11 场，前台不区分 Keynote/Invited talk；可为确认公开的场次附 PDF/PPTX，并保留人工富文本详情。
 - 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前只展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养五门课程，每门包含课程性质和一段克制的双语简介。
-- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列，同年按 `order` 升序、再按当前语言显示名稳定排序，无年份的成员排在末尾。每张卡片可选展示双语姓名、身份/状态、入学年份、2–3 句双语简介、授权公开头像与可选个人主页/邮箱；材料未收齐的字段使用克制占位文案（"入学年份待补充 / Enrollment year forthcoming"、"个人与研究简介待补充 / Profile forthcoming"、统一中性头像位），不显示成员详情页，不承担课题组站的成果关联或编辑功能。
+- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列，同年按 `order` 升序、再按当前语言显示名稳定排序。`enrollmentYear` 是 Studio 新增成员时的必填排序字段，但前台卡片不展示年份；卡片展示双语姓名、身份/状态、2–3 句双语简介、授权公开头像与可选个人主页/邮箱。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
 - AI 问答：导航名称固定为“AI 问答”；接入服务端大模型，回答导师或课题组的公开信息问题，并落实公开知识库、答案来源、无证据时拒答、按 IP/每日总量限流、费用上限和异常停用。
 
 ### 2026-07-27 第二轮页面与功能要求
@@ -193,7 +193,7 @@ Sanity Asset CDN
 | `/[lang]/talks` | 可检索、按年份筛选的报告列表；详情页展示富文本正文与公开附件（已移除类型筛选与标签） |
 | `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
 | `/[lang]/teaching` | 独立双语课程栏目；五门课程的性质与简介从 Sanity `course` 文档读取 |
-| `/[lang]/people` | 团队成员单页概览：所有已发布成员按入学年份降序排列于同一网格，无分类 Tab、无详情页、无可点击假入口；缺失字段降级为克制占位文案 |
+| `/[lang]/people` | 团队成员单页概览：所有已发布成员按后台入学年份降序排列于同一网格，前台不显示年份；无分类 Tab、无详情页、无可点击假入口；缺失简介或头像降级为克制占位 |
 | `/[lang]/ask` | AI 问答客户端；调用 `/api/ask` |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
 | `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
@@ -279,7 +279,7 @@ tests/
 - 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。
 - 新增报告：核对日期、主办方、地点、题名、双语正文和公开附件；不需要封面图，也不使用 AI 生成正文。导师最新要求不再区分 Keynote/Invited talk；11 场白名单迁移已完成（2026-08-18），`type` 已置为 `hidden` 旧数据兼容字段，前台、查询与 AI 知识均不依赖或展示。
 - 新增课程：通过独立 `course` 文档维护双语名称、性质、简介、排序和发布状态；Profile 内旧课程数组只为线上兼容暂时保留，不得继续编辑。
-- 成员：前台为9位成员单网格并按入学年份排序。只在收到本人确认材料后维护年份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
+- 成员：前台为9位成员单网格并按入学年份排序，但不公开显示年份。Studio `enrollmentYear` 为新增成员必填字段，Sanity 查询和前端均执行年份降序、同年 `order` 升序及本地化姓名稳定排序。只在收到本人确认材料后维护年份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
 - 所有公开项目必须由人工白名单录入，不允许从简历整段自动导入。
 - 内容更新完成后至少运行 `npm run lint`、`npm run build`，并检查 `/en`、`/zh` 与受影响子页面。
 
@@ -750,3 +750,22 @@ npm run studio:build
 - 新增原图 CDN：唐陆禛 `https://cdn.sanity.io/images/mb3w1o0y/production/d0fd7b218b92d9a0b3177bc87a01aeab6a42936c-1280x1280.jpg`；李子健 `https://cdn.sanity.io/images/mb3w1o0y/production/13f033552ab945177915304d287b728eaccdae64-1440x962.jpg`；许明雪 `https://cdn.sanity.io/images/mb3w1o0y/production/35a1eaa7823ea8f278b73f4e741cbc539c955f51-960x1200.jpg`；肖琳霏 `https://cdn.sanity.io/images/mb3w1o0y/production/ecf7583c72c85cc7dc5ad1d18ded7597c3ff6612-1280x1280.jpg`；马玲 `https://cdn.sanity.io/images/mb3w1o0y/production/84f19f807489880067e5394cb15ad702e3887219-787x1036.jpg`。5个地址均返回 HTTP 200 与 `image/jpeg`。
 - `tests/rendered-html.test.mjs` 移除“至少一张成员卡/必须存在待补占位”的旧断言，改为中英文页面均精确渲染9张成员卡、包含本轮5位姓名且不再出现年份/简介占位；继续验证无分类Tab与无虚假成员详情链接。ESLint 0 error/0 warning，Next.js Production build与TypeScript通过，38/38测试通过；首次并行回归遇到Windows `.next/export-detail.json` 短暂文件锁，顺序复跑通过，不属于代码或内容故障。
 - 提交 `9ca64a6 Complete People profiles and portraits` 已推送 GitHub `main`，触发 Vercel Production `dpl_EiEA6jnbpJDcGg61vDxy8BJjb2XS` 并达到 Ready。正式别名 `/en/people` 与 `/zh/people` 均返回 HTTP 200，线上实查包含5位本轮成员姓名与5张新头像，不再出现年份或简介占位文案；`yizhoufan.com` 仍待既有 DNS 收尾。
+
+### 2026-09-03 - 马郡阳头像与唐陆禛年份修正
+
+- 按用户最新明确材料，将 `person-008`（马郡阳）头像替换为3054×3054、约2.36 MB的授权JPEG原图；新Sanity CDN地址为 `https://cdn.sanity.io/images/mb3w1o0y/production/644f1807f21c9cfade97e2c9c252c22fe7efedc2-3054x3054.jpg`，返回HTTP 200与`image/jpeg`。旧1798×1798头像资产未删除，便于必要时回退。
+- 将 `person-009`（唐陆禛）的 `enrollmentYear` 从2026修正为2023，保留人工排序值 `order=90`。前台排序优先按年份降序，因此她自动移动至2024级李子健之后；未修改姓名、身份、双语简介、头像或发布状态。
+- 写入前完整导出Sanity Production（119份文档、99个资产）至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-junyang-photo-tang-year-20260903.tar.gz`；换图后资产总数为100（89 file、11 image）。本轮只修改Sanity内容与本项目记忆，不改页面代码、测试或Studio Schema。
+- 验证：新头像CDN返回HTTP 200与`image/jpeg`；ESLint 0 error/0 warning，Next.js Production build与TypeScript通过并生成22个页面；正式别名中英文People页均返回HTTP 200，均命中新头像，唐陆禛显示2023且排在2024级李子健之后。根据项目硬约束，本轮未获明确Git推送授权，因此项目记忆修改暂留本地工作区，未commit/push、未触发Vercel重新部署；Sanity内容已通过ISR刷新在线生效。
+
+### 2026-09-03 - 列表、聊天与全站页脚 UI 收敛（本地完成）
+
+- Sanity Studio 将原顶栏独立“添加学术成果”工具移入 Structure 的“学术成果”分组，形成“全部学术成果 / 添加学术成果”两个相邻子入口；候选检索、手动录入与草稿创建逻辑保持不变。浏览器已实测分组展开、两个子入口与添加页面均可访问，Studio Production build 与 ESLint 通过。
+- 根据浏览器标注意见进一步统一 AI 问答卡片：输入区外层改为与消息区一致的白色，文本输入框改为浅米色，并保留现有分隔线、标签、焦点与禁用状态；本地浏览器复核计算色值分别为 `rgb(255, 255, 255)` 与 `rgb(248, 245, 239)`，ESLint 与 Next.js Production build 均通过。
+- Talks 列表卡片改为“报告名称在左、日期在右”的同一标题行，窄屏仍保持并列且无横向溢出。列表在报告存在公开附件时显示附件数量并链接至详情页附件区；详情页继续逐个展示双语附件名、可选说明、PDF/PPTX/文件格式与下载入口。
+- 核对附件全链路：Studio 每条 Talk 支持多个 `reportAttachment`，仅允许 PDF/PPTX、单文件不超过80 MB，并须勾选版权与公开范围；前台查询只返回已确认公开的附件。当前 Production 11 条 Talk 仍均为0附件，因此线上暂不会出现附件入口。
+- Publications 左侧筛选栏增加视口内最大高度和独立纵向滚动；年份默认显示最近3个，其余通过带 `aria-expanded` 的按钮展开/收起，已选年份即使收起也继续可见。平板及手机端筛选栏恢复自然高度和页面滚动。
+- Publications、Talks、Courses、Team、AI Q&A 的页面标题说明行全部移除，只保留正式栏目标题。全站页脚改为姓名/身份、公开邮箱与学术链接、北京大学教育学院官方通讯地址三栏；地址采用官方教师页公开信息：Room 419、No.5 Yiheyuan Road、Beijing 100871，并提供中英文展示；不加入私人手机号。
+- People 的 `enrollmentYear` 在 Studio 改为新增/编辑时必填，Sanity 查询显式按 `enrollmentYear desc, order asc, name.en asc` 排序，前端继续以本地化姓名完成稳定排序但不再渲染年份。AI Q&A 将消息区与输入区合并为一个连续卡片，输入区固定为该卡片的底部区域，保留可见标签、限流说明和安全失败口径。
+- 交互与视觉验收：Next.js Production build通过并生成22个页面；41/41测试通过（含新增Talk附件与People年份Schema守卫）；Sanity Studio build通过。浏览器实测桌面与375px窄屏：Talk标题/日期并列、无横向溢出；Publications 年份折叠为3项，展开后筛选栏 `overflow-y:auto` 且 `scrollHeight > clientHeight`；AI聊天卡片一体化且窄屏无横向溢出。使用Web界面规范复核焦点、语义控件、长文本换行与减少动画规则。
+- 本轮未获 Git commit/push、Vercel 或 Studio 部署授权；上述代码与 Studio Schema 均只在本地工作区，线上界面和后台必填校验尚未更新。

@@ -18,10 +18,7 @@ export default async function TeachingPage({ params }: { params: Promise<{ lang:
 
   return (
     <div className="section-wrap page-body teaching-page">
-      <PageIntro
-        title={zh ? "教授课程" : "Courses"}
-        lead={zh ? "围绕学习分析、教育技术设计、学术写作与人工智能素养开展的北京大学课程。" : "Courses at Peking University spanning learning analytics, educational technology design, academic writing, and AI literacy."}
-      />
+      <PageIntro title={zh ? "教授课程" : "Courses"} />
 
       <div className="teaching-grid">
         {courses.map((course) => {

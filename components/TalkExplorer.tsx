@@ -70,13 +70,18 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
             const host = localizedTalkHost(talk, lang);
             const hasDetails = hasTalkDetails(talk, lang);
             const summary = lang === "zh" ? (talk.summaryZh || talk.summary) : (talk.summary || talk.summaryZh);
+            const attachmentCount = talk.attachments?.length || (talk.slidesUrl ? 1 : 0);
             return <article className="result-card talk-card" key={talk.id}>
-              <div className="result-card__meta"><time>{displayTalkDate(talk.date)}</time></div>
-              <h2>{hasDetails ? <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{title}</Link> : title}</h2>
+              <div className="talk-card__heading">
+                <h2>{hasDetails ? <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{title}</Link> : title}</h2>
+                <div className="result-card__meta"><time>{displayTalkDate(talk.date)}</time></div>
+              </div>
               <p className="result-card__authors">{host}</p>
               {hasDetails && <div className="result-card__actions">
                 <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{zh ? "查看报告详情" : "View details"} →</Link>
-                {talk.slidesUrl ? <a href={talk.slidesUrl} download>{zh ? "下载报告文件" : "Download slides"} ↓</a> : null}
+                {attachmentCount > 0 && <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}#public-downloads`}>
+                  {zh ? `${attachmentCount} 个公开附件` : `${attachmentCount} public ${attachmentCount === 1 ? "attachment" : "attachments"}`} ↓
+                </Link>}
               </div>}
               {summary && <div className="abstract-panel"><strong>{zh ? "报告简介" : "Summary"}</strong><p>{summary}</p></div>}
             </article>

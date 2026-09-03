@@ -190,8 +190,7 @@ textarea:focus-visible {
 .content-card,
 .filter-panel,
 .result-card,
-.chat-panel,
-.chat-composer {
+.chat-panel {
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
@@ -517,14 +516,6 @@ textarea:focus-visible {
   line-height: 1.05;
 }
 
-.page-intro__lead {
-  max-width: 740px;
-  margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.75;
-}
-
 .archive-layout {
   width: 100%;
   max-width: 100%;
@@ -570,6 +561,10 @@ textarea:focus-visible {
 .filter-panel {
   position: sticky;
   top: 96px;
+  max-height: calc(100dvh - 120px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   padding: 18px;
 }
 
@@ -639,6 +634,15 @@ textarea:focus-visible {
   color: var(--pku-red);
 }
 
+.filter-group .filter-disclosure {
+  margin-top: 5px;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding-top: 11px;
+  color: var(--pku-red);
+  font-weight: 700;
+}
+
 .result-count {
   min-height: 36px;
   display: flex;
@@ -699,20 +703,32 @@ textarea:focus-visible {
   padding: 28px 26px 26px;
 }
 
-.talk-card .result-card__meta {
-  margin-bottom: 14px;
+.talk-card__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px 24px;
 }
 
-.talk-card .result-card__meta time {
+.talk-card__heading .result-card__meta {
+  padding-top: 5px;
+}
+
+.talk-card__heading .result-card__meta time {
+  width: auto;
+  margin-left: 0;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .talk-card h2 {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: clamp(21px, 2.2vw, 26px);
 }
 
 .talk-card .result-card__authors {
+  margin-top: 10px;
   font-size: 14px;
   line-height: 1.7;
 }
@@ -949,18 +965,6 @@ textarea:focus-visible {
   font-size: 13px;
 }
 
-.person-card__year {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.person-card__year.is-pending {
-  color: var(--muted);
-  font-weight: 400;
-}
-
 .person-card__bio {
   margin: 0;
   font-size: 13px;
@@ -1008,12 +1012,19 @@ textarea:focus-visible {
 }
 
 .chat-shell {
-  display: grid;
-  gap: 14px;
+  display: block;
 }
 
 .chat-panel {
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-history {
   min-height: 360px;
+  flex: 1;
   padding: 24px;
 }
 
@@ -1167,7 +1178,10 @@ textarea:focus-visible {
 }
 
 .chat-composer {
-  padding: 18px;
+  border-top: 1px solid var(--line);
+  /* Continue the white conversation surface into the composer. */
+  background: var(--surface);
+  padding: 16px 18px 18px;
 }
 
 .chat-composer > label {
@@ -1222,19 +1236,22 @@ textarea:focus-visible {
 }
 
 .site-footer {
-  min-height: 150px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 38px;
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(180px, 0.8fr) minmax(280px, 1fr);
+  align-items: start;
+  gap: 32px 56px;
   border-top: 1px solid var(--line);
-  padding-block: 34px;
+  padding-block: 38px 42px;
 }
 
-.site-footer p {
+.site-footer p,
+.site-footer address,
+.site-footer span {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1.65;
 }
 
 .site-footer__name {
@@ -1247,14 +1264,39 @@ textarea:focus-visible {
 .site-footer__links {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 18px;
+  gap: 8px 16px;
+  margin-top: 10px;
   font-size: 12px;
   font-weight: 700;
 }
 
+.site-footer__contact > a,
+.site-footer__links a {
+  color: var(--ink);
+}
+
+.site-footer__contact > a:hover,
 .site-footer__links a:hover {
   color: var(--pku-red);
+}
+
+.site-footer__label {
+  margin: 0 0 9px !important;
+  color: var(--faint) !important;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-footer__address {
+  display: grid;
+  margin: 0;
+  font-style: normal;
+}
+
+.site-footer__address span {
+  margin: 0;
 }
 
 @media (max-width: 1040px) {
@@ -1338,6 +1380,8 @@ textarea:focus-visible {
 
   .filter-panel {
     position: static;
+    max-height: none;
+    overflow-y: visible;
     margin-bottom: 24px;
   }
 
@@ -1388,7 +1432,7 @@ textarea:focus-visible {
   }
 
   .content-card,
-  .chat-panel {
+  .chat-history {
     padding: 22px;
   }
 
@@ -1424,7 +1468,8 @@ textarea:focus-visible {
     padding-top: 22px;
   }
 
-  .result-card__meta time {
+  .result-card:not(.talk-card) .result-card__meta time,
+  .report-detail__header .result-card__meta time {
     width: 100%;
     margin-left: 0;
   }
@@ -1442,11 +1487,12 @@ textarea:focus-visible {
   }
 
   .site-footer {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .site-footer__links {
-    justify-content: flex-start;
+    margin-top: 8px;
   }
 }
 

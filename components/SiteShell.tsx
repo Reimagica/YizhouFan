@@ -76,26 +76,34 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
       <main>{children}</main>
 
       <footer className="site-footer">
-        <div>
+        <div className="site-footer__identity">
           <p className="site-footer__name">{copy.name}</p>
           <p>{copy.footer}</p>
         </div>
-        <div className="site-footer__links">
-          <a href={profileLinks.email}>Email</a>
-          <a href={profileLinks.scholar} target="_blank" rel="noreferrer">Google Scholar</a>
-          <a href={profileLinks.orcid} target="_blank" rel="noreferrer">ORCID</a>
-          <a href={profileLinks.pku} target="_blank" rel="noreferrer">PKU</a>
+        <div className="site-footer__contact">
+          <p className="site-footer__label">{lang === "zh" ? "联系" : "Contact"}</p>
+          <a href={profileLinks.email}>fyz@pku.edu.cn</a>
+          <div className="site-footer__links">
+            <a href={profileLinks.scholar} target="_blank" rel="noreferrer">Google Scholar</a>
+            <a href={profileLinks.orcid} target="_blank" rel="noreferrer">ORCID</a>
+            <a href={profileLinks.pku} target="_blank" rel="noreferrer">PKU</a>
+          </div>
         </div>
+        <address className="site-footer__address">
+          <p className="site-footer__label">{lang === "zh" ? "通讯地址" : "Mailing address"}</p>
+          <span>{lang === "zh" ? "北京市海淀区颐和园路5号" : "Room 419, Graduate School of Education"}</span>
+          <span>{lang === "zh" ? "北京大学教育学院419室" : "Peking University, No. 5 Yiheyuan Road"}</span>
+          <span>{lang === "zh" ? "邮编：100871" : "Beijing 100871, China"}</span>
+        </address>
       </footer>
     </div>
   );
 }
 
-export function PageIntro({ title, lead }: { title: string; lead: string }) {
+export function PageIntro({ title }: { title: string }) {
   return (
     <header className="page-intro">
       <h1>{title}</h1>
-      <p className="page-intro__lead">{lead}</p>
     </header>
   );
 }

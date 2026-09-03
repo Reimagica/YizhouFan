@@ -33,10 +33,15 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
   const [language, setLanguage] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [showAllYears, setShowAllYears] = useState(false);
 
   const years = [...new Set(publications.map((item) => item.year))].sort((a, b) => b - a);
   const kinds = [...new Set(publications.map((item) => item.kind))];
   const languages = [...new Set(publications.map((item) => item.language).filter(Boolean))] as string[];
+  const visibleYears = showAllYears || years.length <= 3
+    ? years
+    : years.filter((item, index) => index < 3 || item === year);
+  const hiddenYearCount = Math.max(0, years.length - 3);
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     return publications.filter((item) => {
@@ -74,7 +79,19 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
         <div className="filter-group">
           <p>{zh ? "年份" : "Year"}</p>
           <button aria-pressed={!year} className={!year ? "active" : ""} type="button" onClick={() => setYear(null)}>{zh ? "全部" : "All"}</button>
-          {years.map((item) => <button aria-pressed={year === item} className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
+          {visibleYears.map((item) => <button aria-pressed={year === item} className={year === item ? "active" : ""} type="button" key={item} onClick={() => setYear(year === item ? null : item)}>{item}</button>)}
+          {hiddenYearCount > 0 && (
+            <button
+              aria-expanded={showAllYears}
+              className="filter-disclosure"
+              type="button"
+              onClick={() => setShowAllYears((current) => !current)}
+            >
+              {showAllYears
+                ? (zh ? "收起年份" : "Show fewer years")
+                : (zh ? `展开其余 ${hiddenYearCount} 个年份` : `Show ${hiddenYearCount} more years`)}
+            </button>
+          )}
         </div>
 
         <div className="filter-group">

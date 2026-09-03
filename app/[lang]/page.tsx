@@ -67,7 +67,7 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
             ))}
           </div>
           <p className="scholar-metrics__updated">
-            {zh ? `Scholar 指标截至 ${metrics.asOf}；成果总数随本站已发布内容自动更新。` : `Scholar metrics as of ${metrics.asOf}; the publication total updates with this site's published archive.`}
+            {zh ? `Scholar 指标截至 ${metrics.asOf}。` : `Scholar metrics as of ${metrics.asOf}; the publication total updates with this site's published archive.`}
           </p>
         </section>
 

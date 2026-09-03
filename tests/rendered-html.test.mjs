@@ -111,6 +111,9 @@ test("renders searchable publication controls and PDF status", async () => {
   assert.doesNotMatch(html, /Find source|google\.com\/scholar\?q=/i);
   assert.match(html, /PDF pending/);
   assert.match(html, /BibTeX/);
+  assert.match(html, /aria-expanded="false"/);
+  assert.match(html, /Show \d+ more years/);
+  assert.doesNotMatch(html, /Search by title, author, venue, year/);
 });
 
 test("localizes publication types and exposes filter state in Chinese", async () => {
@@ -130,7 +133,8 @@ test("places the talk search before filters and results and drops the type filte
   assert.ok(searchIndex >= 0);
   assert.ok(yearIndex > searchIndex);
   assert.match(html, /<h1>Talks<\/h1>/);
-  assert.match(html, /Search talks by title, host, or year\./);
+  assert.doesNotMatch(html, /Search talks by title, host, or year\./);
+  assert.match(html, /talk-card__heading/);
   // Type filter UI removed entirely.
   assert.doesNotMatch(html, />Type</);
   assert.doesNotMatch(html, /talk type/i);
@@ -171,7 +175,7 @@ test("renders talks in Chinese without type classification labels", async () => 
   const html = await response.text();
   assert.match(html, /11 场报告/);
   assert.match(html, /<h1>学术报告<\/h1>/);
-  assert.match(html, /可按题目、主办方或年份检索学术报告。/);
+  assert.doesNotMatch(html, /可按题目、主办方或年份检索学术报告。/);
   assert.doesNotMatch(html, /主旨演讲|受邀报告/);
   assert.doesNotMatch(html, /可下载课件|公开课件/);
   assert.match(html, /aria-pressed="true"/);
@@ -217,6 +221,7 @@ test("renders all members on one page without category tabs (en)", async () => {
   assert.match(html, /Linfei Xiao/);
   assert.match(html, /Ling Ma/);
   assert.doesNotMatch(html, /Enrollment year forthcoming|Profile forthcoming/);
+  assert.doesNotMatch(html, /person-card__year/);
   // No member detail route / no clickable fake entry.
   assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
 });
@@ -235,6 +240,7 @@ test("renders all completed member profiles in Chinese without tabs (zh)", async
   assert.match(html, /肖琳霏/);
   assert.match(html, /马玲/);
   assert.doesNotMatch(html, /入学年份待补充|个人与研究简介待补充/);
+  assert.doesNotMatch(html, /person-card__year/);
   assert.doesNotMatch(html, /href="\/zh\/people\/[^"]+"/);
 });
 
@@ -244,6 +250,9 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   const html = await page.text();
   assert.match(html, /Ask the AI assistant/);
   assert.match(html, /This browser may ask up to 8 questions per day/);
+  assert.doesNotMatch(html, /The assistant reads only public profile/);
+  assert.match(html, /<section class="chat-panel"><div class="chat-history"/);
+  assert.match(html, /<form class="chat-composer"/);
   assert.doesNotMatch(html, /Each visitor may ask/);
 
   const api = await request("/api/ask", {
@@ -253,6 +262,21 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   });
   assert.equal(api.status, 503);
   assert.match(await api.text(), /model key has not been configured/i);
+});
+
+test("renders a bilingual institutional footer with public contact details", async () => {
+  const english = await request("/en");
+  const englishHtml = await english.text();
+  assert.match(englishHtml, /Mailing address/);
+  assert.match(englishHtml, /Room 419, Graduate School of Education/);
+  assert.match(englishHtml, /Beijing 100871, China/);
+  assert.match(englishHtml, /fyz@pku.edu.cn/);
+
+  const chinese = await request("/zh");
+  const chineseHtml = await chinese.text();
+  assert.match(chineseHtml, /通讯地址/);
+  assert.match(chineseHtml, /北京市海淀区颐和园路5号/);
+  assert.match(chineseHtml, /邮编：100871/);
 });
 
 test("rejects unsigned CMS automation requests", async () => {

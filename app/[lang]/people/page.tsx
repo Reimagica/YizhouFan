@@ -12,12 +12,7 @@ export default async function PeoplePage({ params }: { params: Promise<{ lang: s
 
   return (
     <div className="section-wrap page-body">
-      <PageIntro
-        title={zh ? "团队成员" : "Team"}
-        lead={zh
-          ? "我们围绕学习科学、学习分析与人工智能教育开展共同研究。"
-          : "We work together across learning sciences, learning analytics, and artificial intelligence in education."}
-      />
+      <PageIntro title={zh ? "团队成员" : "Team"} />
       <PeopleDirectory lang={lang} people={people} />
     </div>
   );

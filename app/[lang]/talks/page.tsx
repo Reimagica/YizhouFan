@@ -12,10 +12,7 @@ export default async function TalksPage({ params }: { params: Promise<{ lang: st
 
   return (
     <div className="section-wrap page-body">
-      <PageIntro
-        title={zh ? "学术报告" : "Talks"}
-        lead={zh ? "可按题目、主办方或年份检索学术报告。" : "Search talks by title, host, or year."}
-      />
+      <PageIntro title={zh ? "学术报告" : "Talks"} />
       <TalkExplorer lang={lang} talks={talks} />
     </div>
   );

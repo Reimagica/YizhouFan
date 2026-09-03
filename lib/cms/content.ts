@@ -56,7 +56,7 @@ const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc
   )
 }`;
 
-const peopleQuery = `*[_type == "person" && status == "published"] | order(order asc, name.en asc) {
+const peopleQuery = `*[_type == "person" && status == "published"] | order(enrollmentYear desc, order asc, name.en asc) {
   "id": _id,
   "name": name.en,
   "nameZh": name.zh,

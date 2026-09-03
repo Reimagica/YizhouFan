@@ -26,10 +26,10 @@ export default async function TalkDetailPage({params}: {params: Promise<{lang: s
       {summary && <div className="report-summary">{summary}</div>}
     </header>
     <PortableContent blocks={body} lang={lang} />
-    {(attachments.length > 0 || talk.slidesUrl) && <section className="report-downloads">
+    {(attachments.length > 0 || talk.slidesUrl) && <section className="report-downloads" id="public-downloads">
       <h2>{zh ? "公开附件" : "Public downloads"}</h2>
       <div>
-        {attachments.map((attachment) => <a href={attachment.url} download key={attachment.url}><strong>{(zh ? attachment.labelZh : attachment.label) ?? (zh ? "下载报告附件" : "Download attachment")}</strong>{(zh ? attachment.noteZh : attachment.note) && <span>{zh ? attachment.noteZh : attachment.note}</span>}<small>{attachment.mimeType?.includes("presentation") ? "PPTX" : "PDF"} ↓</small></a>)}
+        {attachments.map((attachment) => <a href={attachment.url} download key={attachment.url}><strong>{(zh ? attachment.labelZh : attachment.label) ?? (zh ? "下载报告附件" : "Download attachment")}</strong>{(zh ? attachment.noteZh : attachment.note) && <span>{zh ? attachment.noteZh : attachment.note}</span>}<small>{attachment.mimeType?.includes("pdf") ? "PDF" : attachment.mimeType?.includes("presentation") ? "PPTX" : (zh ? "文件" : "File")} ↓</small></a>)}
         {!attachments.length && talk.slidesUrl && <a href={talk.slidesUrl} download><strong>{zh ? "下载报告附件" : "Download attachment"}</strong><small>{talk.slidesFormat?.toUpperCase()} ↓</small></a>}
       </div>
     </section>}

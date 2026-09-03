@@ -25,9 +25,6 @@ export function PeopleDirectory({lang, people}: {lang: Language; people: PublicP
         const position = zh ? (person.positionZh || person.position) : (person.position || person.positionZh);
         const bioSource = zh ? (person.bioZh || person.bio) : (person.bio || person.bioZh);
         const bio = bioSource?.trim() || undefined;
-        const yearLabel = person.enrollmentYear != null
-          ? String(person.enrollmentYear)
-          : (zh ? "入学年份待补充" : "Enrollment year forthcoming");
         const bioLabel = bio ?? (zh ? "个人与研究简介待补充" : "Profile forthcoming");
         const linkLabel = zh ? "个人主页" : "Personal page";
 
@@ -41,7 +38,6 @@ export function PeopleDirectory({lang, people}: {lang: Language; people: PublicP
             <div className="person-card__body">
               <h2>{name}</h2>
               {position && <p className="person-card__position">{position}</p>}
-              <p className={`person-card__year${person.enrollmentYear != null ? "" : " is-pending"}`}>{yearLabel}</p>
               <p className={`person-card__bio${bio ? "" : " is-pending"}`}>{bioLabel}</p>
               {(person.profileUrl || person.publicEmail) && (
                 <p className="person-card__links">

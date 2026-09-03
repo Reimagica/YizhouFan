@@ -41,8 +41,9 @@ export function AskInterface({ lang }: { lang: Language }) {
 
   return (
     <div className="chat-shell">
-      <section className="chat-panel" aria-live="polite">
-        {messages.length === 0 ? (
+      <section className="chat-panel">
+        <div className="chat-history" aria-live="polite">
+          {messages.length === 0 ? (
           <div className="chat-empty">
             <span>AI</span>
             <h2>{zh ? "可以从这些问题开始" : "Try one of these questions"}</h2>
@@ -50,7 +51,7 @@ export function AskInterface({ lang }: { lang: Language }) {
               {examples.map((example) => <button key={example} type="button" onClick={() => setQuestion(example)}>{example}</button>)}
             </div>
           </div>
-        ) : (
+          ) : (
           <div className="message-list">
             {messages.map((message, index) => (
               <article className={`message message--${message.role}`} key={`${message.role}-${index}`}>
@@ -79,17 +80,18 @@ export function AskInterface({ lang }: { lang: Language }) {
             ))}
             {loading && <article className="message message--assistant"><span>AI</span><p>{zh ? "正在核对公开资料…" : "Checking the public material…"}</p></article>}
           </div>
-        )}
-      </section>
-
-      <form className="chat-composer" onSubmit={submit}>
-        <label htmlFor="question">{zh ? "向 AI 助手提问" : "Ask the AI assistant"}</label>
-        <div>
-          <textarea id="question" maxLength={800} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={zh ? "询问导师的研究、成果、报告、教学或课题组…" : "Ask about research, publications, talks, teaching, or the lab…"} />
-          <button type="submit" disabled={loading || !question.trim()}>{loading ? (zh ? "回答中" : "Answering") : (zh ? "发送" : "Send")}</button>
+          )}
         </div>
-        <p>{zh ? "回答仅基于本站公开材料；资料不足时会明确说明。本浏览器每天最多提问 8 次，并设有网络与全站保护额度。" : "Answers use only public site content and state when evidence is insufficient. This browser may ask up to 8 questions per day, with additional network and site-wide safeguards."}</p>
-      </form>
+
+        <form className="chat-composer" onSubmit={submit}>
+          <label htmlFor="question">{zh ? "向 AI 助手提问" : "Ask the AI assistant"}</label>
+          <div>
+            <textarea id="question" name="question" autoComplete="off" maxLength={800} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={zh ? "询问导师的研究、成果、报告、教学或课题组…" : "Ask about research, publications, talks, teaching, or the lab…"} />
+            <button type="submit" disabled={loading || !question.trim()}>{loading ? (zh ? "回答中…" : "Answering…") : (zh ? "发送" : "Send")}</button>
+          </div>
+          <p>{zh ? "回答仅基于本站公开材料；本浏览器每天最多提问 8 次。" : "Answers use only public site content and state when evidence is insufficient. This browser may ask up to 8 questions per day."}</p>
+        </form>
+      </section>
     </div>
   );
 }
