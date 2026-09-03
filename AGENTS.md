@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-03 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。当前本地工作区已完成 Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板，尚未 commit/push/deploy。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-03 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；Studio 新结构尚未单独部署。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-03 马郡阳换图后共有 100 个 Asset（89 file、11 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -768,4 +768,4 @@ npm run studio:build
 - Publications、Talks、Courses、Team、AI Q&A 的页面标题说明行全部移除，只保留正式栏目标题。全站页脚改为姓名/身份、公开邮箱与学术链接、北京大学教育学院官方通讯地址三栏；地址采用官方教师页公开信息：Room 419、No.5 Yiheyuan Road、Beijing 100871，并提供中英文展示；不加入私人手机号。
 - People 的 `enrollmentYear` 在 Studio 改为新增/编辑时必填，Sanity 查询显式按 `enrollmentYear desc, order asc, name.en asc` 排序，前端继续以本地化姓名完成稳定排序但不再渲染年份。AI Q&A 将消息区与输入区合并为一个连续卡片，输入区固定为该卡片的底部区域，保留可见标签、限流说明和安全失败口径。
 - 交互与视觉验收：Next.js Production build通过并生成22个页面；41/41测试通过（含新增Talk附件与People年份Schema守卫）；Sanity Studio build通过。浏览器实测桌面与375px窄屏：Talk标题/日期并列、无横向溢出；Publications 年份折叠为3项，展开后筛选栏 `overflow-y:auto` 且 `scrollHeight > clientHeight`；AI聊天卡片一体化且窄屏无横向溢出。使用Web界面规范复核焦点、语义控件、长文本换行与减少动画规则。
-- 本轮未获 Git commit/push、Vercel 或 Studio 部署授权；上述代码与 Studio Schema 均只在本地工作区，线上界面和后台必填校验尚未更新。
+- 2026-09-03 用户明确授权提交推送；网站与 Studio 源码、测试及项目记录以提交 `682031d Refine content navigation and archive interfaces` 推送 GitHub `main`。交接压缩包与 `tmp/` 临时目录未纳入仓库；Studio 新结构尚未执行独立部署。
