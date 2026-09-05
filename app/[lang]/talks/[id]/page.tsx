@@ -8,7 +8,7 @@ export default async function TalkDetailPage({params}: {params: Promise<{lang: s
   const {lang, id} = await params;
   if (!isLanguage(lang)) notFound();
   const talk = await getTalkById(decodeURIComponent(id));
-  if (!talk) notFound();
+  if (!talk || talk.attachments?.length || talk.slidesUrl) notFound();
   const zh = lang === "zh";
   const title = zh ? (talk.titleZh || talk.title) : (talk.title || talk.titleZh);
   const host = zh ? (talk.hostZh || talk.host) : (talk.host || talk.hostZh);

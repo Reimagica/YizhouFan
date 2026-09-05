@@ -253,6 +253,8 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   assert.doesNotMatch(html, /The assistant reads only public profile/);
   assert.match(html, /<section class="chat-panel"><div class="chat-history"/);
   assert.match(html, /<form class="chat-composer"/);
+  assert.match(html, /id="quota-status"/);
+  assert.match(html, /disabled=""/);
   assert.doesNotMatch(html, /Each visitor may ask/);
 
   const api = await request("/api/ask", {

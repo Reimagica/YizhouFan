@@ -1,5 +1,36 @@
 type QuotaRule = { key: string; limit: number };
 
+// Read-only: displaying availability must never consume a question.
+export async function readAskQuota(visitorId: string, networkId: string) {
+  const now = Date.now();
+  const day = new Date(now).toISOString().slice(0, 10);
+  const minute = Math.floor(now / 60_000);
+  const keys = [`day:${day}:browser:${visitorId}`, `day:${day}:network:${networkId}`, `day:${day}:site`, `minute:${minute}:browser:${visitorId}`, `minute:${minute}:network:${networkId}`];
+  const endpoint = process.env.UPSTASH_REDIS_REST_URL?.replace(/\/$/, "");
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  let counts: number[];
+  if (!endpoint || !token) {
+    if (process.env.NODE_ENV === "production") throw new Error("Quota unavailable");
+    counts = keys.map((key) => { const value = memoryUsage.get(key); return value && value.expiresAt > now ? value.count : 0; });
+  } else {
+    const response = await fetch(endpoint, {
+      method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(["MGET", ...keys.map((key) => `yizhoufan:quota:${key}`)]),
+      cache: "no-store", signal: AbortSignal.timeout(3_000),
+    });
+    const payload = await response.json() as { result?: unknown[] };
+    if (!response.ok || !Array.isArray(payload.result) || payload.result.length !== keys.length) throw new Error("Quota unavailable");
+    counts = payload.result.map((value) => value === null ? 0 : Number(value));
+    if (counts.some((value) => !Number.isSafeInteger(value) || value < 0)) throw new Error("Invalid quota");
+  }
+  const remaining = Math.max(0, 8 - counts[0]);
+  const dailyBlocked = remaining === 0 || counts[1] >= 32 || counts[2] >= 120;
+  const minuteBlocked = counts[3] >= 3 || counts[4] >= 12;
+  const resetsAt = new Date(`${day}T00:00:00Z`).getTime() + 86_400_000;
+  return { remaining, limit: 8, blocked: dailyBlocked || minuteBlocked, reason: dailyBlocked ? "daily" : minuteBlocked ? "minute" : null,
+    resetsAt, retryAt: dailyBlocked ? resetsAt : minuteBlocked ? (minute + 1) * 60_000 : null };
+}
+
 const memoryUsage = new Map<string, { expiresAt: number; count: number }>();
 
 function utcDay() {

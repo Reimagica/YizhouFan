@@ -5,6 +5,17 @@ import Link from "next/link";
 import type { Language } from "../lib/content";
 import type { PublicTalk } from "../lib/cms/types";
 
+function downloadUrl(value: string) {
+  try {
+    const url = new URL(value, "https://yizhoufan.com");
+    // Sanity sets Content-Disposition for cross-origin file downloads.
+    if (url.hostname === "cdn.sanity.io") { url.searchParams.set("dl", ""); return url.toString(); }
+  } catch {
+    return value;
+  }
+  return value;
+}
+
 function talkYear(date: string) {
   return date.match(/^\d{4}/)?.[0] ?? date;
 }
@@ -25,7 +36,7 @@ function localizedTalkHost(talk: PublicTalk, lang: Language) {
 function hasTalkDetails(talk: PublicTalk, lang: Language) {
   const summary = lang === "zh" ? (talk.summaryZh || talk.summary) : (talk.summary || talk.summaryZh);
   const body = lang === "zh" ? (talk.bodyZh?.length ? talk.bodyZh : talk.body) : (talk.body?.length ? talk.body : talk.bodyZh);
-  return Boolean(summary?.trim() || body?.length || talk.attachments?.length || talk.slidesUrl);
+  return !talk.attachments?.length && !talk.slidesUrl && Boolean(summary?.trim() || body?.length);
 }
 
 export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTalk[] }) {
@@ -70,18 +81,18 @@ export function TalkExplorer({ lang, talks }: { lang: Language; talks: PublicTal
             const host = localizedTalkHost(talk, lang);
             const hasDetails = hasTalkDetails(talk, lang);
             const summary = lang === "zh" ? (talk.summaryZh || talk.summary) : (talk.summary || talk.summaryZh);
-            const attachmentCount = talk.attachments?.length || (talk.slidesUrl ? 1 : 0);
+            const attachments = talk.attachments?.length ? talk.attachments : talk.slidesUrl ? [{ url: talk.slidesUrl, label: "Download attachment", labelZh: "下载报告附件" }] : [];
             return <article className="result-card talk-card" key={talk.id}>
               <div className="talk-card__heading">
                 <h2>{hasDetails ? <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{title}</Link> : title}</h2>
                 <div className="result-card__meta"><time>{displayTalkDate(talk.date)}</time></div>
               </div>
               <p className="result-card__authors">{host}</p>
-              {hasDetails && <div className="result-card__actions">
-                <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{zh ? "查看报告详情" : "View details"} →</Link>
-                {attachmentCount > 0 && <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}#public-downloads`}>
-                  {zh ? `${attachmentCount} 个公开附件` : `${attachmentCount} public ${attachmentCount === 1 ? "attachment" : "attachments"}`} ↓
-                </Link>}
+              {(hasDetails || attachments.length > 0) && <div className="result-card__actions">
+                {hasDetails && <Link href={`/${lang}/talks/${encodeURIComponent(talk.id)}`}>{zh ? "查看报告详情" : "View details"} →</Link>}
+                {attachments.map((attachment, index) => <a key={`${attachment.url}-${index}`} href={downloadUrl(attachment.url)} download>
+                  {zh ? (attachment.labelZh || attachment.label || `下载附件 ${index + 1}`) : (attachment.label || attachment.labelZh || `Download attachment ${index + 1}`)} ↓
+                </a>)}
               </div>}
               {summary && <div className="abstract-panel"><strong>{zh ? "报告简介" : "Summary"}</strong><p>{summary}</p></div>}
             </article>

@@ -4,7 +4,7 @@ import { isLanguage, type Language } from "../../../lib/content";
 import { buildPublicKnowledgeBundle } from "../../../lib/public-knowledge";
 import { guardAnswer } from "../../../lib/server/answer-guard";
 import { ensurePublicationTitles, selectPublicationLinks, selectPublicSources } from "../../../lib/server/answer-links";
-import { consumeDailyQuotas, consumeMinuteQuotas } from "../../../lib/server/rate-limit";
+import { consumeDailyQuotas, consumeMinuteQuotas, readAskQuota } from "../../../lib/server/rate-limit";
 
 const VISITOR_COOKIE = "yf_qa_visitor";
 const BROWSER_DAILY_LIMIT = 8;
@@ -28,6 +28,7 @@ function clientAddress(request: Request) {
 
 function jsonResponse(body: object, status: number, visitorId?: string, setVisitorCookie = false) {
   const response = NextResponse.json(body, { status });
+  response.headers.set("Cache-Control", "private, no-store");
   if (visitorId && setVisitorCookie) {
     response.cookies.set(VISITOR_COOKIE, visitorId, {
       httpOnly: true,
@@ -38,6 +39,20 @@ function jsonResponse(body: object, status: number, visitorId?: string, setVisit
     });
   }
   return response;
+}
+
+export async function GET(request: Request) {
+  const stored = cookieValue(request, VISITOR_COOKIE);
+  const valid = /^[0-9a-f-]{36}$/iu.test(stored);
+  const visitorId = valid ? stored : randomUUID();
+  const salt = process.env.RATE_LIMIT_SALT ?? (process.env.NODE_ENV === "production" ? "" : "local-development-only");
+  try {
+    if (!salt) throw new Error("Unavailable");
+    const networkId = createHmac("sha256", salt).update(clientAddress(request).slice(0, 128)).digest("hex").slice(0, 24);
+    return jsonResponse({ quota: await readAskQuota(visitorId, networkId), available: Boolean(process.env.DEEPSEEK_API_KEY) }, 200, visitorId, !valid);
+  } catch {
+    return jsonResponse({ quota: null, error: "AI Q&A is temporarily unavailable." }, 503, visitorId, !valid);
+  }
 }
 
 export async function POST(request: Request) {
@@ -69,7 +84,10 @@ export async function POST(request: Request) {
   const hasValidVisitorId = /^[0-9a-f-]{36}$/iu.test(storedVisitorId);
   const visitorId = hasValidVisitorId ? storedVisitorId : randomUUID();
   const networkId = createHmac("sha256", rateLimitSalt).update(clientAddress(request).slice(0, 128)).digest("hex").slice(0, 24);
-  const withIdentity = (payload: object, status: number) => jsonResponse(payload, status, visitorId, !hasValidVisitorId);
+  const withIdentity = async (payload: object, status: number) => {
+    const quota = await readAskQuota(visitorId, networkId).catch(() => null);
+    return jsonResponse({ ...payload, quota }, status, visitorId, !hasValidVisitorId);
+  };
 
   const burstAllowed = await consumeMinuteQuotas([
     { key: `browser:${visitorId}`, limit: BROWSER_MINUTE_LIMIT },

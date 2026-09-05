@@ -1,7 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import type { Language } from "../lib/content";
+
+type Quota = { remaining: number; limit: number; blocked: boolean; reason: string | null; resetsAt: number; retryAt: number | null };
 
 type Source = { label: string; url: string };
 type Answer = { status: "answered" | "insufficient"; items: string[]; note?: string };
@@ -12,6 +14,41 @@ export function AskInterface({ lang }: { lang: Language }) {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [quota, setQuota] = useState<Quota | null>(null);
+  const [quotaChecked, setQuotaChecked] = useState(false);
+  const [serviceAvailable, setServiceAvailable] = useState<boolean | null>(null);
+  const sending = useRef(false);
+  const generation = useRef(0);
+  const blocked = !quota || quota.blocked || serviceAvailable !== true;
+
+  useEffect(() => {
+    let active = true;
+    let reading = false;
+    async function refresh() {
+      if (sending.current || reading || document.visibilityState === "hidden") return;
+      reading = true;
+      const version = generation.current;
+      try {
+        const response = await fetch("/api/ask", { cache: "no-store" });
+        const result = await response.json();
+        if (active && !sending.current && version === generation.current) {
+          setQuota(response.ok ? result.quota : null);
+          setServiceAvailable(response.ok ? Boolean(result.available) : false);
+        }
+      } catch {
+        if (active && !sending.current && version === generation.current) { setQuota(null); setServiceAvailable(false); }
+      } finally {
+        reading = false;
+        if (active) setQuotaChecked(true);
+      }
+    }
+    void refresh();
+    const timer = setInterval(refresh, 15_000);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { active = false; clearInterval(timer); window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", refresh); };
+  }, []);
+
   const examples = zh
     ? ["范老师主要研究什么？", "有哪些生成式 AI 与学习相关的代表成果？", "课题组关注哪些研究方向？"]
     : ["What does Dr. Fan mainly research?", "Which publications focus on generative AI and learning?", "What does FanLearn Lab study?"];
@@ -19,7 +56,9 @@ export function AskInterface({ lang }: { lang: Language }) {
   async function submit(event: FormEvent) {
     event.preventDefault();
     const text = question.trim();
-    if (!text || loading) return;
+    if (!text || loading || blocked || sending.current) return;
+    sending.current = true;
+    generation.current += 1;
     setMessages((current) => [...current, { role: "user", text }]);
     setQuestion("");
     setLoading(true);
@@ -29,12 +68,20 @@ export function AskInterface({ lang }: { lang: Language }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: text, lang }),
       });
-      const result = await response.json() as { answer?: Answer; error?: string; publicationLinks?: Source[]; sources?: Source[] };
-      if (!response.ok || !result.answer) throw new Error(result.error || (zh ? "暂时无法回答。" : "Unable to answer right now."));
+      const result = await response.json() as { quota?: Quota | null; available?: boolean; answer?: Answer; error?: string; publicationLinks?: Source[]; sources?: Source[] };
+      setQuota(result.quota ?? null);
+      setServiceAvailable(response.ok ? true : serviceAvailable);
+      if (!response.ok || !result.answer) {
+        setMessages((current) => [...current, { role: "assistant", text: result.error || (zh ? "暂时无法回答。" : "Unable to answer right now.") }]);
+        return;
+      }
       setMessages((current) => [...current, { role: "assistant", answer: result.answer!, publicationLinks: result.publicationLinks, sources: result.sources }]);
     } catch (error) {
+      setQuota(null);
+      setServiceAvailable(false);
       setMessages((current) => [...current, { role: "assistant", text: error instanceof Error ? error.message : (zh ? "暂时无法回答。" : "Unable to answer right now.") }]);
     } finally {
+      sending.current = false;
       setLoading(false);
     }
   }
@@ -48,7 +95,7 @@ export function AskInterface({ lang }: { lang: Language }) {
             <span>AI</span>
             <h2>{zh ? "可以从这些问题开始" : "Try one of these questions"}</h2>
             <div className="question-examples">
-              {examples.map((example) => <button key={example} type="button" onClick={() => setQuestion(example)}>{example}</button>)}
+              {examples.map((example) => <button key={example} type="button" disabled={blocked || loading} onClick={() => setQuestion(example)}>{example}</button>)}
             </div>
           </div>
           ) : (
@@ -86,9 +133,16 @@ export function AskInterface({ lang }: { lang: Language }) {
         <form className="chat-composer" onSubmit={submit}>
           <label htmlFor="question">{zh ? "向 AI 助手提问" : "Ask the AI assistant"}</label>
           <div>
-            <textarea id="question" name="question" autoComplete="off" maxLength={800} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={zh ? "询问导师的研究、成果、报告、教学或课题组…" : "Ask about research, publications, talks, teaching, or the lab…"} />
-            <button type="submit" disabled={loading || !question.trim()}>{loading ? (zh ? "回答中…" : "Answering…") : (zh ? "发送" : "Send")}</button>
+            <textarea disabled={blocked || loading} aria-describedby="quota-status" id="question" name="question" autoComplete="off" maxLength={800} rows={3} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder={zh ? "询问导师的研究、成果、报告、教学或课题组…" : "Ask about research, publications, talks, teaching, or the lab…"} />
+            <button type="submit" disabled={blocked || loading || !question.trim()}>{loading ? (zh ? "回答中…" : "Answering…") : (zh ? "发送" : "Send")}</button>
           </div>
+          <p id="quota-status" role="status" aria-live="polite">
+            {!quota ? (quotaChecked ? (zh ? "暂时无法读取提问额度，请稍后重试。" : "Question availability is temporarily unavailable. Please try again shortly.") : (zh ? "正在读取剩余提问次数…" : "Checking remaining questions…")) : <>
+              <strong>{zh ? `本浏览器今日剩余 ${quota.remaining} / ${quota.limit} 次提问。` : `${quota.remaining} / ${quota.limit} questions remaining for this browser today.`}</strong>{" "}
+              {serviceAvailable === false ? (zh ? "AI 问答暂时不可用。" : "AI Q&A is temporarily unavailable.") : quota.blocked && (quota.reason === "daily" ? (zh ? "今日可用额度已达上限，提问已暂停。" : "Today's available quota has been reached. Questions are paused.") : (zh ? "提问过于频繁，请稍后再试。" : "Questions are temporarily paused. Please try again shortly."))}
+              {" "}{zh ? "每日额度于北京时间 08:00 重置。" : "Daily quota resets at 00:00 UTC."}
+            </>}
+          </p>
           <p>{zh ? "回答仅基于本站公开材料；本浏览器每天最多提问 8 次。" : "Answers use only public site content and state when evidence is insufficient. This browser may ask up to 8 questions per day."}</p>
         </form>
       </section>

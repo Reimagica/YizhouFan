@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-03 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；Studio 新结构尚未单独部署。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-03 马郡阳换图后共有 100 个 Asset（89 file、11 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -769,3 +769,15 @@ npm run studio:build
 - People 的 `enrollmentYear` 在 Studio 改为新增/编辑时必填，Sanity 查询显式按 `enrollmentYear desc, order asc, name.en asc` 排序，前端继续以本地化姓名完成稳定排序但不再渲染年份。AI Q&A 将消息区与输入区合并为一个连续卡片，输入区固定为该卡片的底部区域，保留可见标签、限流说明和安全失败口径。
 - 交互与视觉验收：Next.js Production build通过并生成22个页面；41/41测试通过（含新增Talk附件与People年份Schema守卫）；Sanity Studio build通过。浏览器实测桌面与375px窄屏：Talk标题/日期并列、无横向溢出；Publications 年份折叠为3项，展开后筛选栏 `overflow-y:auto` 且 `scrollHeight > clientHeight`；AI聊天卡片一体化且窄屏无横向溢出。使用Web界面规范复核焦点、语义控件、长文本换行与减少动画规则。
 - 2026-09-03 用户明确授权提交推送；网站与 Studio 源码、测试及项目记录以提交 `682031d Refine content navigation and archive interfaces` 推送 GitHub `main`。交接压缩包与 `tmp/` 临时目录未纳入仓库；Studio 新结构尚未执行独立部署。
+
+### 2026-09-05 - 新版 Sanity Studio 部署
+
+- 按用户明确指示执行 `sanity deploy --schema-required`，本地构建、内容校验、Production Schema 发布与 Studio 托管上传全部成功；正式地址为 `https://yizhoufan.sanity.studio/`。
+- 部署包含 People `enrollmentYear` 必填校验，以及 Structure 中“学术成果 → 全部学术成果 / 添加学术成果”的分组入口；未修改 Sanity Production 内容文档或资产。
+- 匿名 HTTP 验证正式地址可达并返回 HTTP 200，未登录请求按预期跳转到 Sanity 官方认证页面；本轮项目记忆更新尚未获得新的 Git commit/push 授权，暂留本地工作区。
+
+### 2026-09-05 - AI quota visibility and direct talk attachments
+
+- AI 问答新增只读 `GET /api/ask` 额度查询：沿用浏览器、匿名网络与全站三层限流键读取当前计数，不消耗额度；页面显示“本浏览器今日剩余 X / 8 次提问”，并在每日/分钟/网络或全站额度达到限制时禁用输入框、示例问题与发送按钮。每次问答响应携带最新 quota，窗口重新获得焦点或定时刷新时同步；生产环境额度读取缺少持久化配置时继续安全失败。
+- 有公开附件的学术报告不再显示详情页标题入口，详情路由也对含附件的报告返回 404；列表直接渲染每个已确认公开附件的下载按钮，Sanity CDN 链接追加 `dl` 参数触发下载。无附件但有正文/简介的报告继续保留详情页入口。
+- 新增额度与附件行为回归测试；本轮未修改 Sanity 内容、未提交/推送 GitHub、未部署 Vercel 或修改域名。
