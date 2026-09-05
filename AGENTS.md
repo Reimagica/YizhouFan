@@ -10,10 +10,10 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；马郡阳已更换最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；9张成员头像已按姓名更新至 Sanity，马郡阳已使用最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-03 马郡阳换图后共有 100 个 Asset（89 file、11 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-05 成员头像更新后共有 107 个 Asset（89 file、18 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -781,3 +781,9 @@ npm run studio:build
 - AI 问答新增只读 `GET /api/ask` 额度查询：沿用浏览器、匿名网络与全站三层限流键读取当前计数，不消耗额度；页面显示“本浏览器今日剩余 X / 8 次提问”，并在每日/分钟/网络或全站额度达到限制时禁用输入框、示例问题与发送按钮。每次问答响应携带最新 quota，窗口重新获得焦点或定时刷新时同步；生产环境额度读取缺少持久化配置时继续安全失败。
 - 有公开附件的学术报告不再显示详情页标题入口，详情路由也对含附件的报告返回 404；列表直接渲染每个已确认公开附件的下载按钮，Sanity CDN 链接追加 `dl` 参数触发下载。无附件但有正文/简介的报告继续保留详情页入口。
 - 新增额度与附件行为回归测试；本轮未修改 Sanity 内容、未提交/推送 GitHub、未部署 Vercel 或修改域名。
+
+### 2026-09-05 - Refresh all People portraits in Sanity
+
+- 从 `E:/科研/课题组网站/课题组网站记录/成员照片` 读取 9 张带中文姓名的 JPG/PNG；明确排除同目录下的 `个人信息汇总.docx`。文件名与 Sanity `person` 文档一一匹配：唐陆禛→`person-009`、夏梦雨→`person-002`、朱桃林→`person-006`、李子健→`person-005`、肖琳霏→`person-007`、许家奇→`person-001`、许明雪→`person-003`、马玲→`person-004`、马郡阳→`person-008`。
+- 写入前备份 9 份 Person 文档至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-portraits-20260905.ndjson.gz`。通过 Sanity CLI 上传图片并仅 patch 各文档的 `portrait.asset`，未修改姓名、身份、年份、简介、排序或发布状态；旧头像资产保留。
+- 写入后 9 个 Person 仍为 published，头像引用逐一复核；9 个 Sanity CDN 地址均 HTTP 200，MIME 为 JPEG/PNG，资产总数由 100 增至 107（89 file、18 image）。头像迁移记录与可复用脚本随本轮提交并推送 GitHub；未部署 Vercel；照片更新已在 Sanity Production 生效并可由现有内容刷新机制读取。
