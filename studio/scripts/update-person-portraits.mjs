@@ -42,7 +42,7 @@ if (matchedIds.size !== docs.length) {
 }
 
 if (mode === "query") {
-  console.log(JSON.stringify(matches.map(({file, doc}) => ({file: file.name, _id: doc._id, name: doc.name, status: doc.status, currentAsset: doc.portraitAsset ?? null})), null, 2));
+  console.log(JSON.stringify(matches.map(({file, doc}) => ({file: file.name, _id: doc._id, name: doc.name, position: doc.position, enrollmentYear: doc.enrollmentYear, bio: doc.bio, status: doc.status, currentAsset: doc.portraitAsset ?? null})), null, 2));
 } else if (mode === "verify") {
   const checks = await Promise.all(matches.map(async ({file, doc}) => {
     const url = doc.portraitAsset?.url;

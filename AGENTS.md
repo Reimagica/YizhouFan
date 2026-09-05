@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；9张成员头像已按姓名更新至 Sanity，马郡阳已使用最新授权头像，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；9张成员头像已按姓名更新至 Sanity，马郡阳已使用最新授权头像并补充最终版中英文简介，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-05 成员头像更新后共有 107 个 Asset（89 file、18 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -787,3 +787,16 @@ npm run studio:build
 - 从 `E:/科研/课题组网站/课题组网站记录/成员照片` 读取 9 张带中文姓名的 JPG/PNG；明确排除同目录下的 `个人信息汇总.docx`。文件名与 Sanity `person` 文档一一匹配：唐陆禛→`person-009`、夏梦雨→`person-002`、朱桃林→`person-006`、李子健→`person-005`、肖琳霏→`person-007`、许家奇→`person-001`、许明雪→`person-003`、马玲→`person-004`、马郡阳→`person-008`。
 - 写入前备份 9 份 Person 文档至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-portraits-20260905.ndjson.gz`。通过 Sanity CLI 上传图片并仅 patch 各文档的 `portrait.asset`，未修改姓名、身份、年份、简介、排序或发布状态；旧头像资产保留。
 - 写入后 9 个 Person 仍为 published，头像引用逐一复核；9 个 Sanity CDN 地址均 HTTP 200，MIME 为 JPEG/PNG，资产总数由 100 增至 107（89 file、18 image）。头像迁移记录与可复用脚本随本轮提交并推送 GitHub；未部署 Vercel；照片更新已在 Sanity Production 生效并可由现有内容刷新机制读取。
+
+### 2026-09-05 - 马郡阳双语简介更新（最终版）
+
+- 按用户最新材料更新 `person-008`（马郡阳）的 `bio.zh` 为：“本科毕业于北京大学信息管理系，研究方向聚焦人机交互与人智协作，关注人工智能如何支持人的学习、决策与知识创造，并探索技术与人的能力、需求之间的协同方式。”；同步生成并写入对应 `bio.en`，姓名、身份、入学年份、排序值及头像均未修改。
+- 英文简介为（45词）：“She received her bachelor’s degree from the Department of Information Management at Peking University. Her research focuses on human–computer interaction and human–AI collaboration, exploring how artificial intelligence can support human learning, decision-making, and knowledge creation, and how technology can align with human capabilities and needs.”
+- 写入前将当前 Person 文档备份至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-junyang-bio-en-final-20260905.json`；通过 Sanity CLI 用户令牌提交并以同步可见性复核，文档仍为 `published`。
+- Sanity Production 查询确认中英文简介均已更新；`https://yizhoufan.vercel.app/zh/people` 与 `/en/people` 均返回 HTTP 200，分别命中新中文文案与英文文案。本轮未修改仓库代码，也未提交/推送 GitHub；临时写入脚本已移除。
+
+### 2026-09-05 - 按 DOCX 核验后修正许家奇职位
+
+- 对照 `E:/科研/课题组网站/课题组网站记录/成员照片/个人信息汇总.docx` 与 Sanity Production 已发布 Person 文档（排除马郡阳）逐字段核验；8位成员姓名均对应一致，6位双语简介完全一致。李子健英文简介保留 Sanity 当前规范化表达，肖琳霏中文简介保留现有末尾句号；唐陆禛继续使用“2026届硕士毕业生”口径并保留后台 `enrollmentYear=2023`。
+- 根据用户确认，将 `person-001`（许家奇）的 `position.zh` 更新为“博士后”、`position.en` 更新为“postdoc”；`enrollmentYear=2025`、双语简介、头像和发布状态未修改。写入前备份9份 Person 文档至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-jiaqi-position-20260905.ndjson.gz`；写入后查询确认文档仍为 `published`，Vercel `/en/people` 与 `/zh/people` 均返回 HTTP 200 并命中对应职位文本。
+- 本轮只修改 Sanity Production 内容与本文件，未修改代码、未部署、未提交或推送 GitHub；其余核验中的文字与字段差异按用户确认保持现状。
