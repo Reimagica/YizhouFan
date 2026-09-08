@@ -848,3 +848,9 @@ npm run studio:build
 
 - 用户在已登录的 Sanity Studio 中手动替换 `person-007`（肖琳霏）与 `person-004`（马玲）头像；本轮不再由 Agent 重复上传或 patch，避免产生重复资产或覆盖用户刚完成的修改。
 - Sanity Production 只读核验：肖琳霏当前头像为 `image-5b1eebd44d711901575bda3b21266f2947ff50d1-1080x1080-jpg`，尺寸1080×1080；马玲当前头像为 `image-2a822b4d991bfcfc4a17bb4ffdf7bb6a028abc79-1155x1155-jpg`，尺寸1155×1155。两个 CDN 资源均返回 HTTP 200。
+
+### 2026-09-08 - 六类成员身份规则最终上线
+
+- 用户补充并确认同年排序为：博士后、博士生、硕转博、硕士生、已毕业、其他；Sanity 新增/编辑成员时六类 `memberRole` 均为必选，前台不展示该字段。
+- 9 位已发布 Person 已按现有公开身份回填：许家奇=博士后，夏梦雨/许明雪/马玲=博士生，马郡阳/朱桃林/肖琳霏/李子健=硕士生，唐陆禛=已毕业；未修改其他字段。完整备份位于 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-member-roles-20260908.tar.gz`。
+- 最终代码提交 `81b2ff5 Finalize six-role People ordering` 已推送 GitHub `main`；Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。Vercel Production 部署 `dpl_CAAbZ45vzSMxQUJkyimna927U9yk` 状态 Ready，正式别名 `https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 均已绑定；中英文 People/AI 页面返回 HTTP 200，页面顺序与六类规则一致。
