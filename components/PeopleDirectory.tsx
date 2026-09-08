@@ -26,7 +26,6 @@ export function PeopleDirectory({lang, people}: {lang: Language; people: PublicP
         const bioSource = zh ? (person.bioZh || person.bio) : (person.bio || person.bioZh);
         const bio = bioSource?.trim() || undefined;
         const bioLabel = bio ?? (zh ? "个人与研究简介待补充" : "Profile forthcoming");
-        const linkLabel = zh ? "个人主页" : "Personal page";
 
         return (
           <article className="person-card" key={person.id}>
@@ -39,16 +38,6 @@ export function PeopleDirectory({lang, people}: {lang: Language; people: PublicP
               <h2>{name}</h2>
               {position && <p className="person-card__position">{position}</p>}
               <p className={`person-card__bio${bio ? "" : " is-pending"}`}>{bioLabel}</p>
-              {(person.profileUrl || person.publicEmail) && (
-                <p className="person-card__links">
-                  {person.profileUrl && (
-                    <a href={person.profileUrl} target="_blank" rel="noopener noreferrer">{linkLabel} ↗</a>
-                  )}
-                  {person.publicEmail && (
-                    <a href={`mailto:${person.publicEmail}`}>{person.publicEmail}</a>
-                  )}
-                </p>
-              )}
             </div>
           </article>
         );

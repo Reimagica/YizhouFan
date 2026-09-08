@@ -68,9 +68,7 @@ const peopleQuery = `*[_type == "person" && status == "published"] | order(enrol
   "bio": bio.en,
   "bioZh": bio.zh,
   "portraitUrl": portrait.asset->url,
-  order,
-  profileUrl,
-  publicEmail
+  order
 }`;
 
 const courseQuery = `*[_type == "course" && status == "published"] | order(order asc, title.en asc) {

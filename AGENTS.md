@@ -45,7 +45,7 @@
 - 学术成果：中英文成果列表，Google Scholar 作为引用信息的重要外部入口；93 份已确认公开的 PDF 将按正文抽取元数据、去重并补齐到 Sanity，首页只统计全部已发布成果总数，不拆分语言。
 - 学术报告：最终只保留导师指定的 11 场，前台不区分 Keynote/Invited talk；可为确认公开的场次附 PDF/PPTX，并保留人工富文本详情。
 - 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前只展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养五门课程，每门包含课程性质和一段克制的双语简介。
-- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列；同一年份固定按博士后、博士生、硕转博、硕士生、已毕业、其他排序，再按当前语言显示名稳定排序。Studio 新增或编辑成员时必须填写 `enrollmentYear` 并从这六类中选择 `memberRole`，两个字段均不在前台卡片展示，只用于排序；卡片继续展示双语姓名、身份展示文案、2–3 句双语简介、授权公开头像与可选个人主页/邮箱。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
+- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列；同一年份固定按博士后、博士生、硕转博、硕士生、已毕业、其他排序，再按当前语言显示名稳定排序。Studio 新增或编辑成员时必须填写 `enrollmentYear` 并从这六类中选择 `memberRole`，两个字段均不在前台卡片展示，只用于排序；身份展示文案默认由模板自动生成，选择“其他”时才手写中英文。卡片继续展示双语姓名、身份展示文案、2–3 句双语简介与授权公开头像，不再提供个人主页/公开邮箱字段。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
 - AI 问答：导航名称固定为“AI 问答”；接入服务端大模型，回答导师或课题组的公开信息问题，并落实公开知识库、答案来源、无证据时拒答、按 IP/每日总量限流、费用上限和异常停用。
 
 ### 2026-07-27 第二轮页面与功能要求
@@ -288,7 +288,7 @@ tests/
 
 ## 后续优先事项
 
-1. **发布 People 后台字段 — 已完成**：2026-08-23 已部署新版 Sanity Studio，远端 production Schema 包含 `enrollmentYear`、长文本 `bio`、`profileUrl`、`publicEmail`。不得在资料未确认前批量补写成员事实。
+1. **发布 People 后台字段 — 已完成**：2026-08-23 已部署新版 Sanity Studio，远端 production Schema 包含 `enrollmentYear`、长文本 `bio` 与公开头像字段；个人主页/公开邮箱已在 2026-09-08 的 Schema 清理中移除。不得在资料未确认前批量补写成员事实。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
 4. **团队成员重构与资料补全（Prompt 3，已完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，Studio Schema 已部署，缺失字段降级为占位文案，AI 知识不读取占位文案。2026-09-02 已补齐全部9位成员的年份、双语简介与授权头像；1:1头像前端改动已发布。
@@ -854,3 +854,11 @@ npm run studio:build
 - 用户补充并确认同年排序为：博士后、博士生、硕转博、硕士生、已毕业、其他；Sanity 新增/编辑成员时六类 `memberRole` 均为必选，前台不展示该字段。
 - 9 位已发布 Person 已按现有公开身份回填：许家奇=博士后，夏梦雨/许明雪/马玲=博士生，马郡阳/朱桃林/肖琳霏/李子健=硕士生，唐陆禛=已毕业；未修改其他字段。完整备份位于 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-member-roles-20260908.tar.gz`。
 - 最终代码提交 `81b2ff5 Finalize six-role People ordering` 已推送 GitHub `main`；Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。Vercel Production 部署 `dpl_CAAbZ45vzSMxQUJkyimna927U9yk` 状态 Ready，正式别名 `https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 均已绑定；中英文 People/AI 页面返回 HTTP 200，页面顺序与六类规则一致。
+
+### 2026-09-08 - Person Studio 填写体验与未知字段清理（本地完成）
+
+- Person Schema 的“身份/状态”改为模板/其他双模式：模板模式根据“入学年份 + 成员身份”自动生成“北京大学教育学院XXXX级XXX”及预设英文，不再要求手写英文；选择“其他”后显示中英文手写框，并要求两种语言同时填写。新增 `positionMode` 控制字段，`position` 使用 `PersonPositionInput` 自定义输入。
+- “入学年份”说明简化为“必填，用于成员排序”，并使用年份下拉输入（1900–2100）；“成员身份”使用六类排序下拉。旧“同年人工排序值”更名为“排列顺序”，改为只读，说明由年份与身份自动生成，前台仍不展示。
+- 移除 Person Schema、公开查询类型、People 卡片和头像更新脚本中的 `profileUrl`/`publicEmail`；个人主页和公开邮箱不再出现在团队成员填写页面或前台。个人简介说明中的“待本人确认后补全”已删除。
+- 定位并清理 Production `person-004`、`person-007` 的 `_system` 未知字段；清理前完整备份位于 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-person-schema-cleanup-20260908.tar.gz`。清理后9条 Person 均无 `_system`、`profileUrl`、`publicEmail` 残留。
+- 验证：网站构建、Studio 构建、ESLint 与全量54项测试通过。本轮代码与 Schema 尚未提交、未部署 Studio/Vercel；Production 字段清理已通过已登录 Sanity CLI 完成。待用户确认后再部署 Studio，使后台新输入界面上线。

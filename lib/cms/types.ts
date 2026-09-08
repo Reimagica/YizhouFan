@@ -76,8 +76,6 @@ export type PublicPerson = {
   bioZh?: string;
   portraitUrl?: string;
   order?: number;
-  profileUrl?: string;
-  publicEmail?: string;
 };
 
 export type PublicCourse = {

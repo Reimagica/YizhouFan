@@ -18,7 +18,7 @@ if (mode === "backup" && !backupPath) throw new Error("PERSONS_BACKUP is require
 const client = getCliClient({apiVersion: "2025-02-19"});
 const docs = await client.fetch(`*[_type == "person"] | order(_id asc){
   _id, _type, _rev, _createdAt, _updatedAt, status, name, position,
-  enrollmentYear, bio, portrait, order, profileUrl, publicEmail, category,
+  enrollmentYear, bio, portrait, order, category,
   "portraitAsset": portrait.asset->{_id, url, mimeType, size, "width": metadata.dimensions.width, "height": metadata.dimensions.height}
 }`);
 const files = (await readdir(directory, {withFileTypes: true}))

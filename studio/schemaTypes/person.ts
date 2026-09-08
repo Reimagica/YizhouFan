@@ -1,4 +1,6 @@
 import {defineField, defineType} from "sanity";
+import {EnrollmentYearInput} from "../components/EnrollmentYearInput";
+import {PersonPositionInput} from "../components/PersonPositionInput";
 
 export const person = defineType({
   name: "person",
@@ -6,12 +8,17 @@ export const person = defineType({
   type: "document",
   fields: [
     defineField({name: "name", title: "姓名", type: "localizedString", validation: (rule) => rule.required()}),
-    defineField({name: "position", title: "身份展示文案", type: "localizedString", description: "前台显示的双语身份文案，如博士研究生；排序请使用下方“成员身份”。"}),
+    defineField({name: "positionMode", title: "身份/状态填写方式", type: "string", options: {list: [{title: "北京大学教育学院模板", value: "template"}, {title: "其他（中英文手写）", value: "other"}]}, initialValue: "template", validation: (rule) => rule.required()}),
+    defineField({name: "position", title: "身份/状态", type: "localizedString", description: "默认生成“北京大学教育学院XXXX级XXX”；选择“其他”后切换为中英文手写。", components: {input: PersonPositionInput}, validation: (rule) => rule.custom((value, context) => {
+      if (context.document?.positionMode !== "other") return true;
+      return value?.zh?.trim() && value?.en?.trim() ? true : "其他身份请同时填写中文和英文。";
+    })}),
     defineField({
       name: "enrollmentYear",
       title: "入学年份",
       type: "number",
-      description: "必填，用于成员列表按年份从近到远排序（如 2023）；该年份不在公开页面展示。",
+      description: "必填，用于成员排序",
+      components: {input: EnrollmentYearInput},
       validation: (rule) => rule.required().integer().min(1900).max(2100),
     }),
     defineField({
@@ -28,15 +35,12 @@ export const person = defineType({
           {title: "已毕业", value: "graduated"},
           {title: "其他", value: "other"},
         ],
-        layout: "radio",
       },
       validation: (rule) => rule.required().error("请选择成员身份。"),
     }),
-    defineField({name: "bio", title: "个人与研究简介", type: "localizedText", description: "2–3 句中英文简介，待本人确认后补全。"}),
+    defineField({name: "bio", title: "个人与研究简介", type: "localizedText", description: "2–3 句中英文简介。"}),
     defineField({name: "portrait", title: "授权公开头像", type: "image", options: {hotspot: true}}),
-    defineField({name: "order", title: "人工排序值（旧字段）", type: "number", hidden: true, description: "旧数据兼容字段，前台排序不再使用。", validation: (rule) => rule.integer().min(0)}),
-    defineField({name: "profileUrl", title: "个人主页（可选）", type: "url", description: "只有本人明确同意公开时才填写。"}),
-    defineField({name: "publicEmail", title: "公开邮箱（可选）", type: "string", description: "只有本人明确同意公开时才填写。", validation: (rule) => rule.email()}),
+    defineField({name: "order", title: "排列顺序", type: "number", readOnly: true, description: "按入学年份和成员身份自动生成，暂不可修改。", validation: (rule) => rule.integer().min(0)}),
     defineField({
       name: "category",
       title: "分类（旧字段，前台不再使用）",
