@@ -57,12 +57,13 @@ const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc
   )
 }`;
 
-const peopleQuery = `*[_type == "person" && status == "published"] | order(enrollmentYear desc, order asc, name.en asc) {
+const peopleQuery = `*[_type == "person" && status == "published"] | order(enrollmentYear desc, name.en asc) {
   "id": _id,
   "name": name.en,
   "nameZh": name.zh,
   "position": coalesce(position.en, position.zh),
   "positionZh": position.zh,
+  memberRole,
   enrollmentYear,
   "bio": bio.en,
   "bioZh": bio.zh,
@@ -228,10 +229,10 @@ export function fallbackProfile(lang: Language): PublicProfile {
     affiliation: content[lang].affiliation,
     email: "fyz@pku.edu.cn",
     bio: zh ? [
-      "范逸洲博士是北京大学教育学院助理教授、研究员，教育技术系副主任，并任莫纳什大学信息技术学院兼职研究员。",
+      "范逸洲是北京大学教育学院助理教授、研究员，教育技术系副主任，并任莫纳什大学信息技术学院兼职研究员。",
       "其研究围绕教育与人工智能、人机交互与协同、学习分析、元认知与自我调节学习、科研智能和模拟学习展开，关注学习过程测量、机制解释与智能干预在真实教育场景中的应用。",
     ] : [
-      "Dr. Yizhou Fan is an Assistant Professor and Research Fellow at the Graduate School of Education, Peking University, Deputy Director of the Department of Educational Technology, and an Adjunct Research Fellow at Monash University.",
+      "Yizhou Fan is an Assistant Professor and Research Fellow at the Graduate School of Education, Peking University, Deputy Director of the Department of Educational Technology, and an Adjunct Research Fellow at Monash University.",
       "His research spans AI in education, human-AI interaction and collaboration, learning analytics, metacognition and self-regulated learning, scientific intelligence, and simulated learning, connecting the measurement of learning processes with mechanism-building and intelligent interventions in authentic educational settings.",
     ],
     researchStatement: content[lang].heroBody,

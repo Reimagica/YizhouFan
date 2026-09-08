@@ -51,7 +51,7 @@ export function AskInterface({ lang }: { lang: Language }) {
 
   const examples = zh
     ? ["范老师主要研究什么？", "有哪些生成式 AI 与学习相关的代表成果？", "课题组关注哪些研究方向？"]
-    : ["What does Dr. Fan mainly research?", "Which publications focus on generative AI and learning?", "What does FanLearn Lab study?"];
+    : ["What does Yizhou Fan mainly research?", "Which publications focus on generative AI and learning?", "What research areas does the team focus on?"];
 
   async function submit(event: FormEvent) {
     event.preventDefault();

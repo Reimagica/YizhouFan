@@ -35,6 +35,24 @@ test("falls back safely when the model does not return JSON", () => {
   assert.deepEqual(answer.items, ["First supported point.", "Second supported point."]);
 });
 
+test("removes unsupported research-group names and personal honorifics", () => {
+  const chinese = guardAnswer(JSON.stringify({
+    status: "answered",
+    items: ["课题组（FanLearn Lab）关注范逸洲博士的研究方向。"],
+    topics: ["people"],
+    publicationIds: [],
+  }), "zh");
+  assert.deepEqual(chinese.items, ["课题组关注范逸洲老师的研究方向。"]);
+
+  const english = guardAnswer(JSON.stringify({
+    status: "answered",
+    items: ["FanLearn Lab studies topics connected with Dr. Yizhou Fan."],
+    topics: ["people"],
+    publicationIds: [],
+  }), "en");
+  assert.deepEqual(english.items, ["The research group studies topics connected with Yizhou Fan."]);
+});
+
 test("keeps only supported topics and bounded publication IDs", () => {
   const answer = guardAnswer(JSON.stringify({
     status: "answered",

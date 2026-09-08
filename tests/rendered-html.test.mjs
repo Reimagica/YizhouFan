@@ -249,6 +249,8 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   assert.equal(page.status, 200);
   const html = await page.text();
   assert.match(html, /Ask the AI assistant/);
+  assert.match(html, /What does Yizhou Fan mainly research/);
+  assert.doesNotMatch(html, /Dr\. Fan|FanLearn Lab/);
   assert.match(html, /Answers are based only on public material on this site/);
   assert.match(html, /This site does not save question or answer history/);
   assert.match(html, /Do not submit private or sensitive information/);
@@ -263,7 +265,7 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   const api = await request("/api/ask", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ question: "What does Dr. Fan research?", lang: "en" }),
+    body: JSON.stringify({ question: "What does Yizhou Fan research?", lang: "en" }),
   });
   assert.equal(api.status, 503);
   assert.match(await api.text(), /model key has not been configured/i);

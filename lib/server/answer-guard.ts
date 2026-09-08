@@ -13,10 +13,22 @@ const forcedClosings = [
   /(?:for )?more details[^.!?]*(?:public pages?|fyz@pku\.edu\.cn)[.!?]?/giu,
 ];
 
-function cleanText(value: unknown) {
+function normalizeNames(value: string, lang: Language) {
+  return value
+    .replace(/课题组\s*[（(]\s*FanLearn Lab\s*[）)]/giu, "课题组")
+    .replace(/\bthe\s+FanLearn Lab\b/giu, lang === "zh" ? "课题组" : "the research group")
+    .replace(/FanLearn Lab/giu, lang === "zh" ? "课题组" : "the research group")
+    .replace(/范逸洲博士/gu, "范逸洲老师")
+    .replace(/(?:博士范逸洲|范博士)/gu, "范逸洲老师")
+    .replace(/\bDr\.?\s+Yizhou Fan\b/giu, "Yizhou Fan")
+    .replace(/\bDr\.?\s+Fan\b/giu, "Yizhou Fan")
+    .replace(/(^|[.!?]\s+)the research group/gu, "$1The research group");
+}
+
+function cleanText(value: unknown, lang: Language) {
   let text = typeof value === "string" ? value : "";
   for (const pattern of forcedClosings) text = text.replace(pattern, "");
-  return text
+  return normalizeNames(text, lang)
     .replace(/```(?:json)?|```/giu, "")
     .replace(/\*+|__|`/gu, "")
     .replace(/^\s*(?:[-*•]|\d+[.)])\s*/u, "")
@@ -34,10 +46,10 @@ function truncate(value: string, lang: Language, chineseCharacters: number, engl
   return words.length <= englishWords ? value : `${words.slice(0, englishWords).join(" ").replace(/[,;:.!?\s]+$/u, "")}…`;
 }
 
-function fallbackItems(raw: string) {
-  const lines = raw.replace(/```(?:json)?|```/giu, "").split(/\r?\n/u).map(cleanText).filter(Boolean);
+function fallbackItems(raw: string, lang: Language) {
+  const lines = raw.replace(/```(?:json)?|```/giu, "").split(/\r?\n/u).map((item) => cleanText(item, lang)).filter(Boolean);
   if (lines.length > 1) return lines;
-  return cleanText(raw).split(/(?<=[。！？.!?])\s*/u).filter(Boolean);
+  return cleanText(raw, lang).split(/(?<=[。！？.!?])\s*/u).filter(Boolean);
 }
 
 export function guardAnswer(raw: string, lang: Language): GuardedAnswer {
@@ -55,21 +67,21 @@ export function guardAnswer(raw: string, lang: Language): GuardedAnswer {
     rawTopics = parsed.topics;
     rawPublicationIds = parsed.publicationIds;
   } catch {
-    values = fallbackItems(raw);
+    values = fallbackItems(raw, lang);
   }
 
   const items = values
-    .map(cleanText)
+    .map((item) => cleanText(item, lang))
     .filter(Boolean)
     .slice(0, 4)
     .map((item) => truncate(item, lang, 300, 150));
-  const note = truncate(cleanText(rawNote), lang, 90, 36);
+  const note = truncate(cleanText(rawNote, lang), lang, 90, 36);
   const allowedTopics = new Set(["profile", "teaching", "publications", "talks", "people"]);
   const topics = (Array.isArray(rawTopics) ? rawTopics : [])
     .filter((topic): topic is GuardedAnswer["topics"][number] => typeof topic === "string" && allowedTopics.has(topic))
     .slice(0, 4);
   const publicationIds = (Array.isArray(rawPublicationIds) ? rawPublicationIds : [])
-    .map(cleanText)
+    .map((id) => cleanText(id, lang))
     .filter(Boolean)
     .slice(0, 4)
     .map((id) => Array.from(id).slice(0, 180).join(""));

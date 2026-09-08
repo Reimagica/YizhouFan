@@ -225,15 +225,15 @@ export const talks = [
 ] as const;
 
 export const people = [
-  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后" },
-  { name: "Marine", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生" },
-  { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生" },
-  { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生" },
-  { name: "Zijian Li", nameZh: "李子健", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Zhu Taolin", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Linfei Xiao", nameZh: "肖琳霏", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Junyang Ma", nameZh: "马郡阳", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Luzhen Tang", nameZh: "唐陆禛", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生" },
+  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后", enrollmentYear: 2025 },
+  { name: "Marine", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },
+  { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2025 },
+  { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },
+  { name: "Zijian Li", nameZh: "李子健", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2024 },
+  { name: "Zhu Taolin", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2025 },
+  { name: "Linfei Xiao", nameZh: "肖琳霏", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2025 },
+  { name: "Junyang Ma", nameZh: "马郡阳", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2026 },
+  { name: "Luzhen Tang", nameZh: "唐陆禛", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生", memberRole: "graduated", enrollmentYear: 2023 },
 ] as const;
 
 export const content = {
