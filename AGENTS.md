@@ -870,9 +870,9 @@ npm run studio:build
 - 自定义输入现读取 Sanity `readOnly` 状态：只读文档不再自动回填，也不会响应手写输入事件；可编辑草稿/新文档仍保留模板生成能力。
 - 网站构建、Studio 构建、ESLint 与全量54项测试均通过；本地修复尚未提交、推送或重新部署，待确认后执行。
 
-### 2026-09-08 - 身份状态改为“自动填入后可编辑”（本地待部署）
+### 2026-09-08 - 身份状态改为“自动填入后可编辑”（已部署）
 
 - 根据用户最新确认，移除前台可见的“身份/状态填写方式”；字段顺序调整为“入学年份 → 成员身份 → 身份/状态”。身份/状态始终显示中文和英文输入框，满足年份与身份后自动填入预设内容。
 - 自动填入值记录在组件内部；用户直接修改任一语言后，后续年份或身份变化不再覆盖手写内容。只读文档继续禁止任何自动或手动补丁。
 - `positionMode` 作为隐藏只读兼容字段保留，仅用于识别历史数据、避免 Unknown field found，不再显示或参与编辑。
-- 网站构建、Studio 构建、ESLint 与全量54项测试均通过；本轮修改尚未提交、推送或重新部署。
+- 网站构建、Studio 构建、ESLint 与全量54项测试均通过；代码以提交 `f75236a Make People status fields editable` 推送 GitHub `main`，Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。Vercel Production 自动部署 `dpl_711qyhJ7yifVLKk9st8hE6rFjJFR` 状态 Ready，`https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 别名均已绑定。
