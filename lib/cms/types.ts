@@ -70,7 +70,7 @@ export type PublicPerson = {
   nameZh: string;
   position?: string;
   positionZh?: string;
-  memberRole?: "master" | "phd" | "masterToPhd" | "graduated";
+  memberRole?: "postdoc" | "phd" | "masterToPhd" | "master" | "graduated" | "other";
   enrollmentYear?: number;
   bio?: string;
   bioZh?: string;

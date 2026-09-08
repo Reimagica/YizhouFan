@@ -225,7 +225,7 @@ export const talks = [
 ] as const;
 
 export const people = [
-  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后", enrollmentYear: 2025 },
+  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后", memberRole: "postdoc", enrollmentYear: 2025 },
   { name: "Marine", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },
   { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2025 },
   { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },

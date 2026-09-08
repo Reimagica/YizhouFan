@@ -18,21 +18,19 @@ export const person = defineType({
       name: "memberRole",
       title: "成员身份",
       type: "string",
-      description: "新增成员必填；同一入学年份内按博士生、硕转博、硕士生、已毕业排序。既有博士后记录无需选择。",
+      description: "必填，仅用于排序，不在前台展示；同一入学年份内按博士后、博士生、硕转博、硕士生、已毕业、其他排序。",
       options: {
         list: [
-          {title: "硕士生", value: "master"},
+          {title: "博士后", value: "postdoc"},
           {title: "博士生", value: "phd"},
           {title: "硕转博", value: "masterToPhd"},
+          {title: "硕士生", value: "master"},
           {title: "已毕业", value: "graduated"},
+          {title: "其他", value: "other"},
         ],
         layout: "radio",
       },
-      validation: (rule) => rule.custom((value, context) => {
-        if (value) return true;
-        if (context.document?.category === "postdoc") return true;
-        return "请选择成员身份。";
-      }),
+      validation: (rule) => rule.required().error("请选择成员身份。"),
     }),
     defineField({name: "bio", title: "个人与研究简介", type: "localizedText", description: "2–3 句中英文简介，待本人确认后补全。"}),
     defineField({name: "portrait", title: "授权公开头像", type: "image", options: {hotspot: true}}),

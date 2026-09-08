@@ -20,18 +20,22 @@ test("sorts members by year descending, then role priority, ignoring legacy manu
   ]);
 });
 
-test("uses PhD, master's-to-PhD, master's, graduated order within one year", () => {
+test("uses postdoc, PhD, master's-to-PhD, master's, graduated, other order within one year", () => {
   const sameYear = [
+    {id: "other", name: "F", nameZh: "己", memberRole: "other", enrollmentYear: 2026},
     {id: "graduated", name: "A", nameZh: "甲", memberRole: "graduated", enrollmentYear: 2026},
     {id: "master", name: "B", nameZh: "乙", memberRole: "master", enrollmentYear: 2026},
     {id: "master-to-phd", name: "C", nameZh: "丙", memberRole: "masterToPhd", enrollmentYear: 2026},
     {id: "phd", name: "D", nameZh: "丁", memberRole: "phd", enrollmentYear: 2026},
+    {id: "postdoc", name: "E", nameZh: "戊", memberRole: "postdoc", enrollmentYear: 2026},
   ];
   assert.deepEqual(sortPeople(sameYear, "zh").map((person) => person.id), [
+    "postdoc",
     "phd",
     "master-to-phd",
     "master",
     "graduated",
+    "other",
   ]);
 });
 
@@ -42,7 +46,7 @@ test("infers legacy role text until Sanity memberRole values are backfilled", ()
     {id: "phd", name: "C", nameZh: "丙", position: "Ph.D. student", enrollmentYear: 2025},
     {id: "postdoc", name: "D", nameZh: "丁", positionZh: "博雅博士后", enrollmentYear: 2025},
   ];
-  assert.deepEqual(sortPeople(legacy, "zh").map((person) => person.id), ["phd", "master", "graduated", "postdoc"]);
+  assert.deepEqual(sortPeople(legacy, "zh").map((person) => person.id), ["postdoc", "phd", "master", "graduated"]);
 });
 
 test("uses the active-language name as the final stable tie-breaker", () => {
