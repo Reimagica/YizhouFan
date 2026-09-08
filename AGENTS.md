@@ -855,11 +855,24 @@ npm run studio:build
 - 9 位已发布 Person 已按现有公开身份回填：许家奇=博士后，夏梦雨/许明雪/马玲=博士生，马郡阳/朱桃林/肖琳霏/李子健=硕士生，唐陆禛=已毕业；未修改其他字段。完整备份位于 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-member-roles-20260908.tar.gz`。
 - 最终代码提交 `81b2ff5 Finalize six-role People ordering` 已推送 GitHub `main`；Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。Vercel Production 部署 `dpl_CAAbZ45vzSMxQUJkyimna927U9yk` 状态 Ready，正式别名 `https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 均已绑定；中英文 People/AI 页面返回 HTTP 200，页面顺序与六类规则一致。
 
-### 2026-09-08 - Person Studio 填写体验与未知字段清理（已部署）
+### 2026-09-08 - Person Studio 填写体验与未知字段清理（已部署，后续交互调整待部署）
 
-- Person Schema 的“身份/状态”改为模板/其他双模式：模板模式根据“入学年份 + 成员身份”自动生成“北京大学教育学院XXXX级XXX”及预设英文，不再要求手写英文；选择“其他”后显示中英文手写框，并要求两种语言同时填写。新增 `positionMode` 控制字段，`position` 使用 `PersonPositionInput` 自定义输入。
+- Person Schema 的“身份/状态”最初改为模板/其他双模式：模板模式根据“入学年份 + 成员身份”自动生成“北京大学教育学院XXXX级XXX”及预设英文，选择“其他”后显示中英文手写框；该版本的 `positionMode` 仅作为隐藏兼容字段保留，`position` 使用 `PersonPositionInput` 自定义输入。
 - “入学年份”说明简化为“必填，用于成员排序”，并使用年份下拉输入（1900–2100）；“成员身份”使用六类排序下拉。旧“同年人工排序值”更名为“排列顺序”，改为只读，说明由年份与身份自动生成，前台仍不展示。
 - 移除 Person Schema、公开查询类型、People 卡片和头像更新脚本中的 `profileUrl`/`publicEmail`；个人主页和公开邮箱不再出现在团队成员填写页面或前台。个人简介说明中的“待本人确认后补全”已删除。
 - 定位并清理 Production `person-004`、`person-007` 的 `_system` 未知字段；清理前完整备份位于 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-person-schema-cleanup-20260908.tar.gz`。清理后9条 Person 均无 `_system`、`profileUrl`、`publicEmail` 残留。
 - 验证：网站构建、Studio 构建、ESLint 与全量54项测试通过。Production 字段清理已通过已登录 Sanity CLI 完成。
 - 用户确认“推送部署”后，代码以提交 `b371edb Improve Sanity People editing form` 推送 GitHub `main`；Studio 已重新部署至 `https://yizhoufan.sanity.studio/`。Vercel 自动生产部署 `dpl_7ZKibpG3x7MuDT5fXfmCSLNt5kdw` 状态 Ready，`https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 均已绑定；线上 `/zh/people` 返回 200 且不再包含个人主页/公开邮箱字段。
+
+### 2026-09-08 - 修复身份模板在只读文档上的回填异常（本地待部署）
+
+- 用户反馈打开团队成员时出现 `Attempted to patch a read-only document`。原因是 `PersonPositionInput` 在 Studio 仅查看已发布文档时仍通过 `useEffect` 自动发出 `onChange` 补丁。
+- 自定义输入现读取 Sanity `readOnly` 状态：只读文档不再自动回填，也不会响应手写输入事件；可编辑草稿/新文档仍保留模板生成能力。
+- 网站构建、Studio 构建、ESLint 与全量54项测试均通过；本地修复尚未提交、推送或重新部署，待确认后执行。
+
+### 2026-09-08 - 身份状态改为“自动填入后可编辑”（本地待部署）
+
+- 根据用户最新确认，移除前台可见的“身份/状态填写方式”；字段顺序调整为“入学年份 → 成员身份 → 身份/状态”。身份/状态始终显示中文和英文输入框，满足年份与身份后自动填入预设内容。
+- 自动填入值记录在组件内部；用户直接修改任一语言后，后续年份或身份变化不再覆盖手写内容。只读文档继续禁止任何自动或手动补丁。
+- `positionMode` 作为隐藏只读兼容字段保留，仅用于识别历史数据、避免 Unknown field found，不再显示或参与编辑。
+- 网站构建、Studio 构建、ESLint 与全量54项测试均通过；本轮修改尚未提交、推送或重新部署。

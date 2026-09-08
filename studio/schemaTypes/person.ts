@@ -8,11 +8,6 @@ export const person = defineType({
   type: "document",
   fields: [
     defineField({name: "name", title: "姓名", type: "localizedString", validation: (rule) => rule.required()}),
-    defineField({name: "positionMode", title: "身份/状态填写方式", type: "string", options: {list: [{title: "北京大学教育学院模板", value: "template"}, {title: "其他（中英文手写）", value: "other"}]}, initialValue: "template", validation: (rule) => rule.required()}),
-    defineField({name: "position", title: "身份/状态", type: "localizedString", description: "默认生成“北京大学教育学院XXXX级XXX”；选择“其他”后切换为中英文手写。", components: {input: PersonPositionInput}, validation: (rule) => rule.custom((value, context) => {
-      if (context.document?.positionMode !== "other") return true;
-      return value?.zh?.trim() && value?.en?.trim() ? true : "其他身份请同时填写中文和英文。";
-    })}),
     defineField({
       name: "enrollmentYear",
       title: "入学年份",
@@ -38,6 +33,10 @@ export const person = defineType({
       },
       validation: (rule) => rule.required().error("请选择成员身份。"),
     }),
+    defineField({name: "position", title: "身份/状态", type: "localizedString", description: "根据入学年份和成员身份自动填入，可自行修改中文和英文内容。", components: {input: PersonPositionInput}, validation: (rule) => rule.custom((value) => value?.zh?.trim() && value?.en?.trim() ? true : "请填写中文和英文身份/状态。")}),
+    // Legacy drafts may still contain this field from the previous two-mode editor.
+    // Keep it hidden so Sanity recognizes the data without exposing the old control.
+    defineField({name: "positionMode", type: "string", hidden: true, readOnly: true}),
     defineField({name: "bio", title: "个人与研究简介", type: "localizedText", description: "2–3 句中英文简介。"}),
     defineField({name: "portrait", title: "授权公开头像", type: "image", options: {hotspot: true}}),
     defineField({name: "order", title: "排列顺序", type: "number", readOnly: true, description: "按入学年份和成员身份自动生成，暂不可修改。", validation: (rule) => rule.integer().min(0)}),
