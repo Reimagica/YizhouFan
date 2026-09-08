@@ -45,7 +45,7 @@ export function PortableContent({blocks, lang}: {blocks?: PortableBlock[]; lang:
         const sourceUrl = safeUrl(block.sourceUrl);
         return <figure key={block._key}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={block.imageUrl} alt={(zh ? block.alt?.zh : block.alt?.en) ?? block.alt?.zh ?? block.alt?.en ?? ""} />
+          <img loading="lazy" decoding="async" src={block.imageUrl} alt={(zh ? block.alt?.zh : block.alt?.en) ?? block.alt?.zh ?? block.alt?.en ?? ""} />
           <figcaption>{zh ? block.caption?.zh : block.caption?.en}{block.credit && <> · {sourceUrl ? <a href={sourceUrl} target="_blank" rel="noreferrer">{block.credit}</a> : block.credit}</>}</figcaption>
         </figure>;
       }

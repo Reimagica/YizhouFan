@@ -3,6 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { content, isLanguage, profileLinks, scholarSnapshot } from "../../lib/content";
 import { getProfile, getPublications } from "../../lib/cms/content";
+import { localizedMetadata } from "../../lib/metadata";
+
+export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
+  const {lang} = await params;
+  if (!isLanguage(lang)) return {};
+  return localizedMetadata(lang, "", "Yizhou Fan", "范逸洲", "Academic profile, research, publications, teaching, talks, and people.", "范逸洲个人学术主页，介绍研究、成果、教学、报告与团队成员。");
+}
 
 function displayPeriod(period: string, zh: boolean) {
   const normalized = period.replace(/(\d{4})-(?=\d{4}|present)/gi, "$1–");

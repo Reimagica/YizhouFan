@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-05 People 9位成员资料均已写入 Sanity Production；9张成员头像已按姓名更新至 Sanity，马郡阳已使用最新授权头像并补充最终版中英文简介，唐陆禛入学年份修正为2023。Talks 日期横排、Publications 年份折叠与筛选栏滚动、全站标题说明移除、机构页脚、People 年份后台必填但前台隐藏、AI 问答一体化聊天面板及 Studio 成果入口分组已由提交 `682031d` 推送 GitHub `main`；新版 Studio 已部署至 `https://yizhoufan.sanity.studio/`。Google Scholar 每日同步保持上线；`yizhoufan.com` 仍待阿里云 DNS 与 HTTPS 验收 |
+| 当前阶段 | 2026-09-08 上线前内容、隐私、SEO、可访问性及数据模型修复已部署到 Vercel Production；Sanity 写入令牌和内容刷新 Webhook secret 已轮换，Vercel Hobby 零美元硬上限与默认费用告警已核对。People 9位成员资料与头像完整，Google Scholar 每日同步保持上线；DeepSeek、Upstash 服务商侧最终凭据轮换及 `yizhoufan.com` 阿里云 DNS/HTTPS 验收仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-05 成员头像更新后共有 107 个 Asset（89 file、18 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -138,8 +138,8 @@ Sanity Asset CDN
 
 尚未完成：
 
-1. 线上内容刷新 Webhook 的过滤器需确认包含 `course`；新版 Teaching 页面已上线，Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
-2. `yizhoufan.com` 已于 2026-08-23 绑定到 Vercel 项目，阿里云 DNS 当前仍无 apex/`www` 解析；需写入 Vercel `domains verify` 返回的两条 apex A 记录并完成 HTTPS 验收。浏览器端真实 AI 问答验收、费用告警/硬上限核对，以及对曾暴露凭据的轮换仍待完成。
+1. 内容刷新 Webhook 过滤器已确认包含 `course`；Profile 内遗留的旧 `courses` 数组可在备份后另行清理。
+2. `yizhoufan.com` 已于 2026-08-23 绑定到 Vercel 项目，阿里云 DNS 当前仍无 apex/`www` 解析；需写入 Vercel `domains verify` 返回的两条 apex A 记录并完成 HTTPS 验收。浏览器端额度读取与 AI 可用状态已验收，Vercel Hobby 零美元硬上限和默认告警已核对；Sanity 凭据已轮换，DeepSeek、Upstash 服务商侧最终凭据仍待轮换。
 
 未经用户明确指示，不得代为 Git commit/push、部署 Vercel/Studio、修改域名或发布尚未人工核对的批量成果草稿。成果模块的 8 条最终发布已由用户明确指示完成。
 
@@ -291,7 +291,7 @@ tests/
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
 4. **团队成员重构与资料补全（Prompt 3，已完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，Studio Schema 已部署，缺失字段降级为占位文案，AI 知识不读取占位文案。2026-09-02 已补齐全部9位成员的年份、双语简介与授权头像；1:1头像前端改动已发布。
-5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；另需在浏览器完成 AI 问答和 Upstash 键验证，核对费用告警/硬上限，并轮换任何曾在对话中暴露的 DeepSeek/Redis 凭据。
+5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；Vercel Hobby 零美元硬上限、默认告警与浏览器端额度读取已核对，Sanity 凭据已轮换，仍需轮换曾暴露的 DeepSeek/Upstash 服务商侧最终凭据并重新部署验证。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
 7. **Scholar 指标自动同步 — 已完成并上线**：SerpApi、Vercel Cron、Production 密钥、异常保护与成功/unchanged 缓存刷新均已上线；首次指标经 SerpApi 与 Google Scholar 官方主页双重核对为 3,962 / 30 / 46（2026-08-25），Sanity、Cron 200 与英文首页均已验收。
 
@@ -588,7 +588,7 @@ npm run studio:build
 - `studio/schemaTypes/talk.ts`：`date` 增加 `options.dateFormat: "YYYY-MM"`（只精确到年月，不填具体日）；新增 `displayOrder`（同年月手动排序，白名单 1–11 预填）；`type` 改 `hidden: true` 并标注为旧数据兼容字段。
 - `lib/cms/types.ts`：`PublicTalk.type` 改可选，新增 `displayOrder?`。
 - `lib/cms/content.ts`：talkQuery 排序改 `order(date desc, displayOrder asc)`、投影新增 `displayOrder`、移除 `type`；回退 `fallbackTalkRows` 使用稳定 `item.id`、补 `displayOrder`、移除 `type`。
-- `lib/content.ts`：回退 talks 改为 11 条白名单（id + displayOrder 1–11 + 点分日期 "2026.07"，无 type），题名逐字保留（含 "selfregulated"、"The University College of London"）。
+- `lib/content.ts`：回退 talks 改为 11 条白名单（id + displayOrder 1–11 + 点分日期 "2026.07"，无 type），题名逐字保留（含 "selfregulated"）；主办方名称已按最新校对更新。
 - `scripts/generate-sanity-seed.mjs`：talkDocuments 用 `item.id`、`item.date.replace(".", "-")`（不加 "-01"）、`displayOrder`，移除 `type`。
 - `components/TalkExplorer.tsx`：移除 typeLabels/localizedType/type 状态/类型筛选组/卡片 type-pill；搜索占位改为 "Enter a title or host" / "输入报告题目或主办方"；卡片 key 改用稳定 `talk.id`；无 slidesUrl 时不渲染禁用占位（只显示 View details）。
 - `app/[lang]/talks/page.tsx`：lead 移除"与报告类型/and talk type"，"slides"→"materials"；标题/eyebrow 不变（Talks/学术报告）。
@@ -606,7 +606,7 @@ npm run studio:build
   1. talk-2026-07-bavaria — 2026-07 — A Metacognitive Approach to Learning and Performance in Human-AI Interaction — Bavarian Learning Analytics Network and University of Hagen, Germany
   2. talk-002 — 2026-04 — Shifting From Product-Oriented to Process-Oriented Assessment with Learning Analytics — The 6th Workshop on Learning Analytics and Assessment (LAK26), Norway
   3. talk-003 — 2026-04 — Beware of Metacognitive Laziness in Learning with GenAI — The University of California, Riverside, USA
-  4. talk-004 — 2026-02 — Revealing and Avoiding Metacognitive Laziness while Learning with GenAI — The University College of London, UK
+  4. talk-004 — 2026-02 — Revealing and Avoiding Metacognitive Laziness while Learning with GenAI — University College London (UCL), UK
   5. talk-2025-12-new-liberal-arts — 2025-12 — Learning with GenAI to solve real-world and high-challenge tasks — 1st International Conference on New Liberal Arts, Hong Kong, China
   6. talk-005 — 2025-11 — Designing, scaffolding, and coding complex human-AI interactions and collaboration processes — The University of Hong Kong, Hong Kong, China
   7. talk-006 — 2025-11 — Learning with GenAI: Beware the Trap of Metacognitive Laziness — International Conference on Intelligent Education and Research, Wuhan, China
@@ -800,3 +800,21 @@ npm run studio:build
 - 对照 `E:/科研/课题组网站/课题组网站记录/成员照片/个人信息汇总.docx` 与 Sanity Production 已发布 Person 文档（排除马郡阳）逐字段核验；8位成员姓名均对应一致，6位双语简介完全一致。李子健英文简介保留 Sanity 当前规范化表达，肖琳霏中文简介保留现有末尾句号；唐陆禛继续使用“2026届硕士毕业生”口径并保留后台 `enrollmentYear=2023`。
 - 根据用户确认，将 `person-001`（许家奇）的 `position.zh` 更新为“博士后”、`position.en` 更新为“postdoc”；`enrollmentYear=2025`、双语简介、头像和发布状态未修改。写入前备份9份 Person 文档至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-jiaqi-position-20260905.ndjson.gz`；写入后查询确认文档仍为 `published`，Vercel `/en/people` 与 `/zh/people` 均返回 HTTP 200 并命中对应职位文本。
 - 本轮只修改 Sanity Production 内容与本文件，未修改代码、未部署、未提交或推送 GitHub；其余核验中的文字与字段差异按用户确认保持现状。
+
+### 2026-09-07 - 上线前内容与隐私收尾修复
+
+- 按最新中英文简历核对 Production Profile：教育技术系副主任、2026 UCL Knowledge Lab 访问学者、2023–2027 阿里巴巴公益基金会项目及 2023–2026 奖项/基金信息已保持为最新公开口径；本轮不把私人简历文件写入仓库、公开资源或 AI 知识库。
+- `publication-008` 写入 `contributorRole=editor`，Studio Publication Schema 增加作者/主编字段，BibTeX 对编辑卷输出 `editor`，前台显示“主编 / Edited by”并保留原始来源；迁移事务为 `C9ancIaxlIcgrUEsCqihUa`。
+- `course-academic-writing-ai` 修正为公开 MOOC 并写入课程链接；`talk-004` 主办方统一为 `University College London (UCL), UK`。旧回退数据与历史记录中的错误名称同步校正。
+- AI 问答页面补充 DeepSeek 处理方、无聊天历史留存、匿名 Cookie/网络标识仅用于滥用防护及勿提交敏感信息的双语说明；服务端继续保持一年期 HttpOnly 匿名 Cookie、分层限流与公开额度口径，不把问题正文写入限流键。
+- Sanity Production 删除已停用的 `YizhouFan content automation` webhook，仅保留 `YizhouFan content revalidation`；未删除任何文档或资产。
+- 修正根路由布局与双语 HTML `lang`、全站 SEO canonical/hreflang、robots/sitemap、报告详情页元数据、跳过链接与活动导航语义、PDF 下载参数及公开富文本图片懒加载；Sanity 查询失败时不再静默回退到过期静态数据。
+- 验证：Next.js Production build 通过，Sanity Studio build 通过，ESLint 通过，`npm test` 46/46 通过；本轮未 Git commit/push、未部署 Vercel/Studio、未修改 DNS。
+
+### 2026-09-08 - 生产部署、凭据与 AI 提示收尾
+
+- 将上线前修复后的当前工作区部署到 Vercel Production；部署 `dpl_2uyFGKjBStxEAVJm4fBZY3XErsTm` 达到 Ready，`https://yizhoufan.vercel.app` 及既有正式域名别名均已绑定。线上核验英文个人页、中文成果页、AI 问答页、sitemap 与只读问答额度接口正常；自定义域名 DNS 仍按既有待办处理。
+- 轮换 Sanity Production 写入令牌与内容刷新 Webhook secret，删除旧令牌、临时令牌及旧 Webhook；当前 revalidation filter 已包含 `profile`、`publication`、`talk`、`person`、`course`。DeepSeek 与 Upstash 服务商侧最终凭据尚未轮换，旧凭据仍有效，继续列为生产安全待办。
+- 核对 Vercel 团队为有效 Hobby 方案，无付费承诺；该方案没有付费超额，达到包含额度后限制服务，构成零美元硬上限。默认中高等级用量告警已启用并自动通知所有者；自定义 Spend Management 仅适用于 Pro，无需在当前方案另设预算。
+- `.vercelignore` 增加交接压缩包、DOCX、`tmp/` 与 `private/`，避免本地材料进入后续部署包；未删除任何本地文件。
+- 按用户最终展示口径精简 AI 输入区说明：正常可用时只保留“本浏览器今日剩余 X / 8 次提问。每日额度于北京时间 08:00 重置。”与“回答仅基于本站公开材料，本站不保存问答历史。请勿提交私人或敏感信息。”，英文页面同步保持同义信息；服务端匿名 Cookie、分层限流与失败关闭机制不变。

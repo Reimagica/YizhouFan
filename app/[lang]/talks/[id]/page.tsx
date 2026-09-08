@@ -3,6 +3,19 @@ import Link from "next/link";
 import {PortableContent} from "../../../../components/PortableContent";
 import {isLanguage} from "../../../../lib/content";
 import {getTalkById} from "../../../../lib/cms/content";
+import {localizedMetadata} from "../../../../lib/metadata";
+
+export async function generateMetadata({params}: {params: Promise<{lang: string; id: string}>}) {
+  const {lang, id} = await params;
+  if (!isLanguage(lang)) return {};
+  const talk = await getTalkById(decodeURIComponent(id));
+  if (!talk || talk.attachments?.length || talk.slidesUrl) return {};
+  const titleEn = talk.title || talk.titleZh || "Talk";
+  const titleZh = talk.titleZh || talk.title || "学术报告";
+  const descriptionEn = talk.summary || talk.summaryZh || talk.host || talk.hostZh || "Academic presentation details.";
+  const descriptionZh = talk.summaryZh || talk.summary || talk.hostZh || talk.host || "学术报告详情。";
+  return localizedMetadata(lang, `/talks/${encodeURIComponent(id)}`, titleEn, titleZh, descriptionEn, descriptionZh);
+}
 
 export default async function TalkDetailPage({params}: {params: Promise<{lang: string; id: string}>}) {
   const {lang, id} = await params;

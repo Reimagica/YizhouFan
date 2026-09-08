@@ -130,11 +130,11 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
                   <time>{publication.year}</time>
                 </div>
                 <h2>{title}</h2>
-                <p className="result-card__authors">{publication.authors}</p>
+                <p className="result-card__authors">{publication.contributorRole === "editor" ? (zh ? "主编：" : "Edited by: ") : ""}{publication.authors}</p>
                 <div className="result-card__actions">
                   {sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer">{zh ? "查看原文" : "View source"} ↗</a>}
                   {pdfUrl ? (
-                    <a href={pdfUrl} download>{zh ? "下载 PDF" : "Download PDF"} ↓</a>
+                    <a href={`${pdfUrl}${pdfUrl.includes("?") ? "&" : "?"}dl=`} download>{zh ? "下载 PDF" : "Download PDF"} ↓</a>
                   ) : (
                     <span className="disabled-action" title={zh ? "公开版本待确认" : "Public version pending"}>{zh ? "PDF 待补" : "PDF pending"}</span>
                   )}

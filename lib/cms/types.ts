@@ -2,6 +2,7 @@ export type PublicPublication = {
   id: string;
   year: number;
   kind: string;
+  contributorRole?: "author" | "editor";
   title: string;
   titleZh?: string;
   authors: string;

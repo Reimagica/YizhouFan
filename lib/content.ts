@@ -98,6 +98,7 @@ export const publications = [
     title:
       "Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us",
     authors: "Yizhou Fan",
+    contributorRole: "editor",
     venue: "Routledge",
     featured: true,
     sourceUrl: "https://doi.org/10.4324/9781003632146",
@@ -170,7 +171,7 @@ export const talks = [
     date: "2026.02",
     displayOrder: 4,
     title: "Revealing and Avoiding Metacognitive Laziness while Learning with GenAI",
-    host: "The University College of London, UK",
+    host: "University College London (UCL), UK",
   },
   {
     id: "talk-2025-12-new-liberal-arts",
@@ -225,14 +226,14 @@ export const talks = [
 
 export const people = [
   { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后" },
-  { name: "Mengyu Xia", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生" },
+  { name: "Marine", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生" },
   { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生" },
   { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生" },
   { name: "Zijian Li", nameZh: "李子健", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Taolin Zhu", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生" },
+  { name: "Zhu Taolin", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生" },
   { name: "Linfei Xiao", nameZh: "肖琳霏", position: "Master’s student", positionZh: "硕士研究生" },
   { name: "Junyang Ma", nameZh: "马郡阳", position: "Master’s student", positionZh: "硕士研究生" },
-  { name: "Luzhen Tang", nameZh: "唐陆稹", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生" },
+  { name: "Luzhen Tang", nameZh: "唐陆禛", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生" },
 ] as const;
 
 export const content = {

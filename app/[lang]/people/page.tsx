@@ -3,6 +3,13 @@ import { PeopleDirectory } from "../../../components/PeopleDirectory";
 import { PageIntro } from "../../../components/SiteShell";
 import { isLanguage } from "../../../lib/content";
 import { getPeople } from "../../../lib/cms/content";
+import { localizedMetadata } from "../../../lib/metadata";
+
+export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
+  const {lang} = await params;
+  if (!isLanguage(lang)) return {};
+  return localizedMetadata(lang, "/people", "People", "团队成员", "People and researchers connected with the lab.", "课题组成员与研究人员简介。");
+}
 
 export default async function PeoplePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;

@@ -33,12 +33,12 @@ export async function sanityQuery<T>(query: string, params: Record<string, unkno
     });
     if (!response.ok) {
       console.error("Sanity query failed", response.status);
-      return undefined;
+      throw new Error(`Sanity query failed with ${response.status}`);
     }
     const payload = (await response.json()) as { result?: T };
     return payload.result;
   } catch (error) {
     console.error("Sanity query failed", error instanceof Error ? error.message : "unknown error");
-    return undefined;
+    throw error;
   }
 }

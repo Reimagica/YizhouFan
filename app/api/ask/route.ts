@@ -19,9 +19,9 @@ function cookieValue(request: Request, name: string) {
 }
 
 function clientAddress(request: Request) {
-  return request.headers.get("cf-connecting-ip")
-    ?? request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim()
+  return request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim()
     ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? request.headers.get("cf-connecting-ip")
     ?? request.headers.get("x-real-ip")
     ?? "local";
 }
@@ -130,6 +130,7 @@ Return valid JSON only, with this shape: {"status":"answered"|"insufficient","it
 - Use plain text only: no Markdown, asterisks, headings, URLs, citations, or repeated conclusion.
 - topics must list every site section materially used by the answer: profile, teaching, publications, talks, or people. Course questions belong to teaching, not profile.
 - When answering about a publication or book, state its exact complete title from PUBLICATIONS before describing it; never replace the title with a generic phrase such as "a 2025 paper" or "a book on generative AI".
+- When PUBLICATIONS says a work is an edited volume, call it an edited volume or 主编著作 and identify the editor; do not call it a monograph or ordinary authored book.
 - If an item names, describes, or recommends a publication, include its exact ID from PUBLICATIONS in publicationIds. Never invent an ID or URL. Otherwise return an empty array.
 - Use status insufficient when the evidence cannot support a reliable answer. State only what is missing; do not guess.
 - Do not automatically append contact advice or an email address. Mention the public work email only when the visitor explicitly asks how to make contact.

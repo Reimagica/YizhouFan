@@ -9,7 +9,7 @@ export function publicationToBibTeX(publication: PublicPublication): string {
   const lines = [
     `@${entryType}{${key}`,
     `  title = {${publication.title}}`,
-    `  author = {${publication.authors.replaceAll(", ", " and ")}}`,
+    `  ${publication.contributorRole === "editor" ? "editor" : "author"} = {${publication.authors.replaceAll(", ", " and ")}}`,
     `  ${venueField} = {${publication.venue}}`,
   ];
   if (publication.volume) lines.push(`  volume = {${publication.volume}}`);

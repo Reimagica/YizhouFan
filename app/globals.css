@@ -34,6 +34,22 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-150%);
+  border-radius: 8px;
+  background: var(--ink);
+  padding: 10px 14px;
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.skip-link:focus { transform: translateY(0); }
+
 a {
   color: inherit;
   text-decoration: none;
@@ -670,6 +686,11 @@ textarea:focus-visible {
   overflow: hidden;
   padding: 22px;
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.result-list .result-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 220px;
 }
 
 .result-card:hover {
@@ -1514,3 +1535,9 @@ textarea:focus-visible {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.chat-composer > .chat-privacy-note {
+  max-width: 780px;
+}
+
+.chat-privacy-note { color: var(--muted) !important; }

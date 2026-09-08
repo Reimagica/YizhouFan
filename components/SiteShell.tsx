@@ -32,6 +32,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
 
   return (
     <div className="site-shell" lang={lang === "zh" ? "zh-CN" : "en"}>
+      <a className="skip-link" href="#main-content">{lang === "zh" ? "跳转到主要内容" : "Skip to main content"}</a>
       <header className="site-header">
         <div className="site-header__inner">
           <Link className="wordmark" href={pathFor(lang)} aria-label={`${siteTitle} - ${copy.nav.profile}`}>
@@ -44,6 +45,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
                 key={path || "home"}
                 className={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "nav-link nav-link--active" : "nav-link"}
                 href={pathFor(lang, path)}
+                aria-current={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "page" : undefined}
               >
                 {label}
               </Link>
@@ -66,6 +68,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
               key={path || "home"}
               className={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "nav-link nav-link--active" : "nav-link"}
               href={pathFor(lang, path)}
+              aria-current={resolvedActivePath === path || (path && resolvedActivePath.startsWith(`${path}/`)) ? "page" : undefined}
             >
               {label}
             </Link>
@@ -73,7 +76,7 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
         </nav>
       </header>
 
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
 
       <footer className="site-footer">
         <div className="site-footer__identity">

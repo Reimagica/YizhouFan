@@ -33,8 +33,8 @@ test("uses the English profile as the default language landing page", async () =
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /Biography/);
-  assert.match(html, /范逸洲/);
   assert.match(html, /Yizhou Fan/);
+  assert.match(html, /<html lang="en">/);
   assert.doesNotMatch(html, /Personal Website/);
   assert.match(html, /Academic profile/);
   assert.match(html, /Works on this site/);
@@ -249,7 +249,10 @@ test("renders the live AI Q&A surface and fails safely without a key", async () 
   assert.equal(page.status, 200);
   const html = await page.text();
   assert.match(html, /Ask the AI assistant/);
-  assert.match(html, /This browser may ask up to 8 questions per day/);
+  assert.match(html, /Answers are based only on public material on this site/);
+  assert.match(html, /This site does not save question or answer history/);
+  assert.match(html, /Do not submit private or sensitive information/);
+  assert.doesNotMatch(html, /DeepSeek|anonymous Cookie|irreversible digest/);
   assert.doesNotMatch(html, /The assistant reads only public profile/);
   assert.match(html, /<section class="chat-panel"><div class="chat-history"/);
   assert.match(html, /<form class="chat-composer"/);

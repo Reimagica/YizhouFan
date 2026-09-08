@@ -10,7 +10,7 @@ export async function buildPublicKnowledgeBundle(lang: Language) {
     getPeople(),
     getCourses(),
   ]);
-  const publicationText = publications.map((item) => `ID=${item.id}; ${item.year}; ${item.language ?? "en"}; ${item.kind}; ${item.title}; ${item.titleZh ?? ""}; ${item.authors}; ${item.venue}`).join("\n");
+  const publicationText = publications.map((item) => `ID=${item.id}; ${item.year}; ${item.language ?? "en"}; ${item.kind}; ${item.contributorRole === "editor" ? "edited volume; editor" : "author"}; ${item.title}; ${item.titleZh ?? ""}; ${item.authors}; ${item.venue}`).join("\n");
   const talkText = talks.map((item) => `${item.date}; ${item.title}; ${item.titleZh ?? ""}; ${item.host}; ${item.hostZh ?? ""}`).join("\n");
   const peopleText = people.map((item) => {
     const parts = [`${item.name} / ${item.nameZh}`];

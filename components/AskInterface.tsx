@@ -143,7 +143,7 @@ export function AskInterface({ lang }: { lang: Language }) {
               {" "}{zh ? "每日额度于北京时间 08:00 重置。" : "Daily quota resets at 00:00 UTC."}
             </>}
           </p>
-          <p>{zh ? "回答仅基于本站公开材料；本浏览器每天最多提问 8 次。" : "Answers use only public site content and state when evidence is insufficient. This browser may ask up to 8 questions per day."}</p>
+          <p className="chat-privacy-note">{zh ? "回答仅基于本站公开材料，本站不保存问答历史。请勿提交私人或敏感信息。" : "Answers are based only on public material on this site. This site does not save question or answer history. Do not submit private or sensitive information."}</p>
         </form>
       </section>
     </div>

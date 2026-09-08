@@ -91,6 +91,21 @@ test("emits @book with publisher and no journal/booktitle for a book", () => {
   assert.doesNotMatch(out, /journal =|booktitle =/u);
 });
 
+test("uses editor for an edited volume", () => {
+  const out = publicationToBibTeX({
+    id: "p-edited",
+    year: 2025,
+    kind: "Book",
+    contributorRole: "editor",
+    title: "Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us",
+    authors: "Yizhou Fan",
+    venue: "Routledge",
+  });
+  assert.match(out, /@book\{Fan2025/u);
+  assert.match(out, /editor = \{Yizhou Fan\}/u);
+  assert.doesNotMatch(out, /author =/u);
+});
+
 test("emits @inproceedings with booktitle for a conference paper", () => {
   const out = publicationToBibTeX({
     id: "p4",

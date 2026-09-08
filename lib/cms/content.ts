@@ -6,6 +6,7 @@ const publicationQuery = `*[_type == "publication" && status == "published"] | o
   "id": _id,
   year,
   kind,
+  contributorRole,
   language,
   "title": coalesce(title.en, title.zh),
   "titleZh": title.zh,
@@ -92,7 +93,7 @@ const profileQuery = `*[_type == "profile" && status == "published"][0] {
   "role": select($lang == "zh" => role.zh, role.en),
   "affiliation": select($lang == "zh" => affiliation.zh, affiliation.en),
   email,
-  "bio": [select($lang == "zh" => bio.zh, bio.en)],
+  "bio": select($lang == "zh" => bio.zh, bio.en),
   "researchStatement": select($lang == "zh" => researchStatement.zh, researchStatement.en),
   "researchInterests": researchInterests[]{"value": select($lang == "zh" => zh, en)}.value,
   "appointments": appointments[]{year, "institution": select($lang == "zh" => institution.zh, institution.en), "role": select($lang == "zh" => role.zh, role.en)},
@@ -166,6 +167,7 @@ function fallbackPublicationRows(): PublicPublication[] {
       id: `fallback-publication-${index}`,
       year: item.year,
       kind: item.kind,
+      contributorRole: "contributorRole" in item && (item.contributorRole === "editor" || item.contributorRole === "author") ? item.contributorRole : undefined,
       title: item.title,
       titleZh,
       authors: item.authors,
@@ -267,5 +269,11 @@ export function fallbackProfile(lang: Language): PublicProfile {
 
 export async function getProfile(lang: Language): Promise<PublicProfile> {
   const profile = await sanityQuery<PublicProfile | null>(profileQuery, {lang});
-  return profile ? {...profile, scholarMetrics: profile.scholarMetrics ?? scholarSnapshot} : fallbackProfile(lang);
+  if (!profile) return fallbackProfile(lang);
+  const bioParagraphs = Array.isArray(profile.bio) ? profile.bio : [profile.bio];
+  return {
+    ...profile,
+    bio: bioParagraphs.flatMap((paragraph) => paragraph.split(/\n\s*\n/u).map((item) => item.trim()).filter(Boolean)),
+    scholarMetrics: profile.scholarMetrics ?? scholarSnapshot,
+  };
 }

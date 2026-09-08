@@ -11,6 +11,7 @@ export const publication = defineType({
   fields: [
     defineField({name: "title", title: "题名", type: "localizedString", group: "content", validation: (rule) => rule.required()}),
     defineField({name: "authors", title: "作者（按发表顺序）", type: "string", group: "content"}),
+    defineField({name: "contributorRole", title: "贡献者责任方式", type: "string", group: "content", options: {list: [{title: "作者", value: "author"}, {title: "主编", value: "editor"}]}, initialValue: "author", description: "著作可选择主编；BibTeX 将使用 editor 字段。"}),
     defineField({name: "year", title: "年份", type: "number", group: "content"}),
     defineField({name: "venue", title: "期刊、会议或出版社", type: "string", group: "content"}),
     defineField({name: "volume", title: "卷", type: "string", group: "content", description: "如 56"}),
