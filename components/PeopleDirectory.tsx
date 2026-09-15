@@ -2,6 +2,7 @@ import Image from "next/image";
 import type {Language} from "../lib/content";
 import type {PublicPerson} from "../lib/cms/types";
 import {sortPeople} from "../lib/people-sort";
+import {localizedPersonPosition} from "../lib/person-position";
 
 function initialsFor(person: PublicPerson, zh: boolean) {
   const source = zh ? (person.nameZh || person.name) : person.name;
@@ -22,7 +23,7 @@ export function PeopleDirectory({lang, people}: {lang: Language; people: PublicP
     <div className="people-grid">
       {sorted.map((person) => {
         const name = zh ? (person.nameZh || person.name) : (person.name || person.nameZh);
-        const position = zh ? (person.positionZh || person.position) : (person.position || person.positionZh);
+        const position = localizedPersonPosition(person, lang);
         const bioSource = zh ? (person.bioZh || person.bio) : (person.bio || person.bioZh);
         const bio = bioSource?.trim() || undefined;
         const bioLabel = bio ?? (zh ? "个人与研究简介待补充" : "Profile forthcoming");

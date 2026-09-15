@@ -688,6 +688,11 @@ textarea:focus-visible {
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
+.result-card.is-featured {
+  border-color: color-mix(in srgb, var(--pku-red) 30%, var(--line));
+  box-shadow: inset 3px 0 0 var(--pku-red), 0 12px 34px rgba(42, 34, 28, 0.04);
+}
+
 .result-list .result-card {
   content-visibility: auto;
   contain-intrinsic-size: 0 220px;
@@ -708,7 +713,7 @@ textarea:focus-visible {
   font-size: 12px;
 }
 
-.result-card__meta > span:not(.type-pill),
+.result-card__meta > span:not(.type-pill):not(.featured-pill),
 .result-card h2,
 .result-card__authors {
   overflow-wrap: anywhere;
@@ -760,6 +765,17 @@ textarea:focus-visible {
   padding: 4px 9px;
   color: var(--pku-red);
   font-weight: 700;
+}
+
+.featured-pill {
+  border: 1px solid color-mix(in srgb, var(--pku-red) 28%, var(--line));
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 3px 9px;
+  color: var(--pku-red-dark);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .result-card h2 {

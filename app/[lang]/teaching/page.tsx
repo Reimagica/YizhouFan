@@ -7,7 +7,7 @@ import {localizedMetadata} from "../../../lib/metadata";
 export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
   const {lang} = await params;
   if (!isLanguage(lang)) return {};
-  return localizedMetadata(lang, "/teaching", "Teaching", "教授课程", "Courses in learning analytics, educational technology, academic writing, HCI, and AI literacy.", "学习分析、教育技术、英文学术写作、人机交互与 AI 素养课程。");
+  return localizedMetadata(lang, "/teaching", "Teaching", "教授课程", "Courses in learning analytics, educational technology, academic writing, HCI, AI literacy, and peer instruction.", "学习分析、教育技术、英文学术写作、人机交互、AI 素养与同伴教学法课程。");
 }
 
 export default async function TeachingPage({ params }: { params: Promise<{ lang: string }> }) {
@@ -33,7 +33,7 @@ export default async function TeachingPage({ params }: { params: Promise<{ lang:
                 <p>{zh ? course.descriptionZh : course.description}</p>
                 {(zh ? course.roleZh : course.role) && <span className="course-card__role">{zh ? course.roleZh : course.role}</span>}
                 {moocLink && <a href={moocLink} target="_blank" rel="noreferrer">
-                  {zh ? "访问配套 MOOC ↗" : "View the companion MOOC ↗"}
+                  {zh ? "访问课程 ↗" : "View course ↗"}
                 </a>}
               </div>
             </article>

@@ -2,7 +2,7 @@ import { content, people as fallbackPeople, publications as fallbackPublications
 import { sanityQuery } from "./sanity";
 import type { PublicCourse, PublicPerson, PublicProfile, PublicPublication, PublicTalk } from "./types";
 
-const publicationQuery = `*[_type == "publication" && status == "published"] | order(year desc, title.en asc) {
+const publicationQuery = `*[_type == "publication" && status == "published"] | order(featured desc, year desc, title.en asc) {
   "id": _id,
   year,
   kind,
@@ -154,6 +154,20 @@ export const fallbackCourses: PublicCourse[] = [
     description: "A graduate course cultivating durable foundations for research with AI rather than short-term tool proficiency. Through cases, projects, and human-AI interaction, students develop skills in questioning, feedback, computational thinking, ethical judgment, creativity, collaboration, and connecting knowledge across disciplines.",
     descriptionZh: "面向研究生培养智能时代开展科研所需的底层素养，而非追求工具速成。课程通过案例、项目和人机互动，训练发问、反馈、计算思维、伦理判断、创造力、协同合作与跨学科知识连接等能力。",
     order: 50,
+  },
+  {
+    id: "course-peer-instruction",
+    title: "Peer Instruction",
+    titleZh: "同伴教学法",
+    nature: "Peking University MOOC",
+    natureZh: "北京大学在线课程",
+    description: "An online course for university teachers who want to improve large-class teaching through peer instruction. It introduces the method's principles and classroom process, then uses cases to help participants design concept questions, organize peer discussion, and address common implementation challenges.",
+    descriptionZh: "面向希望改进大班教学的高校教师，介绍同伴教学法的基本原理与课堂流程，并通过案例帮助学习者设计概念测试题、组织同伴讨论，以及应对实际教学中的常见实施问题。",
+    role: "Instructor",
+    roleZh: "授课教师",
+    mooc: true,
+    moocUrl: "https://higher.smartedu.cn/course/68b75f4dd5f9b8b6cf9dd2c6",
+    order: 60,
   },
 ];
 

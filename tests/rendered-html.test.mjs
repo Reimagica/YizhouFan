@@ -72,7 +72,7 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   assert.match(html, /AI 问答/);
 });
 
-test("renders the five-course bilingual teaching archive", async () => {
+test("renders the six-course bilingual teaching archive", async () => {
   const english = await request("/en/teaching");
   assert.equal(english.status, 200);
   const englishHtml = await english.text();
@@ -82,12 +82,14 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(englishHtml, /English Academic Writing in the Age of AI/);
   assert.match(englishHtml, /Human-Computer Interaction Design/);
   assert.match(englishHtml, /AI Literacy for Academic Purposes/);
+  assert.match(englishHtml, /Peer Instruction/);
   assert.match(englishHtml, /authentic multimodal learning data/);
   assert.match(englishHtml, /institutional decision-making and governance/);
   assert.match(englishHtml, /academic integrity or authorial control/);
-  assert.match(englishHtml, /View the companion MOOC/);
+  assert.match(englishHtml, /View course/);
+  assert.match(englishHtml, /higher\.smartedu\.cn\/course\/68b75f4dd5f9b8b6cf9dd2c6/);
   assert.doesNotMatch(englishHtml, /Find related courses on China University MOOC/);
-  assert.doesNotMatch(englishHtml, /Academic Writing in English|Peer Instruction|Flipped Classroom Pedagogy/);
+  assert.doesNotMatch(englishHtml, /Academic Writing in English|Flipped Classroom Pedagogy/);
 
   const chinese = await request("/zh/teaching");
   assert.equal(chinese.status, 200);
@@ -97,7 +99,8 @@ test("renders the five-course bilingual teaching archive", async () => {
   assert.match(chineseHtml, /智能时代的英文学术写作/);
   assert.match(chineseHtml, /人机交互设计/);
   assert.match(chineseHtml, /面向学术的 AI 素养/);
-  assert.match(chineseHtml, /访问配套 MOOC/);
+  assert.match(chineseHtml, /同伴教学法/);
+  assert.match(chineseHtml, /访问课程/);
   assert.doesNotMatch(chineseHtml, /在中国大学 MOOC 检索相关课程/);
 });
 
@@ -113,6 +116,10 @@ test("renders searchable publication controls and PDF status", async () => {
   assert.match(html, /BibTeX/);
   assert.match(html, /aria-expanded="false"/);
   assert.match(html, /Show \d+ more years/);
+  assert.match(html, /featured-pill[^>]*>Featured</);
+  const featuredIndex = html.indexOf("A Metacognitive Approach to Learning and Performance in Human-AI Interaction");
+  const regularIndex = html.indexOf("Beyond the Chat Window");
+  assert.ok(featuredIndex >= 0 && regularIndex > featuredIndex, "featured publications should render before regular publications");
   assert.doesNotMatch(html, /Search by title, author, venue, year/);
 });
 
@@ -221,6 +228,7 @@ test("renders all members on one page without category tabs (en)", async () => {
   assert.match(html, /Linfei Xiao/);
   assert.match(html, /Ling Ma/);
   assert.doesNotMatch(html, /Enrollment year forthcoming|Profile forthcoming/);
+  assert.match(html, /2026 cohort · Ph\.D\. student/);
   assert.doesNotMatch(html, /person-card__year/);
   // No member detail route / no clickable fake entry.
   assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
@@ -239,6 +247,7 @@ test("renders all completed member profiles in Chinese without tabs (zh)", async
   assert.match(html, /许明雪/);
   assert.match(html, /肖琳霏/);
   assert.match(html, /马玲/);
+  assert.match(html, /2025级硕士研究生/);
   assert.doesNotMatch(html, /入学年份待补充|个人与研究简介待补充/);
   assert.doesNotMatch(html, /person-card__year/);
   assert.doesNotMatch(html, /href="\/zh\/people\/[^"]+"/);

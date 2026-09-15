@@ -33,7 +33,7 @@ export const person = defineType({
       },
       validation: (rule) => rule.required().error("请选择成员身份。"),
     }),
-    defineField({name: "position", title: "身份/状态", type: "localizedString", description: "根据入学年份和成员身份自动填入，可自行修改中文和英文内容。", components: {input: PersonPositionInput}, validation: (rule) => rule.custom((value) => value?.zh?.trim() && value?.en?.trim() ? true : "请填写中文和英文身份/状态。")}),
+    defineField({name: "position", title: "身份/状态", type: "localizedString", description: "自动填入后可自行修改中文和英文内容；选择毕业生或其他时不添加入学年份。", components: {input: PersonPositionInput}, validation: (rule) => rule.custom((value) => value?.zh?.trim() && value?.en?.trim() ? true : "请填写中文和英文身份/状态。")}),
     // Legacy drafts may still contain this field from the previous two-mode editor.
     // Keep it hidden so Sanity recognizes the data without exposing the old control.
     defineField({name: "positionMode", type: "string", hidden: true, readOnly: true}),

@@ -13,7 +13,7 @@
 | 当前阶段 | 2026-09-08 上线前内容、隐私、SEO、可访问性及数据模型修复已部署到 Vercel Production；Sanity 写入令牌和内容刷新 Webhook secret 已轮换，Vercel Hobby 零美元硬上限与默认费用告警已核对。People 9位成员资料与头像完整，Google Scholar 每日同步保持上线；DeepSeek、Upstash 服务商侧最终凭据轮换及 `yizhoufan.com` 阿里云 DNS/HTTPS 验收仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、5 Course、92 Publication、11 Talk、9 Person。2026-09-05 成员头像更新后共有 107 个 Asset（89 file、18 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft；Talk 11 published、0 draft；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、9 Person。当前共有 112 个 Asset（92 file、20 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；新增课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -44,8 +44,8 @@
 - 默认个人信息页：取消独立首页；左侧固定展示公开头像、身份、机构和联系方式，右侧首先显示 Bio，再展示带日期的 Scholar 指标快照、本站成果总数、研究方向、任职、奖励荣誉、公开科研项目与学术服务。
 - 学术成果：中英文成果列表，Google Scholar 作为引用信息的重要外部入口；93 份已确认公开的 PDF 将按正文抽取元数据、去重并补齐到 Sanity，首页只统计全部已发布成果总数，不拆分语言。
 - 学术报告：最终只保留导师指定的 11 场，前台不区分 Keynote/Invited talk；可为确认公开的场次附 PDF/PPTX，并保留人工富文本详情。
-- 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前只展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养五门课程，每门包含课程性质和一段克制的双语简介。
-- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列；同一年份固定按博士后、博士生、硕转博、硕士生、已毕业、其他排序，再按当前语言显示名稳定排序。Studio 新增或编辑成员时必须填写 `enrollmentYear` 并从这六类中选择 `memberRole`，两个字段均不在前台卡片展示，只用于排序；身份展示文案默认由模板自动生成，选择“其他”时才手写中英文。卡片继续展示双语姓名、身份展示文案、2–3 句双语简介与授权公开头像，不再提供个人主页/公开邮箱字段。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
+- 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养、同伴教学法六门课程，每门包含课程性质和一段克制的双语简介；有官方课程链接时直接提供访问入口。
+- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列；同一年份固定按博士后、博士生、硕转博、硕士生、已毕业、其他排序，再按当前语言显示名稳定排序。Studio 新增或编辑成员时必须填写 `enrollmentYear` 并从这六类中选择 `memberRole`；`memberRole` 只用于排序、不在前台卡片展示。博士后、博士生、硕转博、硕士生的身份前展示入学年份（如“2025级硕士研究生”/“2025 cohort · Master’s student”）；已毕业与其他不自动添加年份。身份展示文案自动填入后始终可直接修改，选择“其他”时由编辑者手写中英文。卡片继续展示双语姓名、身份展示文案、2–3 句双语简介与授权公开头像，不再提供个人主页/公开邮箱字段。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
 - AI 问答：导航名称固定为“AI 问答”；接入服务端大模型，回答导师或课题组的公开信息问题，并落实公开知识库、答案来源、无证据时拒答、按 IP/每日总量限流、费用上限和异常停用。
 
 ### 2026-07-27 第二轮页面与功能要求
@@ -192,7 +192,7 @@ Sanity Asset CDN
 | `/[lang]/publications` | 可检索、按年份/类型筛选的论文与著作；来源、PDF、BibTeX、摘要操作 |
 | `/[lang]/talks` | 可检索、按年份筛选的报告列表；详情页展示富文本正文与公开附件（已移除类型筛选与标签） |
 | `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
-| `/[lang]/teaching` | 独立双语课程栏目；五门课程的性质与简介从 Sanity `course` 文档读取 |
+| `/[lang]/teaching` | 独立双语课程栏目；六门课程的性质与简介从 Sanity `course` 文档读取 |
 | `/[lang]/people` | 团队成员单页概览：所有已发布成员按后台入学年份降序排列于同一网格，前台不显示年份；无分类 Tab、无详情页、无可点击假入口；缺失简介或头像降级为克制占位 |
 | `/[lang]/ask` | AI 问答客户端；调用 `/api/ask` |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
@@ -277,10 +277,10 @@ tests/
 ## 数据维护约定
 
 - 正式内容通过 `studio/` 中的 Sanity 后台维护；`lib/content.ts` 只作为未配置 Sanity 时的受控回退，不应在正式上线后形成第二套长期数据源。
-- 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。
+- 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。`featured` 可在 Studio 手动勾选；公开查询与前端按精选优先、年份新到旧排序，并显示“精选 / Featured”文字徽标。
 - 新增报告：核对日期、主办方、地点、题名、双语正文和公开附件；不需要封面图，也不使用 AI 生成正文。导师最新要求不再区分 Keynote/Invited talk；11 场白名单迁移已完成（2026-08-18），`type` 已置为 `hidden` 旧数据兼容字段，前台、查询与 AI 知识均不依赖或展示。
-- 新增课程：通过独立 `course` 文档维护双语名称、性质、简介、排序和发布状态；Profile 内旧课程数组只为线上兼容暂时保留，不得继续编辑。
-- 成员：前台为9位成员单网格并按入学年份排序，但不公开显示年份或结构化排序身份。Studio 新增或编辑成员必须填写 `enrollmentYear` 并选择 `memberRole`（博士后、博士生、硕转博、硕士生、已毕业、其他）；前端执行年份降序，同年按上述身份顺序及本地化姓名稳定排序。`order` 仅作为隐藏旧字段保留，不再影响前台。只在收到本人确认材料后维护年份、身份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐原有资料。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
+- 新增课程：通过独立 `course` 文档维护双语名称、性质、简介、排序和发布状态；课程存在官方链接时写入 `moocUrl` 并在前台提供直链。Profile 内旧课程数组只为线上兼容暂时保留，不得继续编辑。当前为六门已发布课程。
+- 成员：前台为9位成员单网格并按入学年份排序；博士后、博士生、硕转博、硕士生的身份前显示入学年份，已毕业和其他不显示年份前缀；结构化排序身份 `memberRole` 始终不公开。Studio 新增或编辑成员必须填写 `enrollmentYear` 并选择 `memberRole`（博士后、博士生、硕转博、硕士生、已毕业、其他）；身份/状态自动填入后可以自行修改。前端执行年份降序，同年按上述身份顺序及本地化姓名稳定排序。`order` 仅作为隐藏旧字段保留，不再影响前台。只在收到本人确认材料后维护年份、身份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐原有资料。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
 - 所有公开项目必须由人工白名单录入，不允许从简历整段自动导入。
 - 内容更新完成后至少运行 `npm run lint`、`npm run build`，并检查 `/en`、`/zh` 与受影响子页面。
 
@@ -876,3 +876,23 @@ npm run studio:build
 - 自动填入值记录在组件内部；用户直接修改任一语言后，后续年份或身份变化不再覆盖手写内容。只读文档继续禁止任何自动或手动补丁。
 - `positionMode` 作为隐藏只读兼容字段保留，仅用于识别历史数据、避免 Unknown field found，不再显示或参与编辑。
 - 网站构建、Studio 构建、ESLint 与全量54项测试均通过；代码以提交 `f75236a Make People status fields editable` 推送 GitHub `main`，Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。Vercel Production 自动部署 `dpl_711qyhJ7yifVLKk9st8hE6rFjJFR` 状态 Ready，`https://yizhoufan.vercel.app`、`https://yizhoufan.com` 与 `https://www.yizhoufan.com` 别名均已绑定。
+
+### 2026-09-15 - 精选成果、同伴教学法课程与成员年份展示（本地待部署）
+
+- 核验发现 Sanity `publication.featured` 原字段已存在且 Production 当前有 4 条已勾选成果，但公开查询原先只按年份排序、前端没有状态提示；Publication 查询与客户端筛选现统一按 `featured desc`、年份降序、标题稳定排序，精选成果卡增加“精选 / Featured”文字徽标和左侧强调线。Studio 字段改名为“置顶精选”，补充置顶行为说明，并新增“精选优先”文档排序；不修改现有 4 条精选数据。
+- 按国家高等教育智慧教育平台公开课程页核对并新增 Sanity `course-peer-instruction`：双语名称“同伴教学法 / Peer Instruction”、北京大学在线课程性质、克制双语简介、授课教师角色、官方课程链接 `https://higher.smartedu.cn/course/68b75f4dd5f9b8b6cf9dd2c6`，状态为 `published`、排序值 60。受控静态回退同步新增该课程；MOOC 链接按钮改为中性的“访问课程 / View course”。写入前备份为 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-peer-instruction-20260915.tar.gz`（Sanity 导出 124 份文档）。
+- People 前端新增统一身份格式化：中文显示为“2025级硕士研究生”，英文显示为“2025 cohort · Master’s student”；已有含复杂状态的身份使用“年份 · 原状态”前缀避免覆盖事实。Studio `PersonPositionInput` 自动模板同步改为该格式，仍支持自动填入后手动修改；随后以幂等脚本为 Production 现有9位成员的 `position` 双语字段补齐年份前缀，保留原身份文字与事实，其他字段与六类排序规则不变。
+- 新增 `lib/person-position.ts`、`studio/scripts/add-peer-instruction-course.mjs`、`studio/scripts/prefix-person-positions.mjs` 与成员格式化测试；两个 Sanity 脚本均已二次运行验证幂等。更新课程、精选、成员页面渲染测试。代码变更后的联网构建、lint、TypeScript、Studio build 与完整测试已通过（56/56）；成员字段写入后再次构建因执行环境连接 Sanity 超时，另以无 Sanity 配置完成代码构建并通过 40 项非渲染单元测试。未提交、未推送、未部署 Vercel/Studio；Sanity 数据写入已生效，待按用户安排部署代码和 Studio。
+
+### 2026-09-15 - 已毕业/其他身份年份例外与缺 PDF 清单（本地待部署）
+
+- 用户补充覆盖同日的统一前缀规则：`PersonPositionInput` 的中文、英文输入框继续始终可编辑；博士后、博士生、硕转博、硕士生仍按年份与身份自动填入，已毕业自动填入“毕业生 / Graduate”但不带入学年份，“其他”不生成模板并提示直接填写双语身份。从未手改的自动模板切换到“其他”时会清空旧模板，避免残留错误身份；已手改内容继续不被自动覆盖。
+- 前台 `localizedPersonPosition` 同步对 `memberRole=graduated|other` 停止添加年份前缀。Production `person-009`（唐陆禛）原先由同日脚本加入的 `2023级 / 2023 cohort` 前缀已移除，原“2026届硕士毕业生 / 2026 Ph.D. Student at HKU”等身份事实原样保留；幂等脚本二次执行为0项更新。写入前备份为 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-graduated-position-exception-20260915.tar.gz`。
+- 只读筛选 Sanity Production 的92条已发布成果，以前台真实下载条件 `publicFile.copyrightCleared == true && (defined(file.asset) || defined(url))` 为准，确认3条缺少公开 PDF：`publication-001`（2026，A Metacognitive Approach to Learning and Performance in Human-AI Interaction）、`publication-008`（2025，Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us）、`publication-009`（2024，English Academic Writing in Practice / 英文学术写作实战）。其余89条具备公开 PDF。
+- 本轮完成 ESLint、TypeScript、Next.js Production build、Sanity Studio build、`git diff --check` 与完整测试，56/56 通过；本地 `/zh/people` 与 Studio 分别返回 200，并验证毕业生身份不含 `2023级`、当前硕士生仍显示 `2025级硕士研究生`。未提交、未推送、未部署 Vercel/Studio；本地前端与 Studio 开发服务继续运行。
+
+### 2026-09-15 - 补充两份 PDF 与修复身份输入可编辑性（待推送部署）
+
+- 用户明确暂不公开 `publication-009`（English Academic Writing in Practice / 英文学术写作实战），只为 `publication-001`（A Metacognitive Approach to Learning and Performance in Human-AI Interaction）与 `publication-008`（Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us）补充附件。两份用户提供 PDF 均通过本地结构检查（46页/2,265,303字节；65页/1,326,138字节），在完整 Production 导出备份 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-two-pdf-attachments-20260915.tar.gz` 后，以事务 `fjaP8ArMH5d2ydVi5VRY2N` 写入 Sanity 原生 file asset、设置 `copyrightCleared=true`。两份 CDN 文件均返回 `200 application/pdf`；真实下载条件下仅 `publication-009` 仍缺 PDF。
+- 修复 `PersonPositionInput` 可能保留 Studio 元素的禁用状态、造成“自动填入的中文身份/状态”无法输入的问题：输入框现在显式以字段 `readOnly` 控制 `disabled` 与 `readOnly`，编辑态永不被残余 disabled 属性锁住；为中英文输入分别加入可见标签，辅助文本继续解释自动模板与手动覆盖规则。只读已发布版本仍保持不可编辑，需进入 Studio 的编辑态创建/编辑草稿。
+- 新增参数化、可干跑的 `attach:missing-publication-pdfs` 脚本；私有附件绝对路径仅通过环境变量传入，不写入仓库。上传脚本会核对目标文档 ID、英文题名、已发布状态和40MB大小限制，重复执行时跳过已有文件。验证：ESLint、Next.js Production build、Sanity Studio build、`git diff --check` 与完整测试56/56全部通过。

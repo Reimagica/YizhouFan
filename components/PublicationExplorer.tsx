@@ -51,8 +51,10 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
       if (!term) return true;
       const target = [item.title, item.titleZh ?? "", item.authors, item.venue, item.kind, ...(item.keywords ?? [])].join(" ").toLowerCase();
       return target.includes(term);
-    });
-  }, [kind, language, publications, query, year]);
+    }).sort((left, right) => Number(Boolean(right.featured)) - Number(Boolean(left.featured))
+      || right.year - left.year
+      || (localizedTitle(left, lang) ?? "").localeCompare(localizedTitle(right, lang) ?? "", zh ? "zh-Hans" : "en"));
+  }, [kind, lang, language, publications, query, year, zh]);
 
   const copyBibTeX = async (publication: PublicPublication) => {
     await navigator.clipboard.writeText(publicationToBibTeX(publication));
@@ -123,8 +125,9 @@ export function PublicationExplorer({ lang, publications }: { lang: Language; pu
             const sourceUrl = publication.sourceUrl ?? (publication.doi ? `https://doi.org/${publication.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")}` : null);
 
             return (
-              <article className="result-card" key={publication.id}>
+              <article className={`result-card${publication.featured ? " is-featured" : ""}`} key={publication.id}>
                 <div className="result-card__meta">
+                  {publication.featured && <span className="featured-pill">{zh ? "精选" : "Featured"}</span>}
                   <span className="type-pill">{localizedKind(publication.kind, zh)}</span>
                   <span>{publication.venue}</span>
                   <time>{publication.year}</time>

@@ -25,10 +25,14 @@ export const publication = defineType({
     defineField({name: "abstract", title: "摘要", type: "localizedText", group: "content"}),
     defineField({name: "keywords", title: "关键词", type: "array", of: [{type: "string"}], group: "content"}),
     defineField({name: "bibtex", title: "BibTeX", type: "text", rows: 8, group: "content"}),
-    defineField({name: "featured", title: "代表成果", type: "boolean", group: "content", initialValue: false}),
+    defineField({name: "featured", title: "置顶精选", type: "boolean", group: "content", initialValue: false, description: "勾选后，该成果会显示“精选”标识，并置于学术成果列表顶部；多篇精选成果仍按年份从新到旧排列。"}),
     defineField({name: "publicFile", title: "公开 PDF", type: "publicFile", group: "file"}),
     defineField({name: "reviewNote", title: "复核说明", type: "text", rows: 3, group: "file", description: "仅后台可见，记录草稿待人工复核的原因；前台不读取。"}),
     defineField({name: "status", title: "发布状态", type: "string", group: "content", options: {list: ["draft", "reviewed", "published"]}, initialValue: "draft"}),
   ],
-  preview: {select: {title: "title.en", subtitle: "venue", year: "year"}, prepare: ({title, subtitle, year}) => ({title, subtitle: [year, subtitle].filter(Boolean).join(" · ")})},
+  orderings: [
+    {title: "精选优先", name: "featuredFirst", by: [{field: "featured", direction: "desc"}, {field: "year", direction: "desc"}, {field: "title.en", direction: "asc"}]},
+    {title: "年份（新到旧）", name: "yearDesc", by: [{field: "year", direction: "desc"}, {field: "title.en", direction: "asc"}]},
+  ],
+  preview: {select: {title: "title.en", subtitle: "venue", year: "year", featured: "featured"}, prepare: ({title, subtitle, year, featured}) => ({title, subtitle: [featured ? "精选" : "", year, subtitle].filter(Boolean).join(" · ")})},
 });
