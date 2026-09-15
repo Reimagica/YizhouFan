@@ -891,8 +891,9 @@ npm run studio:build
 - 只读筛选 Sanity Production 的92条已发布成果，以前台真实下载条件 `publicFile.copyrightCleared == true && (defined(file.asset) || defined(url))` 为准，确认3条缺少公开 PDF：`publication-001`（2026，A Metacognitive Approach to Learning and Performance in Human-AI Interaction）、`publication-008`（2025，Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us）、`publication-009`（2024，English Academic Writing in Practice / 英文学术写作实战）。其余89条具备公开 PDF。
 - 本轮完成 ESLint、TypeScript、Next.js Production build、Sanity Studio build、`git diff --check` 与完整测试，56/56 通过；本地 `/zh/people` 与 Studio 分别返回 200，并验证毕业生身份不含 `2023级`、当前硕士生仍显示 `2025级硕士研究生`。未提交、未推送、未部署 Vercel/Studio；本地前端与 Studio 开发服务继续运行。
 
-### 2026-09-15 - 补充两份 PDF 与修复身份输入可编辑性（待推送部署）
+### 2026-09-15 - 补充两份 PDF 与修复身份输入可编辑性（已部署）
 
 - 用户明确暂不公开 `publication-009`（English Academic Writing in Practice / 英文学术写作实战），只为 `publication-001`（A Metacognitive Approach to Learning and Performance in Human-AI Interaction）与 `publication-008`（Learning with Generative Artificial Intelligence: What Empirical Studies Tell Us）补充附件。两份用户提供 PDF 均通过本地结构检查（46页/2,265,303字节；65页/1,326,138字节），在完整 Production 导出备份 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-two-pdf-attachments-20260915.tar.gz` 后，以事务 `fjaP8ArMH5d2ydVi5VRY2N` 写入 Sanity 原生 file asset、设置 `copyrightCleared=true`。两份 CDN 文件均返回 `200 application/pdf`；真实下载条件下仅 `publication-009` 仍缺 PDF。
 - 修复 `PersonPositionInput` 可能保留 Studio 元素的禁用状态、造成“自动填入的中文身份/状态”无法输入的问题：输入框现在显式以字段 `readOnly` 控制 `disabled` 与 `readOnly`，编辑态永不被残余 disabled 属性锁住；为中英文输入分别加入可见标签，辅助文本继续解释自动模板与手动覆盖规则。只读已发布版本仍保持不可编辑，需进入 Studio 的编辑态创建/编辑草稿。
 - 新增参数化、可干跑的 `attach:missing-publication-pdfs` 脚本；私有附件绝对路径仅通过环境变量传入，不写入仓库。上传脚本会核对目标文档 ID、英文题名、已发布状态和40MB大小限制，重复执行时跳过已有文件。验证：ESLint、Next.js Production build、Sanity Studio build、`git diff --check` 与完整测试56/56全部通过。
+- 用户明确授权后，功能提交 `ebfc9bd Add featured publications and public course materials` 已推送至 GitHub `main`；Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。GitHub Vercel 状态确认对应 Production 部署成功（`https://vercel.com/ma-j/yizhoufan/ELwwyXggnfLcYy38qQwYFXrKorHJ`）。本机 Vercel CLI 没有登录凭据，因此未从 CLI 新建重复部署；项目 GitHub 集成已完成该自动部署。
