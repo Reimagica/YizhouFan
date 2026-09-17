@@ -28,6 +28,28 @@ async function request(pathname, init) {
   return fetch(`${baseUrl}${pathname}`, init);
 }
 
+function decodeHtml(value = "") {
+  return value
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#x27;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">");
+}
+
+function htmlTags(html, tagName) {
+  return [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>`, "gi"))].map((match) => match[0]);
+}
+
+function tagAttributes(tag) {
+  return Object.fromEntries([...tag.matchAll(/([:\w-]+)="([^"]*)"/g)].map((match) => [match[1].toLowerCase(), decodeHtml(match[2])]));
+}
+
+function metadataContent(html, selector, value) {
+  const tag = htmlTags(html, "meta").find((item) => tagAttributes(item)[selector] === value);
+  return tag ? tagAttributes(tag).content : undefined;
+}
+
 test("uses the English profile as the default language landing page", async () => {
   const response = await request("/en");
   assert.equal(response.status, 200);
@@ -70,6 +92,115 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   assert.doesNotMatch(html, />0[1-7]</);
   assert.match(html, /至今/);
   assert.match(html, /AI 问答/);
+});
+
+test("publishes unique bilingual titles, descriptions, canonicals, and one H1 per main page", async () => {
+  const pages = [
+    ["/en", "Yizhou Fan | Peking University", "Academic profile of Yizhou Fan at Peking University, covering his biography, research interests, appointments, honors, public projects, and academic service."],
+    ["/zh", "范逸洲｜北京大学教育学院", "范逸洲的个人学术主页，介绍其在北京大学教育学院的任职、研究方向、学术经历、荣誉、公开科研项目与学术服务。"],
+    ["/en/publications", "Publications & Open PDFs | Yizhou Fan", "Search Yizhou Fan’s publications and books, read abstracts and citation details, copy BibTeX, and download copyright-cleared PDFs."],
+    ["/zh/publications", "范逸洲学术成果与公开 PDF", "检索范逸洲的论文与著作，查看摘要和引文信息、复制 BibTeX，并下载已确认可公开的 PDF 全文。"],
+    ["/en/talks", "Academic Talks | Yizhou Fan", "Browse Yizhou Fan’s academic talks by title, host, or year and access verified public presentation materials when available."],
+    ["/zh/talks", "范逸洲学术报告", "按题目、主办方或年份浏览范逸洲的学术报告，并在材料获准公开时直接获取报告附件。"],
+    ["/en/teaching", "Teaching & Courses | Yizhou Fan", "Explore Yizhou Fan’s six courses at Peking University, including learning analytics, academic writing, HCI, AI literacy, and peer instruction."],
+    ["/zh/teaching", "范逸洲教授课程", "了解范逸洲在北京大学开设的六门课程，涵盖学习分析、英文学术写作、人机交互、AI 素养与同伴教学法等主题。"],
+    ["/en/people", "Research Team | Yizhou Fan", "Meet members of Yizhou Fan’s research team and view their public roles, cohort information, research interests, and biographies."],
+    ["/zh/people", "范逸洲研究团队成员", "查看范逸洲研究团队成员的公开姓名、身份、入学年份、研究兴趣与个人简介。"],
+  ];
+  const titles = new Set();
+
+  for (const [pathname, expectedTitle, expectedDescription] of pages) {
+    const response = await request(pathname);
+    assert.equal(response.status, 200, pathname);
+    const html = await response.text();
+    const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
+    assert.equal(decodeHtml(titleMatch?.[1]), expectedTitle, `${pathname} title`);
+    assert.equal(metadataContent(html, "name", "description"), expectedDescription, `${pathname} description`);
+    assert.equal(metadataContent(html, "property", "og:title"), expectedTitle, `${pathname} Open Graph title`);
+    assert.equal(metadataContent(html, "name", "twitter:title"), expectedTitle, `${pathname} Twitter title`);
+
+    const canonical = htmlTags(html, "link").map(tagAttributes).find((attributes) => attributes.rel === "canonical");
+    assert.equal(canonical?.href, `https://yizhoufan.com${pathname}`, `${pathname} canonical`);
+
+    const alternates = htmlTags(html, "link").map(tagAttributes).filter((attributes) => attributes.rel === "alternate");
+    const englishPath = pathname.replace(/^\/zh/, "/en");
+    const chinesePath = pathname.replace(/^\/en/, "/zh");
+    assert.ok(alternates.some((attributes) => attributes.hreflang === "en" && attributes.href === `https://yizhoufan.com${englishPath}`));
+    assert.ok(alternates.some((attributes) => attributes.hreflang === "zh" && attributes.href === `https://yizhoufan.com${chinesePath}`));
+    assert.ok(alternates.some((attributes) => attributes.hreflang === "x-default" && attributes.href === `https://yizhoufan.com${englishPath}`));
+
+    assert.equal((html.match(/<h1\b/gi) ?? []).length, 1, `${pathname} should have one H1`);
+    titles.add(expectedTitle);
+  }
+
+  assert.equal(titles.size, pages.length, "main-page titles should be unique");
+});
+
+test("adds verified ProfilePage and Person structured data without changing visible copy", async () => {
+  const response = await request("/en");
+  const html = await response.text();
+  const jsonLdTag = htmlTags(html, "script").find((tag) => tagAttributes(tag).type === "application/ld+json");
+  assert.ok(jsonLdTag);
+  const jsonText = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+  const data = JSON.parse(jsonText);
+
+  assert.equal(data["@type"], "ProfilePage");
+  assert.equal(data.url, "https://yizhoufan.com/en");
+  assert.equal(data.mainEntity["@type"], "Person");
+  assert.equal(data.mainEntity.name, "Yizhou Fan");
+  assert.equal(data.mainEntity.alternateName, "范逸洲");
+  assert.equal(data.mainEntity.image, "https://yizhoufan.com/yizhou-fan.jpg");
+  assert.ok(data.mainEntity.sameAs.includes("https://orcid.org/0000-0003-2777-1705"));
+  assert.ok(data.mainEntity.sameAs.some((url) => url.includes("scholar.google.com/citations")));
+  assert.ok(data.mainEntity.knowsAbout.includes("Learning Analytics"));
+});
+
+test("keeps real image alternatives and crawlable internal navigation", async () => {
+  for (const pathname of ["/en", "/zh", "/en/people", "/zh/people"]) {
+    const html = await (await request(pathname)).text();
+    const images = htmlTags(html, "img").map(tagAttributes);
+    assert.ok(images.length > 0, `${pathname} should render images`);
+    assert.ok(images.every((attributes) => attributes.alt?.trim()), `${pathname} images should have non-empty alt text`);
+  }
+
+  const home = await (await request("/en")).text();
+  for (const path of ["/en/publications", "/en/talks", "/en/teaching", "/en/people", "/en/ask"]) {
+    assert.ok(htmlTags(home, "a").map(tagAttributes).some((attributes) => attributes.href === path), `missing internal link ${path}`);
+  }
+});
+
+test("keeps AI Q&A out of search indexes while allowing link discovery", async () => {
+  const english = await (await request("/en/ask")).text();
+  const chinese = await (await request("/zh/ask")).text();
+  assert.match(metadataContent(english, "name", "robots"), /noindex/i);
+  assert.match(metadataContent(english, "name", "robots"), /follow/i);
+  assert.match(metadataContent(chinese, "name", "robots"), /noindex/i);
+  assert.equal((english.match(/<h1\b/gi) ?? []).length, 1);
+  assert.equal((chinese.match(/<h1\b/gi) ?? []).length, 1);
+});
+
+test("publishes a selective sitemap and blocks API crawling", async () => {
+  const sitemapResponse = await request("/sitemap.xml");
+  assert.equal(sitemapResponse.status, 200);
+  const sitemap = await sitemapResponse.text();
+  assert.match(sitemap, /https:\/\/yizhoufan\.com\/en<\/loc>/);
+  assert.match(sitemap, /https:\/\/yizhoufan\.com\/zh\/publications<\/loc>/);
+  assert.match(sitemap, /hreflang="x-default"/);
+  assert.doesNotMatch(sitemap, /\/ask<\/loc>/);
+  assert.doesNotMatch(sitemap, /<lastmod>/);
+
+  const robotsResponse = await request("/robots.txt");
+  assert.equal(robotsResponse.status, 200);
+  const robots = await robotsResponse.text();
+  assert.match(robots, /Allow: \//);
+  assert.match(robots, /Disallow: \/api\//);
+  assert.match(robots, /Sitemap: https:\/\/yizhoufan\.com\/sitemap\.xml/);
+});
+
+test("serves the Baidu site-verification file from the public root", async () => {
+  const response = await request("/baidu_verify_codeva-MG05lBZzhr.html");
+  assert.equal(response.status, 200);
+  assert.equal((await response.text()).trim(), "d183a79a8d5d75b6c6f18edc0f188e31");
 });
 
 test("renders the six-course bilingual teaching archive", async () => {

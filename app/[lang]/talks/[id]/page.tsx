@@ -10,10 +10,12 @@ export async function generateMetadata({params}: {params: Promise<{lang: string;
   if (!isLanguage(lang)) return {};
   const talk = await getTalkById(decodeURIComponent(id));
   if (!talk || talk.attachments?.length || talk.slidesUrl) return {};
-  const titleEn = talk.title || talk.titleZh || "Talk";
-  const titleZh = talk.titleZh || talk.title || "学术报告";
-  const descriptionEn = talk.summary || talk.summaryZh || talk.host || talk.hostZh || "Academic presentation details.";
-  const descriptionZh = talk.summaryZh || talk.summary || talk.hostZh || talk.host || "学术报告详情。";
+  const rawTitleEn = talk.title || talk.titleZh || "Academic talk";
+  const rawTitleZh = talk.titleZh || talk.title || "学术报告";
+  const titleEn = `${rawTitleEn} | Yizhou Fan`;
+  const titleZh = `${rawTitleZh}｜范逸洲`;
+  const descriptionEn = talk.summary || talk.summaryZh || `${rawTitleEn}, hosted by ${talk.host || talk.hostZh}.`;
+  const descriptionZh = talk.summaryZh || talk.summary || `${rawTitleZh}，主办方：${talk.hostZh || talk.host}。`;
   return localizedMetadata(lang, `/talks/${encodeURIComponent(id)}`, titleEn, titleZh, descriptionEn, descriptionZh);
 }
 

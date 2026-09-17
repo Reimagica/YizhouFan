@@ -3,12 +3,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { content, isLanguage, profileLinks, scholarSnapshot } from "../../lib/content";
 import { getProfile, getPublications } from "../../lib/cms/content";
-import { localizedMetadata } from "../../lib/metadata";
+import { localizedMetadata, siteUrl } from "../../lib/metadata";
+import { StructuredData } from "../../components/StructuredData";
 
 export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
   const {lang} = await params;
   if (!isLanguage(lang)) return {};
-  return localizedMetadata(lang, "", "Yizhou Fan", "范逸洲", "Academic profile, research, publications, teaching, talks, and people.", "范逸洲个人学术主页，介绍研究、成果、教学、报告与团队成员。");
+  return localizedMetadata(
+    lang,
+    "",
+    "Yizhou Fan | Peking University",
+    "范逸洲｜北京大学教育学院",
+    "Academic profile of Yizhou Fan at Peking University, covering his biography, research interests, appointments, honors, public projects, and academic service.",
+    "范逸洲的个人学术主页，介绍其在北京大学教育学院的任职、研究方向、学术经历、荣誉、公开科研项目与学术服务。",
+  );
 }
 
 function displayPeriod(period: string, zh: boolean) {
@@ -22,6 +30,31 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
   const copy = content[lang];
   const zh = lang === "zh";
   const [profile, publications] = await Promise.all([getProfile(lang), getPublications()]);
+  const profileUrl = `${siteUrl}/${lang}`;
+  const personStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${profileUrl}#profile-page`,
+    url: profileUrl,
+    inLanguage: zh ? "zh-CN" : "en",
+    name: zh ? "范逸洲｜北京大学教育学院" : "Yizhou Fan | Peking University",
+    description: profile.bio.join(" "),
+    mainEntity: {
+      "@type": "Person",
+      "@id": `${siteUrl}/#yizhou-fan`,
+      name: profile.name,
+      alternateName: zh ? content.en.name : content.zh.name,
+      url: `${siteUrl}/en`,
+      image: `${siteUrl}/yizhou-fan.jpg`,
+      jobTitle: profile.role,
+      affiliation: {
+        "@type": "CollegeOrUniversity",
+        name: profile.affiliation,
+      },
+      knowsAbout: profile.researchInterests,
+      sameAs: [profileLinks.scholar, profileLinks.orcid, profileLinks.pku],
+    },
+  };
   const metrics = profile.scholarMetrics ?? scholarSnapshot;
   const number = new Intl.NumberFormat(copy.locale);
   const metricItems = [
@@ -33,6 +66,7 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
 
   return (
     <div className="section-wrap profile-page">
+      <StructuredData data={personStructuredData} />
       <aside className="profile-sidebar">
         <div className="profile-card">
           <div className="profile-photo">

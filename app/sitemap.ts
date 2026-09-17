@@ -1,17 +1,30 @@
 import type {MetadataRoute} from "next";
 import {getTalks} from "../lib/cms/content";
+import {siteUrl} from "../lib/metadata";
+
+function localizedEntries(path: string): MetadataRoute.Sitemap {
+  const englishUrl = `${siteUrl}/en${path}`;
+  const chineseUrl = `${siteUrl}/zh${path}`;
+  const languages = {en: englishUrl, zh: chineseUrl, "x-default": englishUrl};
+
+  return [
+    {url: englishUrl, alternates: {languages}},
+    {url: chineseUrl, alternates: {languages}},
+  ];
+}
+
+function hasIndexableDetail(talk: Awaited<ReturnType<typeof getTalks>>[number]) {
+  const hasBody = Boolean(talk.body?.length || talk.bodyZh?.length);
+  const hasSummary = Boolean(talk.summary?.trim() || talk.summaryZh?.trim());
+  return !talk.attachments?.length && !talk.slidesUrl && (hasBody || hasSummary);
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
-  const routes = ["", "/publications", "/talks", "/teaching", "/people", "/ask"];
-  const entries: MetadataRoute.Sitemap = routes.flatMap((path) => [
-    {url: `https://yizhoufan.com/en${path}`, lastModified: now, alternates: {languages: {zh: `https://yizhoufan.com/zh${path}`}}},
-    {url: `https://yizhoufan.com/zh${path}`, lastModified: now, alternates: {languages: {en: `https://yizhoufan.com/en${path}`}}},
-  ]);
+  const routes = ["", "/publications", "/talks", "/teaching", "/people"];
+  const entries: MetadataRoute.Sitemap = routes.flatMap(localizedEntries);
   const talks = await getTalks();
-  for (const talk of talks) {
-    entries.push({url: `https://yizhoufan.com/en/talks/${talk.id}`, lastModified: now, alternates: {languages: {en: `https://yizhoufan.com/en/talks/${talk.id}`, zh: `https://yizhoufan.com/zh/talks/${talk.id}`}}});
-    entries.push({url: `https://yizhoufan.com/zh/talks/${talk.id}`, lastModified: now, alternates: {languages: {en: `https://yizhoufan.com/en/talks/${talk.id}`, zh: `https://yizhoufan.com/zh/talks/${talk.id}`}}});
+  for (const talk of talks.filter(hasIndexableDetail)) {
+    entries.push(...localizedEntries(`/talks/${encodeURIComponent(talk.id)}`));
   }
   return entries;
 }

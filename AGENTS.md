@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-08 上线前内容、隐私、SEO、可访问性及数据模型修复已部署到 Vercel Production；Sanity 写入令牌和内容刷新 Webhook secret 已轮换，Vercel Hobby 零美元硬上限与默认费用告警已核对。People 9位成员资料与头像完整，Google Scholar 每日同步保持上线；DeepSeek、Upstash 服务商侧最终凭据轮换及 `yizhoufan.com` 阿里云 DNS/HTTPS 验收仍待完成 |
+| 当前阶段 | 2026-09-17 已在本地完成面向搜索收录的阶段 1–8 优化与全量回归，待用户验收后再提交/部署；People 9位成员资料与头像完整，Google Scholar 每日同步保持上线，Sanity 写入令牌和内容刷新 Webhook secret 已轮换。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、9 Person。当前共有 112 个 Asset（92 file、20 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；新增课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -78,6 +78,15 @@
 - 可先用机器翻译形成草稿，但涉及职务、项目、论文、奖项、人员状态的内容必须人工核对。
 - 更新一条成果、报告、项目或成员信息时，同一提交必须检查两种语言。
 
+### 搜索引擎可见性与页面语义（2026-09-17）
+
+- 每个可索引栏目只承载一个明确主题，使用唯一、准确的双语 Title 与 Description；页面保持单一 H1 和正常的 H2/H3 层级，不为搜索引擎新增隐藏文字或关键词堆砌。
+- `/en/*` 与 `/zh/*` 均设置 canonical、双向 `hreflang` 和 `x-default`（指向英文版本）；当前 canonical 主机继续使用 `https://yizhoufan.com`，apex/`www` 信号冲突按用户要求另行处理，不在本轮改动。
+- 首页输出基于已确认公开资料的 `ProfilePage` + `Person` JSON-LD，只允许姓名、公开头像、职务、机构、研究方向、Google Scholar、ORCID 与北大官方教师页等公开事实；不得把私人简历或未确认项目写入结构化数据。
+- `/[lang]/ask` 保持正常可访问和站内可发现，但标记为 `noindex, follow`，且不写入 sitemap；`/api/*` 在 robots.txt 中禁止抓取。sitemap 只列出真实存在且希望收录的 HTTPS 双语页面，不使用每次构建生成的伪 `lastModified`。
+- 公开正文图片在 Studio 新增时必须填写准确的中英文 alt，前台优先当前语言并回退另一语言；人物头像继续使用真实姓名作为 alt。装饰性内容不得用关键词伪造替代文本。
+- 现有导航和正文链接必须使用普通可抓取链接，不新增隐藏链接；SEO 调整不得明显改变当前页面布局与视觉表现。
+
 ### 文件与托管
 
 - 论文 PDF 和报告 PPT/PDF 是个人站的核心价值，不是装饰性功能。
@@ -86,7 +95,7 @@
 - 报告附件、课程材料和成员照片仍需逐项确认公开范围；未知授权状态继续显示真实待补状态，禁止伪造下载或上传内部材料。
 - 已确认公开的正文图片、论文 PDF 与报告 PDF/PPTX 统一使用 Sanity 原生 `image/file` 和 Asset CDN，不再规划 OSS/COS 双存储；大文件禁止进入 Git 仓库。
 - 当前头像使用 `public/yizhou-fan.jpg`；替换头像时需保持公开授权、合理裁切和跨断点显示一致。
-- `yizhoufan.com` 的 DNS、HTTPS 和正式域名切换尚未完成，当前公开部署仍使用 `https://yizhoufan.vercel.app`。
+- `yizhoufan.com` 当前可访问；apex 与 `www` 的权威域名信号仍有冲突并按用户要求暂缓处理。代码中的 canonical 与 sitemap 主机暂维持 `https://yizhoufan.com`，不得在未确认最终主域前自行切换。
 
 ### 已确认的内容管理、AI 与文件架构（2026-07-27）
 
@@ -193,8 +202,8 @@ Sanity Asset CDN
 | `/[lang]/talks` | 可检索、按年份筛选的报告列表；详情页展示富文本正文与公开附件（已移除类型筛选与标签） |
 | `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
 | `/[lang]/teaching` | 独立双语课程栏目；六门课程的性质与简介从 Sanity `course` 文档读取 |
-| `/[lang]/people` | 团队成员单页概览：所有已发布成员按后台入学年份降序排列于同一网格，前台不显示年份；无分类 Tab、无详情页、无可点击假入口；缺失简介或头像降级为克制占位 |
-| `/[lang]/ask` | AI 问答客户端；调用 `/api/ask` |
+| `/[lang]/people` | 团队成员单页概览：所有已发布成员按入学年份与六类身份规则排列于同一网格；博士后、博士生、硕转博、硕士生的公开身份前展示入学年份，已毕业与其他不自动加年份；无分类 Tab、无详情页、无可点击假入口 |
+| `/[lang]/ask` | AI 问答客户端；调用 `/api/ask`；页面 `noindex, follow` 且不进入 sitemap |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
 | `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
 | `/api/cms/automation` | 已停用的旧自动化入口；签名请求返回 410，待线上旧 Webhook 删除后可移除 |
@@ -897,3 +906,17 @@ npm run studio:build
 - 修复 `PersonPositionInput` 可能保留 Studio 元素的禁用状态、造成“自动填入的中文身份/状态”无法输入的问题：输入框现在显式以字段 `readOnly` 控制 `disabled` 与 `readOnly`，编辑态永不被残余 disabled 属性锁住；为中英文输入分别加入可见标签，辅助文本继续解释自动模板与手动覆盖规则。只读已发布版本仍保持不可编辑，需进入 Studio 的编辑态创建/编辑草稿。
 - 新增参数化、可干跑的 `attach:missing-publication-pdfs` 脚本；私有附件绝对路径仅通过环境变量传入，不写入仓库。上传脚本会核对目标文档 ID、英文题名、已发布状态和40MB大小限制，重复执行时跳过已有文件。验证：ESLint、Next.js Production build、Sanity Studio build、`git diff --check` 与完整测试56/56全部通过。
 - 用户明确授权后，功能提交 `ebfc9bd Add featured publications and public course materials` 已推送至 GitHub `main`；Sanity Studio 已部署至 `https://yizhoufan.sanity.studio/`。GitHub Vercel 状态确认对应 Production 部署成功（`https://vercel.com/ma-j/yizhoufan/ELwwyXggnfLcYy38qQwYFXrKorHJ`）。本机 Vercel CLI 没有登录凭据，因此未从 CLI 新建重复部署；项目 GitHub 集成已完成该自动部署。
+
+### 2026-09-17 - 搜索收录阶段 1–8 优化（本地待部署）
+
+- 为中英文首页、学术成果、学术报告、教授课程、团队成员与 AI 问答分别编写唯一、准确的 Title 和 Description；页面可见 H1、栏目内容、导航结构与视觉样式保持不变。页面级 Open Graph 与 Twitter 卡片同步使用对应双语标题、简介和正式绝对图片地址。
+- `localizedMetadata` 统一输出当前页 canonical、英文/中文双向 `hreflang` 及 `x-default`；首页新增基于当前已发布 Profile 的 `ProfilePage` + `Person` JSON-LD，包含公开姓名、头像、职位、机构、研究方向、Scholar、ORCID 与北大教师页，不包含邮箱、私人简历或未确认项目。
+- AI 问答页标记为 `noindex, follow` 并从 sitemap 移除；robots.txt 允许公开页面、禁止 `/api/` 抓取。sitemap 不再写每次构建变化的伪 `lastModified`，只保留五类主栏目双语 URL；报告详情只有确有简介或正文且路由可返回内容时才进入 sitemap。
+- Sanity 报告正文图片的 alt 校验从“对象存在”收紧为中英文均需填写准确描述，并明确禁止关键词堆砌；前台渲染优先当前语言 alt、空值时回退另一语言。首页导师头像与9位成员头像继续以真实姓名作非空 alt。
+- 新增 SEO 回归：逐页检查唯一 Title/Description、页面级 OG/Twitter、canonical/hreflang/x-default、单一 H1、首页 JSON-LD、图片 alt、可抓取站内导航、AI noindex、选择性 sitemap、robots API 边界与 Studio alt 约束。
+- 验证结果：ESLint 0 error/0 warning；TypeScript 通过；Next.js Production build通过并生成24个页面；完整测试62/62通过；Sanity Studio Production build通过；`git diff --check`无空白错误。当前未 commit/push，未部署 Vercel 或 Sanity Studio，也未修改 DNS/域名设置。
+
+### 2026-09-17 - 百度搜索资源平台 HTML 文件验证（本地待部署）
+
+- 核对用户提供的 `baidu_verify_codeva-MG05lBZzhr.html`，文件仅含百度校验字符串 `d183a79a8d5d75b6c6f18edc0f188e31`，无脚本或其他指令；已原样放入公开根目录 `public/`。
+- 部署后验证地址应为 `https://yizhoufan.com/baidu_verify_codeva-MG05lBZzhr.html`；新增页面回归确保该路径返回 HTTP 200 且正文与百度提供值一致。本轮仍未 commit/push 或部署。

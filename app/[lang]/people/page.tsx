@@ -8,7 +8,14 @@ import { localizedMetadata } from "../../../lib/metadata";
 export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
   const {lang} = await params;
   if (!isLanguage(lang)) return {};
-  return localizedMetadata(lang, "/people", "People", "团队成员", "People and researchers connected with the lab.", "课题组成员与研究人员简介。");
+  return localizedMetadata(
+    lang,
+    "/people",
+    "Research Team | Yizhou Fan",
+    "范逸洲研究团队成员",
+    "Meet members of Yizhou Fan’s research team and view their public roles, cohort information, research interests, and biographies.",
+    "查看范逸洲研究团队成员的公开姓名、身份、入学年份、研究兴趣与个人简介。",
+  );
 }
 
 export default async function PeoplePage({ params }: { params: Promise<{ lang: string }> }) {

@@ -75,7 +75,16 @@ export const reportImage = defineType({
     return !asset?.size || asset.size <= 8 * 1024 * 1024 ? true : "正文图片不能超过 8 MB。";
   }),
   fields: [
-    defineField({name: "alt", title: "替代文本", type: "localizedString", validation: (rule) => rule.required(), description: "简要说明图片内容，供无障碍访问和图片加载失败时使用。"}),
+    defineField({
+      name: "alt",
+      title: "替代文本",
+      type: "localizedString",
+      validation: (rule) => rule.required().custom((value) => {
+        const alt = value as {en?: string; zh?: string} | undefined;
+        return alt?.en?.trim() && alt?.zh?.trim() ? true : "正文图片必须填写准确的中英文替代文本。";
+      }),
+      description: "用中英文简要、准确地说明图片传达的信息，供无障碍访问和图片加载失败时使用；不要堆砌关键词。",
+    }),
     defineField({name: "caption", title: "图注", type: "localizedString"}),
     defineField({name: "credit", title: "来源 / 版权说明", type: "string"}),
     defineField({name: "sourceUrl", title: "来源链接", type: "url"}),

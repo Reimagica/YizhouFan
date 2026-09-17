@@ -7,7 +7,14 @@ import {localizedMetadata} from "../../../lib/metadata";
 export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
   const {lang} = await params;
   if (!isLanguage(lang)) return {};
-  return localizedMetadata(lang, "/teaching", "Teaching", "教授课程", "Courses in learning analytics, educational technology, academic writing, HCI, AI literacy, and peer instruction.", "学习分析、教育技术、英文学术写作、人机交互、AI 素养与同伴教学法课程。");
+  return localizedMetadata(
+    lang,
+    "/teaching",
+    "Teaching & Courses | Yizhou Fan",
+    "范逸洲教授课程",
+    "Explore Yizhou Fan’s six courses at Peking University, including learning analytics, academic writing, HCI, AI literacy, and peer instruction.",
+    "了解范逸洲在北京大学开设的六门课程，涵盖学习分析、英文学术写作、人机交互、AI 素养与同伴教学法等主题。",
+  );
 }
 
 export default async function TeachingPage({ params }: { params: Promise<{ lang: string }> }) {

@@ -8,7 +8,14 @@ import { localizedMetadata } from "../../../lib/metadata";
 export async function generateMetadata({params}: {params: Promise<{lang: string}>}) {
   const {lang} = await params;
   if (!isLanguage(lang)) return {};
-  return localizedMetadata(lang, "/talks", "Talks", "学术报告", "Seminars, presentations, and public presentation materials.", "学术报告、研讨会与公开演讲材料。");
+  return localizedMetadata(
+    lang,
+    "/talks",
+    "Academic Talks | Yizhou Fan",
+    "范逸洲学术报告",
+    "Browse Yizhou Fan’s academic talks by title, host, or year and access verified public presentation materials when available.",
+    "按题目、主办方或年份浏览范逸洲的学术报告，并在材料获准公开时直接获取报告附件。",
+  );
 }
 
 export default async function TalksPage({ params }: { params: Promise<{ lang: string }> }) {
