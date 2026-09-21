@@ -10,7 +10,7 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-21 People 五类纵向分组、分类新增入口、毕业生四类身份选择及统一入学年份排序已迁移至 Sanity Production，Studio 已部署；新成员石博羽与访问学者许淼已发布。前端代码正随本轮推送部署。2026-09-17 搜索收录阶段 1–8 优化、百度 HTML 验证与正文图片 alt 约束已部署。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
+| 当前阶段 | 2026-09-21 People 五类纵向分组、分类新增入口、毕业生四类身份选择及统一入学年份排序已完成 Sanity Production 迁移、Studio 部署、GitHub 推送与 Vercel 正式站双语验收；新成员石博羽与访问学者许淼已上线。2026-09-17 搜索收录阶段 1–8 优化、百度 HTML 验证与正文图片 alt 约束已部署。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
 | 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、11 个非草稿 Person（另有3个既有 Person 草稿）。当前共有 114 个 Asset（92 file、22 image；旧头像保留用于回退）；11位正式 Person 均具备相应年份、双语 `bio` 与 `portrait`。14条 Person 正式/草稿记录均已写入 `memberCategory` 并清理旧 `position/memberRole/graduationYear/alumniDegree/order/category`；唐陆禛使用 `alumniIdentity=master` 与双语毕业去向。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
@@ -297,10 +297,10 @@ tests/
 
 ## 后续优先事项
 
-1. **People 五类编辑结构 — 已迁移并部署 Studio，前端部署中**：新版 Studio 以五类入口新增成员并自动写入 `memberCategory`；所有成员填写入学年份，毕业生另从博士后、博士研究生、硕士研究生、访问学者中选择身份并填写双语去向，不再填写毕业年份。Production 的11个正式成员及3个历史草稿均已迁移并复核。
+1. **People 五类编辑结构 — 已上线**：新版 Studio 以五类入口新增成员并自动写入 `memberCategory`；所有成员填写入学年份，毕业生另从博士后、博士研究生、硕士研究生、访问学者中选择身份并填写双语去向，不再填写毕业年份。Production 的11个正式成员及3个历史草稿均已迁移并复核，中英文正式页面已验收。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
-4. **团队成员五类重构（2026-09-21 Studio 与数据已上线，前端部署中）**：前端已改为五个同页纵向区块，Studio 已改为分类新增和毕业生专用字段，AI 公开知识同步读取自动身份与毕业去向；现有11位正式成员与3个历史草稿均已完成结构迁移，待前端生产部署后完成双语线上验收。
+4. **团队成员五类重构（2026-09-21 已上线）**：前端已改为五个同页纵向区块，Studio 已改为分类新增和毕业生专用字段，AI 公开知识同步读取自动身份与毕业去向；现有11位正式成员与3个历史草稿均已完成结构迁移，双语正式页面已验收。
 5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；Vercel Hobby 零美元硬上限、默认告警与浏览器端额度读取已核对，Sanity 凭据已轮换，仍需轮换曾暴露的 DeepSeek/Upstash 服务商侧最终凭据并重新部署验证。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
 7. **Scholar 指标自动同步 — 已完成并上线**：SerpApi、Vercel Cron、Production 密钥、异常保护与成功/unchanged 缓存刷新均已上线；首次指标经 SerpApi 与 Google Scholar 官方主页双重核对为 3,962 / 30 / 46（2026-08-25），Sanity、Cron 200 与英文首页均已验收。
@@ -967,3 +967,4 @@ npm run studio:build
 - 用户明确授权推送部署后，先将 Production 的128份文档与114个资产完整导出至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-people-five-category-deploy-20260921.tar.gz`，再执行迁移。
 - 首次迁移完成11个非草稿 Person；复核 raw perspective 时发现3个历史草稿仍保留旧字段，因此修正脚本为同时处理 published 与 drafts，并以对应正式文档分类覆盖草稿的过期分类。第二次事务 `dxx2Fm5CvAJLVhr6oYWYH0` 幂等迁移全部14条记录；最终确认每条均有 `memberCategory/enrollmentYear`，唐陆禛正式与草稿均为 `alumniIdentity=master`，且所有旧字段均已清理。
 - 新版 Schema 与 Studio 已成功部署至 `https://yizhoufan.sanity.studio/`；左侧分类名称为“毕业生”，入学年份说明仅为“必填”，毕业生身份提供博士后、博士研究生、硕士研究生、访问学者四个选项。
+- 功能提交 `f56a9e8 Restructure People categories and alumni fields` 已推送 GitHub `main` 并触发 Vercel 自动部署；`https://yizhoufan.com/zh/people` 与 `/en/people` 均返回200，命中五类分组、许淼 / Sophia Xu、唐陆禛的“2023级硕士研究生 / 2023 cohort · Master’s student”及双语毕业去向。正式 Studio 返回200。
