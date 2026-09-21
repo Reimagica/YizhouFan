@@ -225,15 +225,39 @@ export const talks = [
 ] as const;
 
 export const people = [
-  { name: "Jiaqi Xu", nameZh: "许家奇", position: "Boya Postdoctoral Fellow", positionZh: "博雅博士后", memberRole: "postdoc", enrollmentYear: 2025 },
-  { name: "Marine", nameZh: "夏梦雨", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },
-  { name: "Mingxue Xu", nameZh: "许明雪", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2025 },
-  { name: "Ling Ma", nameZh: "马玲", position: "Ph.D. student", positionZh: "博士研究生", memberRole: "phd", enrollmentYear: 2026 },
-  { name: "Zijian Li", nameZh: "李子健", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2024 },
-  { name: "Zhu Taolin", nameZh: "朱桃林", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2025 },
-  { name: "Linfei Xiao", nameZh: "肖琳霏", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2025 },
-  { name: "Junyang Ma", nameZh: "马郡阳", position: "Master’s student", positionZh: "硕士研究生", memberRole: "master", enrollmentYear: 2026 },
-  { name: "Luzhen Tang", nameZh: "唐陆禛", position: "Alumnus · Ph.D. student at HKU", positionZh: "毕业生 · 香港大学博士研究生", memberRole: "graduated", enrollmentYear: 2023 },
+  { name: "Jiaqi Xu", nameZh: "许家奇", memberCategory: "postdoc", enrollmentYear: 2025 },
+  { name: "Marine", nameZh: "夏梦雨", memberCategory: "phd", enrollmentYear: 2026 },
+  { name: "Mingxue Xu", nameZh: "许明雪", memberCategory: "phd", enrollmentYear: 2025 },
+  { name: "Ling Ma", nameZh: "马玲", memberCategory: "phd", enrollmentYear: 2026 },
+  { name: "Zijian Li", nameZh: "李子健", memberCategory: "master", enrollmentYear: 2024 },
+  { name: "Zhu Taolin", nameZh: "朱桃林", memberCategory: "master", enrollmentYear: 2025 },
+  { name: "Linfei Xiao", nameZh: "肖琳霏", memberCategory: "master", enrollmentYear: 2025 },
+  { name: "Junyang Ma", nameZh: "马郡阳", memberCategory: "master", enrollmentYear: 2026 },
+  {
+    name: "Boyu Shi",
+    nameZh: "石博羽",
+    memberCategory: "master",
+    enrollmentYear: 2026,
+    bio: "She graduated from Beijing Normal University, where she majored in Educational Technology. Her research interests focus on AI in education, learning analytics, generative AI, and intelligent agents, with particular attention to human-AI interaction and learning processes.",
+    bioZh: "本科毕业于北京师范大学教育技术学专业，研究方向聚焦人工智能教育应用与学习分析，关注生成式人工智能、智能体技术与学习者认知、元认知过程的交互机制。",
+  },
+  {
+    name: "Sophia Xu",
+    nameZh: "许淼",
+    memberCategory: "visiting",
+    enrollmentYear: 2026,
+    bio: "Sophia Xu, Ed.D., is a lecturer and graduate supervisor at the School of Foreign Languages, Kunming University. Her research interests include English curriculum and instruction, language teaching methodology, teacher education, and the educational applications of artificial intelligence.",
+    bioZh: "许淼，教育博士，昆明学院外国语学院讲师、研究生导师。主要研究方向为英语课程与教学论、英语教学法、英语教师教育及人工智能赋能教育教学。",
+  },
+  {
+    name: "Luzhen Tang",
+    nameZh: "唐陆禛",
+    memberCategory: "alumni",
+    enrollmentYear: 2023,
+    alumniIdentity: "master",
+    destination: "2026 cohort Ph.D. student at the Faculty of Education, The University of Hong Kong",
+    destinationZh: "香港大学教育学院2026级博士生",
+  },
 ] as const;
 
 export const content = {

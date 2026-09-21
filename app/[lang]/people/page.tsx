@@ -13,8 +13,8 @@ export async function generateMetadata({params}: {params: Promise<{lang: string}
     "/people",
     "Research Team | Yizhou Fan",
     "范逸洲研究团队成员",
-    "Meet members of Yizhou Fan’s research team and view their public roles, cohort information, research interests, and biographies.",
-    "查看范逸洲研究团队成员的公开姓名、身份、入学年份、研究兴趣与个人简介。",
+    "Meet the postdoctoral fellows, Ph.D. students, master’s students, visiting scholars, and alumni in Yizhou Fan’s research team.",
+    "查看范逸洲研究团队的博士后、博士研究生、硕士研究生、访问学者与毕业生信息。",
   );
 }
 

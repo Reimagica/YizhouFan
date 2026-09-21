@@ -104,8 +104,8 @@ test("publishes unique bilingual titles, descriptions, canonicals, and one H1 pe
     ["/zh/talks", "范逸洲学术报告", "按题目、主办方或年份浏览范逸洲的学术报告，并在材料获准公开时直接获取报告附件。"],
     ["/en/teaching", "Teaching & Courses | Yizhou Fan", "Explore Yizhou Fan’s six courses at Peking University, including learning analytics, academic writing, HCI, AI literacy, and peer instruction."],
     ["/zh/teaching", "范逸洲教授课程", "了解范逸洲在北京大学开设的六门课程，涵盖学习分析、英文学术写作、人机交互、AI 素养与同伴教学法等主题。"],
-    ["/en/people", "Research Team | Yizhou Fan", "Meet members of Yizhou Fan’s research team and view their public roles, cohort information, research interests, and biographies."],
-    ["/zh/people", "范逸洲研究团队成员", "查看范逸洲研究团队成员的公开姓名、身份、入学年份、研究兴趣与个人简介。"],
+    ["/en/people", "Research Team | Yizhou Fan", "Meet the postdoctoral fellows, Ph.D. students, master’s students, visiting scholars, and alumni in Yizhou Fan’s research team."],
+    ["/zh/people", "范逸洲研究团队成员", "查看范逸洲研究团队的博士后、博士研究生、硕士研究生、访问学者与毕业生信息。"],
   ];
   const titles = new Set();
 
@@ -345,21 +345,29 @@ test("renders all members on one page without category tabs (en)", async () => {
   const response = await request("/en/people");
   assert.equal(response.status, 200);
   const html = await response.text();
-  // Category tab UI removed entirely.
+  // Categories are stacked as sections rather than interactive tabs.
   assert.doesNotMatch(html, /people-tabs/);
   assert.doesNotMatch(html, /aria-pressed="true"/);
-  assert.doesNotMatch(html, /Postdoctoral fellows|Current students/);
-  // All members render on one page in a single grid.
+  for (const heading of ["Postdoctoral Fellows", "Ph.D. Students", "Master’s Students", "Visiting Scholars", "Alumni"]) {
+    assert.match(html, new RegExp(heading.replace(".", "\\.")));
+  }
+  // All members render on one page across the section grids.
   const cardCount = html.split('class="person-card"').length - 1;
-  assert.equal(cardCount, 9);
+  assert.equal(cardCount, 11);
   assert.doesNotMatch(html, /No public members/);
   assert.match(html, /Luzhen Tang/);
   assert.match(html, /Zijian Li/);
   assert.match(html, /Mingxue Xu/);
   assert.match(html, /Linfei Xiao/);
   assert.match(html, /Ling Ma/);
+  assert.match(html, /Boyu Shi/);
+  assert.match(html, /Sophia Xu/);
+  assert.match(html, /2026 cohort · Visiting Scholar/);
   assert.doesNotMatch(html, /Enrollment year forthcoming|Profile forthcoming/);
   assert.match(html, /2026 cohort · Ph\.D\. student/);
+  assert.match(html, /2023 cohort · Master’s student/);
+  assert.match(html, /Destination/);
+  assert.match(html, /HKU Faculty of Education/);
   assert.doesNotMatch(html, /person-card__year/);
   // No member detail route / no clickable fake entry.
   assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
@@ -371,14 +379,21 @@ test("renders all completed member profiles in Chinese without tabs (zh)", async
   const html = await response.text();
   assert.doesNotMatch(html, /people-tabs/);
   assert.doesNotMatch(html, /aria-pressed="true"/);
+  for (const heading of ["博士后", "博士研究生", "硕士研究生", "访问学者", "毕业生"]) assert.match(html, new RegExp(heading));
   const cardCount = html.split('class="person-card"').length - 1;
-  assert.equal(cardCount, 9);
+  assert.equal(cardCount, 11);
   assert.match(html, /唐陆禛/);
   assert.match(html, /李子健/);
   assert.match(html, /许明雪/);
   assert.match(html, /肖琳霏/);
   assert.match(html, /马玲/);
+  assert.match(html, /石博羽/);
+  assert.match(html, /许淼/);
+  assert.match(html, /2026级访问学者/);
   assert.match(html, /2025级硕士研究生/);
+  assert.match(html, /2023级硕士研究生/);
+  assert.match(html, /毕业去向/);
+  assert.match(html, /香港大学教育学院2026级博士生/);
   assert.doesNotMatch(html, /入学年份待补充|个人与研究简介待补充/);
   assert.doesNotMatch(html, /person-card__year/);
   assert.doesNotMatch(html, /href="\/zh\/people\/[^"]+"/);

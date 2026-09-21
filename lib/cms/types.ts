@@ -68,6 +68,12 @@ export type PublicPerson = {
   id: string;
   name: string;
   nameZh: string;
+  memberCategory?: "postdoc" | "phd" | "master" | "visiting" | "alumni";
+  alumniIdentity?: "postdoc" | "phd" | "master" | "visiting";
+  alumniDegree?: "phd" | "master";
+  destination?: string;
+  destinationZh?: string;
+  // Transitional fields retained while existing Sanity documents are migrated.
   position?: string;
   positionZh?: string;
   memberRole?: "postdoc" | "phd" | "masterToPhd" | "master" | "graduated" | "other";

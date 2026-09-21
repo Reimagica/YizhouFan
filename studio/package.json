@@ -9,6 +9,8 @@
     "deploy": "sanity deploy --schema-required",
     "migrate:0817": "sanity exec scripts/migrate-0817-profile-courses.mjs --with-user-token",
     "migrate:peer-instruction": "sanity exec scripts/add-peer-instruction-course.mjs --with-user-token",
+    "migrate:people-categories": "sanity exec scripts/migrate-people-categories.mjs --with-user-token",
+    "add:sophia-xu": "sanity exec scripts/add-sophia-xu.mjs --with-user-token",
     "prefix:person-positions": "sanity exec scripts/prefix-person-positions.mjs --with-user-token",
     "attach:missing-publication-pdfs": "sanity exec scripts/attach-missing-publication-pdfs.mjs --with-user-token",
     "migrate:publications": "sanity exec scripts/migrate-publications.mjs --with-user-token",

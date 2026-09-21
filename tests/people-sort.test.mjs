@@ -1,65 +1,54 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {sortPeople} from "../lib/people-sort.ts";
+import {groupPeople, personCategory, sortPeople, sortPeopleInCategory} from "../lib/people-sort.ts";
 
 const people = [
-  {id: "missing-b", name: "Zed", nameZh: "乙", memberRole: "master", order: 1},
-  {id: "older-master", name: "Bravo", nameZh: "丁", memberRole: "master", enrollmentYear: 2023, order: 1},
-  {id: "newer", name: "Alpha", nameZh: "甲", memberRole: "graduated", enrollmentYear: 2025, order: 100},
-  {id: "older-phd", name: "Charlie", nameZh: "丙", memberRole: "phd", enrollmentYear: 2023, order: 999},
-  {id: "missing-a", name: "Able", nameZh: "戊", memberRole: "phd", order: 999},
+  {id: "master-older", name: "Bravo", nameZh: "丁", memberCategory: "master", enrollmentYear: 2023},
+  {id: "alumni", name: "Alpha", nameZh: "甲", memberCategory: "alumni", enrollmentYear: 2022},
+  {id: "phd", name: "Charlie", nameZh: "丙", memberCategory: "phd", enrollmentYear: 2024},
+  {id: "postdoc", name: "Delta", nameZh: "戊", memberCategory: "postdoc", enrollmentYear: 2026},
 ];
 
-test("sorts members by year descending, then role priority, ignoring legacy manual order", () => {
-  assert.deepEqual(sortPeople(people, "en").map((person) => person.id), [
-    "newer",
-    "older-phd",
-    "older-master",
-    "missing-a",
-    "missing-b",
+test("groups members into the five requested sections in a fixed order", () => {
+  const groups = groupPeople(people, "zh");
+  assert.deepEqual(groups.map((group) => group.category), ["postdoc", "phd", "master", "visiting", "alumni"]);
+  assert.deepEqual(groups.map((group) => group.label), ["博士后", "博士研究生", "硕士研究生", "访问学者", "毕业生"]);
+  assert.deepEqual(groups.map((group) => group.people.map((person) => person.id)), [
+    ["postdoc"],
+    ["phd"],
+    ["master-older"],
+    [],
+    ["alumni"],
   ]);
 });
 
-test("uses postdoc, PhD, master's-to-PhD, master's, graduated, other order within one year", () => {
-  const sameYear = [
-    {id: "other", name: "F", nameZh: "己", memberRole: "other", enrollmentYear: 2026},
-    {id: "graduated", name: "A", nameZh: "甲", memberRole: "graduated", enrollmentYear: 2026},
-    {id: "master", name: "B", nameZh: "乙", memberRole: "master", enrollmentYear: 2026},
-    {id: "master-to-phd", name: "C", nameZh: "丙", memberRole: "masterToPhd", enrollmentYear: 2026},
-    {id: "phd", name: "D", nameZh: "丁", memberRole: "phd", enrollmentYear: 2026},
-    {id: "postdoc", name: "E", nameZh: "戊", memberRole: "postdoc", enrollmentYear: 2026},
+test("sorts each category by year descending and then by the active-language name", () => {
+  const sameCategory = [
+    {id: "older", name: "Able", nameZh: "周", memberCategory: "master", enrollmentYear: 2024},
+    {id: "zulu", name: "Zulu", nameZh: "阿", memberCategory: "master", enrollmentYear: 2025},
+    {id: "alpha", name: "Alpha", nameZh: "乙", memberCategory: "master", enrollmentYear: 2025},
   ];
-  assert.deepEqual(sortPeople(sameYear, "zh").map((person) => person.id), [
-    "postdoc",
-    "phd",
-    "master-to-phd",
-    "master",
-    "graduated",
-    "other",
-  ]);
+  assert.deepEqual(sortPeopleInCategory(sameCategory, "en").map((person) => person.id), ["alpha", "zulu", "older"]);
+  assert.deepEqual(sortPeopleInCategory(sameCategory, "zh").map((person) => person.id), ["zulu", "alpha", "older"]);
 });
 
-test("infers legacy role text until Sanity memberRole values are backfilled", () => {
-  const legacy = [
-    {id: "master", name: "A", nameZh: "甲", positionZh: "硕士研究生", enrollmentYear: 2025},
-    {id: "graduated", name: "B", nameZh: "乙", positionZh: "毕业生 · 香港大学博士研究生", enrollmentYear: 2025},
-    {id: "phd", name: "C", nameZh: "丙", position: "Ph.D. student", enrollmentYear: 2025},
-    {id: "postdoc", name: "D", nameZh: "丁", positionZh: "博雅博士后", enrollmentYear: 2025},
+test("uses enrollment year when sorting alumni", () => {
+  const alumni = [
+    {id: "2023", name: "A", nameZh: "甲", memberCategory: "alumni", enrollmentYear: 2023},
+    {id: "2024", name: "B", nameZh: "乙", memberCategory: "alumni", enrollmentYear: 2024},
   ];
-  assert.deepEqual(sortPeople(legacy, "zh").map((person) => person.id), ["postdoc", "phd", "master", "graduated"]);
+  assert.deepEqual(sortPeopleInCategory(alumni, "zh").map((person) => person.id), ["2024", "2023"]);
 });
 
-test("uses the active-language name as the final stable tie-breaker", () => {
-  const sameYear = [
-    {id: "a", name: "Zulu", nameZh: "阿", memberRole: "master", enrollmentYear: 2024},
-    {id: "b", name: "Alpha", nameZh: "周", memberRole: "master", enrollmentYear: 2024},
-  ];
-  assert.deepEqual(sortPeople(sameYear, "en").map((person) => person.id), ["b", "a"]);
-  assert.deepEqual(sortPeople(sameYear, "zh").map((person) => person.id), ["a", "b"]);
+test("maps legacy Sanity roles during the migration window", () => {
+  assert.equal(personCategory({id: "a", name: "A", nameZh: "甲", memberRole: "postdoc"}), "postdoc");
+  assert.equal(personCategory({id: "b", name: "B", nameZh: "乙", memberRole: "masterToPhd"}), "phd");
+  assert.equal(personCategory({id: "c", name: "C", nameZh: "丙", memberRole: "other"}), "visiting");
+  assert.equal(personCategory({id: "d", name: "D", nameZh: "丁", memberRole: "graduated"}), "alumni");
 });
 
-test("does not mutate the source array", () => {
+test("flattens groups without mutating the source array", () => {
   const source = [...people];
-  sortPeople(source, "en");
+  assert.deepEqual(sortPeople(source, "en").map((person) => person.id), ["postdoc", "phd", "master-older", "alumni"]);
   assert.deepEqual(source, people);
 });

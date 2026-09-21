@@ -1,5 +1,7 @@
 import type {Language} from "../content";
 import type {PublicCourse, PublicPerson, PublicProfile, PublicPublication, PublicTalk} from "../cms/types";
+import {personCategory, PERSON_CATEGORY_LABELS} from "../people-sort.ts";
+import {localizedAlumniDestination, localizedPersonPosition} from "../person-position.ts";
 
 export const MAX_SELECTED_PUBLICATIONS = 10;
 export const PUBLIC_KNOWLEDGE_MAX_CHARS = 28_000;
@@ -215,12 +217,16 @@ export function buildPublicKnowledgeText(input: KnowledgeInput) {
   const peopleText = fitEntries("PEOPLE", people.map((item) => {
     const name = lang === "zh" ? localized(item.nameZh, item.name) : localized(item.name, item.nameZh);
     const alternateName = lang === "zh" ? compact(item.name) : compact(item.nameZh);
-    const position = lang === "zh" ? localized(item.positionZh, item.position) : localized(item.position, item.positionZh);
+    const category = personCategory(item);
+    const categoryLabel = category ? PERSON_CATEGORY_LABELS[category][lang] : "";
+    const position = localizedPersonPosition(item, lang);
+    const destination = category === "alumni" ? localizedAlumniDestination(item, lang) : undefined;
     const bio = lang === "zh" ? localized(item.bioZh, item.bio) : localized(item.bio, item.bioZh);
     return [
       alternateName ? `${name} / ${alternateName}` : name,
+      categoryLabel,
       position,
-      item.enrollmentYear != null ? `${lang === "zh" ? "入学年份" : "Enrolled"} ${item.enrollmentYear}` : "",
+      destination ? `${lang === "zh" ? "毕业去向" : "Destination"}: ${destination}` : "",
       bio,
     ].filter(Boolean).join("; ");
   }), sectionBudgets.people);

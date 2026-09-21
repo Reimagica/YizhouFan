@@ -57,10 +57,15 @@ const talkQuery = `*[_type == "talk" && status == "published"] | order(date desc
   )
 }`;
 
-const peopleQuery = `*[_type == "person" && status == "published"] | order(enrollmentYear desc, name.en asc) {
+const peopleQuery = `*[_type == "person" && status == "published" && defined(name.en) && defined(name.zh)] {
   "id": _id,
   "name": name.en,
   "nameZh": name.zh,
+  memberCategory,
+  alumniIdentity,
+  alumniDegree,
+  "destination": destination.en,
+  "destinationZh": destination.zh,
   "position": coalesce(position.en, position.zh),
   "positionZh": position.zh,
   memberRole,

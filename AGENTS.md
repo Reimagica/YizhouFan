@@ -10,10 +10,10 @@
 | 项目名称 | Yizhou Fan Personal Website / 范逸洲个人学术主页 |
 | 代码位置 | 当前仓库根目录 |
 | 目标域名 | `yizhoufan.com`（导师已购买，DNS 与正式托管待后续确认） |
-| 当前阶段 | 2026-09-17 面向搜索收录的阶段 1–8 优化、百度 HTML 文件验证与 Sanity 正文图片 alt 约束已推送并部署；People 9位成员资料与头像完整，Google Scholar 每日同步保持上线，Sanity 写入令牌和内容刷新 Webhook secret 已轮换。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
+| 当前阶段 | 2026-09-21 People 五类纵向分组、分类新增入口、毕业生四类身份选择及统一入学年份排序已迁移至 Sanity Production，Studio 已部署；新成员石博羽与访问学者许淼已发布。前端代码正随本轮推送部署。2026-09-17 搜索收录阶段 1–8 优化、百度 HTML 验证与正文图片 alt 约束已部署。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、9 Person。当前共有 112 个 Asset（92 file、20 image；旧头像保留用于回退）；9位 Person 全部 published，且均具备 `enrollmentYear`、双语 `bio` 与 `portrait`。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；新增课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、11 个非草稿 Person（另有3个既有 Person 草稿）。当前共有 114 个 Asset（92 file、22 image；旧头像保留用于回退）；11位正式 Person 均具备相应年份、双语 `bio` 与 `portrait`。14条 Person 正式/草稿记录均已写入 `memberCategory` 并清理旧 `position/memberRole/graduationYear/alumniDegree/order/category`；唐陆禛使用 `alumniIdentity=master` 与双语毕业去向。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -45,7 +45,7 @@
 - 学术成果：中英文成果列表，Google Scholar 作为引用信息的重要外部入口；93 份已确认公开的 PDF 将按正文抽取元数据、去重并补齐到 Sanity，首页只统计全部已发布成果总数，不拆分语言。
 - 学术报告：最终只保留导师指定的 11 场，前台不区分 Keynote/Invited talk；可为确认公开的场次附 PDF/PPTX，并保留人工富文本详情。
 - 教学：作为独立导航与 `/{lang}/teaching` 页面维护；当前展示学习分析、信息技术与高校管理、智能时代的英文学术写作、人机交互设计、面向学术的 AI 素养、同伴教学法六门课程，每门包含课程性质和一段克制的双语简介；有官方课程链接时直接提供访问入口。
-- 团队成员概览：已取消博士后、在读学生、毕业生三类前台分组，所有成员在同一页面按入学年份降序（近→远）排列；同一年份固定按博士后、博士生、硕转博、硕士生、已毕业、其他排序，再按当前语言显示名稳定排序。Studio 新增或编辑成员时必须填写 `enrollmentYear` 并从这六类中选择 `memberRole`；`memberRole` 只用于排序、不在前台卡片展示。博士后、博士生、硕转博、硕士生的身份前展示入学年份（如“2025级硕士研究生”/“2025 cohort · Master’s student”）；已毕业与其他不自动添加年份。身份展示文案自动填入后始终可直接修改，选择“其他”时由编辑者手写中英文。卡片继续展示双语姓名、身份展示文案、2–3 句双语简介与授权公开头像，不再提供个人主页/公开邮箱字段。材料未收齐的简介使用克制占位文案（"个人与研究简介待补充 / Profile forthcoming"）和统一中性头像位，不显示成员详情页，不承担课题组站的成果关联或编辑功能。
+- 团队成员概览：同一页面按“博士后、博士研究生、硕士研究生、访问学者、毕业生”五个纵向区块展示，不使用 Tab。Studio 左侧以同样五类提供独立新增入口，最后一类名称固定为“毕业生”；类别由入口自动写入 `memberCategory`，编辑者不再填写自由文本身份。所有成员（含毕业生）均填写 `enrollmentYear`，该字段说明只显示“必填”。毕业生另选 `alumniIdentity`（博士后、博士研究生、硕士研究生、访问学者四选一）并填写双语 `destination`，不再填写毕业年份；主身份按入学年份显示“2023级硕士研究生”，并另行显示“毕业去向：……”。所有类别均按入学年份降序、同年按当前语言姓名字母/拼音顺序排列。卡片继续展示双语姓名、2–3句双语简介与授权公开头像，不提供个人主页/公开邮箱字段；空类别保留栏目标题和克制空状态，无成员详情页或假入口。
 - AI 问答：导航名称固定为“AI 问答”；接入服务端大模型，回答导师或课题组的公开信息问题，并落实公开知识库、答案来源、无证据时拒答、按 IP/每日总量限流、费用上限和异常停用。
 
 ### 2026-07-27 第二轮页面与功能要求
@@ -202,7 +202,7 @@ Sanity Asset CDN
 | `/[lang]/talks` | 可检索、按年份筛选的报告列表；详情页展示富文本正文与公开附件（已移除类型筛选与标签） |
 | `/[lang]/talks/[id]` | 学术报告详情；支持配图、分级标题、引用、链接、脚注、提示框与多附件 |
 | `/[lang]/teaching` | 独立双语课程栏目；六门课程的性质与简介从 Sanity `course` 文档读取 |
-| `/[lang]/people` | 团队成员单页概览：所有已发布成员按入学年份与六类身份规则排列于同一网格；博士后、博士生、硕转博、硕士生的公开身份前展示入学年份，已毕业与其他不自动加年份；无分类 Tab、无详情页、无可点击假入口 |
+| `/[lang]/people` | 团队成员单页概览：博士后、博士研究生、硕士研究生、访问学者、毕业生五类在同页纵向排列；所有类别均按入学年份降序、同年按本地化姓名排序；无分类 Tab、无详情页、无可点击假入口 |
 | `/[lang]/ask` | AI 问答客户端；调用 `/api/ask`；页面 `noindex, follow` 且不进入 sitemap |
 | `/api/ask` | DeepSeek 服务端问答、结构化输出守卫、相关来源选择、浏览器/匿名网络/全站分层持久化限流 |
 | `/api/cms/publications/lookup` | 仅允许 Sanity Studio Origin 的只读论文多源候选检索；不写入内容 |
@@ -289,7 +289,7 @@ tests/
 - 新增论文：核对题名、作者顺序、年份、载体、DOI/公开链接与 PDF 授权；同时检查中英文展示、筛选类型、搜索字段、BibTeX 输出和下载状态。`featured` 可在 Studio 手动勾选；公开查询与前端按精选优先、年份新到旧排序，并显示“精选 / Featured”文字徽标。
 - 新增报告：核对日期、主办方、地点、题名、双语正文和公开附件；不需要封面图，也不使用 AI 生成正文。导师最新要求不再区分 Keynote/Invited talk；11 场白名单迁移已完成（2026-08-18），`type` 已置为 `hidden` 旧数据兼容字段，前台、查询与 AI 知识均不依赖或展示。
 - 新增课程：通过独立 `course` 文档维护双语名称、性质、简介、排序和发布状态；课程存在官方链接时写入 `moocUrl` 并在前台提供直链。Profile 内旧课程数组只为线上兼容暂时保留，不得继续编辑。当前为六门已发布课程。
-- 成员：前台为9位成员单网格并按入学年份排序；博士后、博士生、硕转博、硕士生的身份前显示入学年份，已毕业和其他不显示年份前缀；结构化排序身份 `memberRole` 始终不公开。Studio 新增或编辑成员必须填写 `enrollmentYear` 并选择 `memberRole`（博士后、博士生、硕转博、硕士生、已毕业、其他）；身份/状态自动填入后可以自行修改。前端执行年份降序，同年按上述身份顺序及本地化姓名稳定排序。`order` 仅作为隐藏旧字段保留，不再影响前台。只在收到本人确认材料后维护年份、身份、双语简介与公开照片；截至2026-09-02，9位成员均已按本人材料补齐原有资料。照片在 Sanity 保存原图，前端1:1容器只做非破坏性居中裁切；后续裁图或换图须保留公开授权并同步检查中英文页面。
+- 成员：前台为五个固定纵向类别，顺序为博士后、博士研究生、硕士研究生、访问学者、毕业生；Studio 左侧最后一类名称固定为“毕业生”。必须从对应类别入口新增成员，隐藏只读 `memberCategory` 由初始值模板自动写入；所有成员均填写 `enrollmentYear`，其说明只保留“必填”。毕业生另选 `alumniIdentity`（博士后、博士研究生、硕士研究生、访问学者）并填写中英文 `destination`，不再填写 `graduationYear`，也不再维护自由文本 `position` 或六类 `memberRole`。毕业生卡片的主身份按入学年份和所选身份生成；所有类别统一按入学年份降序，同年按当前语言姓名字母/拼音稳定排序。旧 `alumniDegree`、`graduationYear`、`position`、`memberRole`、`order` 与 `category` 只在迁移窗口识别并清除。只在收到本人确认材料后维护年份、毕业身份、去向、双语简介与公开照片；截至2026-09-21，11位正式成员均具备已确认年份、双语简介与公开头像。照片通常在 Sanity 保存原图，前端1:1容器做非破坏性居中裁切；成员明确要求特殊取景时可另存经确认的正方形裁图，并记录裁切方向。后续裁图或换图须保留公开授权并同步检查中英文页面。
 - 所有公开项目必须由人工白名单录入，不允许从简历整段自动导入。
 - 内容更新完成后至少运行 `npm run lint`、`npm run build`，并检查 `/en`、`/zh` 与受影响子页面。
 
@@ -297,10 +297,10 @@ tests/
 
 ## 后续优先事项
 
-1. **发布 People 后台字段 — 已完成**：2026-08-23 已部署新版 Sanity Studio，远端 production Schema 包含 `enrollmentYear`、长文本 `bio` 与公开头像字段；个人主页/公开邮箱已在 2026-09-08 的 Schema 清理中移除。不得在资料未确认前批量补写成员事实。
+1. **People 五类编辑结构 — 已迁移并部署 Studio，前端部署中**：新版 Studio 以五类入口新增成员并自动写入 `memberCategory`；所有成员填写入学年份，毕业生另从博士后、博士研究生、硕士研究生、访问学者中选择身份并填写双语去向，不再填写毕业年份。Production 的11个正式成员及3个历史草稿均已迁移并复核。
 2. **学术成果（Prompt 1）— 已完成**：009→011 映射修正、一次性 repair 脚本删除、英文原始摘要逐字重提（含扫描型 PDF 的 Vision OCR）、`venue`/卷期页码/文章号规范化、Book chapter `@incollection`/`articleno` BibTeX、绝对私人路径参数化、`tsconfig.tsbuildinfo` 忽略、ESLint 0 warning 均已落地；3 条扫描型 PDF 元数据逐字校正；8 条 custom-status draft 全部发布。当前 92 published、0 draft、89 PDF。
 3. **学术报告收敛（Prompt 2，已完成并上线）**：Talks 已收敛为导师指定的 11 场，移除类型筛选/标签，保留年份、搜索、详情富文本和公开附件能力。详见本文件“2026-08-18 - Talks module convergence (Prompt 2)”。
-4. **团队成员重构与资料补全（Prompt 3，已完成）**：已取消三类前台分组并改为按入学年份单页稳定排列，Studio Schema 已部署，缺失字段降级为占位文案，AI 知识不读取占位文案。2026-09-02 已补齐全部9位成员的年份、双语简介与授权头像；1:1头像前端改动已发布。
+4. **团队成员五类重构（2026-09-21 Studio 与数据已上线，前端部署中）**：前端已改为五个同页纵向区块，Studio 已改为分类新增和毕业生专用字段，AI 公开知识同步读取自动身份与毕业去向；现有11位正式成员与3个历史草稿均已完成结构迁移，待前端生产部署后完成双语线上验收。
 5. **生产运维收尾**：`yizhoufan.com` 已绑定到 Vercel，待阿里云 DNS 写入 apex A `216.198.79.1` 与 `64.29.17.1` 后完成 HTTPS/跳转验收；Vercel Hobby 零美元硬上限、默认告警与浏览器端额度读取已核对，Sanity 凭据已轮换，仍需轮换曾暴露的 DeepSeek/Upstash 服务商侧最终凭据并重新部署验证。
 6. **依赖维护**：Sanity CLI 依赖树仍有传递依赖告警；禁止执行 `npm audit fix --force`，等待兼容版本并在独立分支完成 Studio 构建与功能回归。
 7. **Scholar 指标自动同步 — 已完成并上线**：SerpApi、Vercel Cron、Production 密钥、异常保护与成功/unchanged 缓存刷新均已上线；首次指标经 SerpApi 与 Google Scholar 官方主页双重核对为 3,962 / 30 / 46（2026-08-25），Sanity、Cron 200 与英文首页均已验收。
@@ -920,3 +920,50 @@ npm run studio:build
 
 - 核对用户提供的 `baidu_verify_codeva-MG05lBZzhr.html`，文件仅含百度校验字符串 `d183a79a8d5d75b6c6f18edc0f188e31`，无脚本或其他指令；已原样放入公开根目录 `public/`。
 - 正式验证地址 `https://yizhoufan.com/baidu_verify_codeva-MG05lBZzhr.html` 已返回 HTTP 200，跟随现有 apex → `www` 跳转后正文仍与百度提供值一致。正式英文首页命中新 Title 与 JSON-LD，AI 页命中 `noindex`，robots.txt 命中 `/api/` 禁抓规则；sitemap 共10个目标 URL，含 `x-default`，不含 AI 问答页和伪 `lastModified`。
+
+### 2026-09-21 - People 五类纵向分组与分类编辑模型（本地待部署）
+
+- 根据用户最新要求覆盖 2026-09-08 的六类排序与自由身份文案方案：People 页面仍不使用 Tab，但改为依次展示博士后、博士研究生、硕士研究生、访问学者、毕业生五个纵向区块；空类别保留标题与空状态，姓名卡片标题由 H2 调整为 H3，维持单一页面 H1 和正常标题层级。
+- 新增 `memberCategory`，并在 Studio 左侧提供五个分类列表与各自的新增模板；编辑者从对应类别添加成员，类别自动写入且不在表单中手选。非毕业生只需填写 `enrollmentYear`，身份由前端按类别与年份生成；原 `position`、`memberRole`、`positionMode`、`order`、`category` 均改为隐藏只读迁移字段，自定义 `PersonPositionInput` 已移除。
+- 毕业生填写 `enrollmentYear`、`alumniIdentity`（博士后、博士研究生、硕士研究生、访问学者四选一）和中英文 `destination`；不再设置 `graduationYear`。前台主身份显示“入学年份级 + 所选身份”，并单列“毕业去向 / Destination”，排序也统一使用入学年份。现有 `person-009` 的公开材料已确认其2023年入学、在团队身份为硕士研究生、毕业后赴香港大学教育学院攻读2026级博士；迁移计划据此写入结构化字段，不从未知文本猜测事实。
+- 所有类别内部统一按入学年份降序；同年按当前语言显示姓名的字母/拼音顺序稳定排序。AI 公开知识同步使用生成后的身份、分类和毕业去向，不再读取旧自由身份作为正式数据。
+- 新增默认干跑的 `studio/scripts/migrate-people-categories.mjs`；只有显式设置 `PEOPLE_MIGRATION_APPLY=1` 才会写入，且会在无法分类或毕业生资料不完整时中止。当前 Production 尚未执行迁移，Studio/Vercel 尚未部署，Git 尚未提交或推送；前端保留旧 `memberRole` 与 `position` 的确定性兼容读取，确保迁移窗口页面不失真。
+- 本地验证：ESLint 通过；Next.js 16.2.12 Production build 通过并生成24个页面；Sanity Studio Production build 通过；完整测试64/64通过。Chrome 桌面（1440×1800与1000×6000）及移动端（390×844）截图确认五类顺序、三/二/一列响应式卡片、访问学者空状态、毕业生身份与去向均正常；Codex 浏览器控制连接本轮返回 `nodeRepl.fetch request failed`，因此视觉验收改用本机 Chrome headless 对同一本地页面截图，不涉及线上写入。
+
+### 2026-09-21 - 新增硕士生石博羽（Sanity 已发布，本地服务运行）
+
+- 根据用户提供的本人材料新增 `person-010`：石博羽 / Boyu Shi，`memberCategory=master`、`enrollmentYear=2026`，中英文简介逐字采用用户文本；头像采用用户提供的1279×1280 JPEG原图并上传为 Sanity image asset `image-044f4cd2e797e34cde666c3de92f3701ab10a550-1279x1280-jpg`，CDN HEAD 返回200。
+- 写入前查询确认无同名成员或 `person-010`，并完整导出126份文档和全部资产至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-boyu-shi-20260921.tar.gz`（210,741,426字节）。写入后只读复核姓名、分类、年份、双语简介、头像尺寸/类型及 `published` 状态全部正确；Production 当前为10位成员、113个资产（92 file、21 image）。
+- 为避免新版尚未部署时正式站点的旧 People 前端缺少身份，新文档临时同时写入 `memberRole=master` 与双语 `position`；后续运行五类迁移时脚本会清理这些兼容字段。受控静态回退同步增加石博羽，页面渲染测试人数由9更新为10。
+- 本地前端运行于 `http://localhost:3000`，Sanity Studio 运行于 `http://localhost:3333`；中英文 People 页面与 Studio 均返回200，页面命中姓名、双语简介和10张成员卡。2026级硕士生同年排序复核：中文按拼音为马郡阳→石博羽，英文按字母为Boyu Shi→Junyang Ma。代码、Studio与既有9人迁移仍未提交、推送或部署。
+
+### 2026-09-21 - 新增访问学者许淼（Sanity 已发布，本地服务运行）
+
+- 根据用户提供并确认的本人材料新增 `person-011`：许淼 / Sophia Xu，`memberCategory=visiting`、`enrollmentYear=2026`，双语简介逐字采用用户文本；前台新结构自动显示“2026级访问学者 / 2026 cohort · Visiting Scholar”，昆明学院讲师、研究生导师身份保留在简介中。
+- 用户明确要求照片采用左侧取景的正方形裁切；由提供的3:2 JPEG生成1254×1254 PNG并上传为 Sanity image asset `image-1f870fcab055c5382d1cb4ff0113a92d100b4835-1254x1254-png`。只改变画幅与取景，不作为新增人物事实来源。
+- 写入前确认无同名成员或 `person-011`，并完整导出127份文档和113个资产至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-sophia-xu-20260921.tar.gz`（211,172,220字节）。写入后只读复核姓名、分类、年份、双语简介、头像1:1尺寸及 `published` 状态正确；Production 当前为11个非草稿 Person、114个资产（92 file、22 image），另有3个既有 Person 草稿。
+- 为兼容尚未部署的旧 People 前端，文档暂留 `memberRole=other` 与包含访问学者/讲师事实的双语 `position`；五类迁移脚本后续会清理兼容字段。受控静态回退与页面回归测试同步增加许淼，预期成员卡总数更新为11。代码、Studio与既有9人迁移仍未提交、推送或部署。
+
+### 2026-09-21 - 毕业生恢复展示入学年份与培养身份（本地待部署）
+
+- 用户最新口径覆盖此前“毕业年份 + 毕业生”显示方式：毕业生卡片主身份改为入学年份与其在团队的培养身份，毕业去向继续单列；唐陆禛显示“2023级硕士研究生”，下方显示“毕业去向：香港大学教育学院2026级博士生”。英文同步显示“2023 cohort · Master’s student”及对应去向。
+- Studio 的 `enrollmentYear` 改为所有类别必填且毕业生不再隐藏；随后用户进一步要求移除 `graduationYear`，五类成员统一按入学年份排序。`alumniDegree` 的后台标签改为博士/硕士研究生，避免误解为当前身份。迁移脚本为 `person-009` 明确保留 `enrollmentYear=2023` 与含2026级信息的双语去向，并清理旧 `graduationYear`。
+- 本轮仅调整本地代码、回退数据、测试与项目记录；Sanity 现有 `person-009` 已含 `enrollmentYear=2023`，无需为展示效果修改 Production。未提交、未推送、未部署。
+
+### 2026-09-21 - 移除毕业年份并统一按入学年份排序（本地待部署）
+
+- 按用户最新确认，从 Person Schema、公开查询类型、受控回退与种子生成中移除 `graduationYear`；毕业生只需填写入学年份、在团队的博士/硕士培养身份和双语毕业去向。
+- 五个成员类别统一按 `enrollmentYear` 从后往前排序，同年继续按当前语言姓名字母/拼音稳定排序。迁移脚本会主动 unset 历史 `graduationYear`，避免 Studio 部署后出现未知字段。
+- 本轮不需要修改当前 Sanity Production 内容：`person-009` 的 `graduationYear` 当前为空，`enrollmentYear=2023` 已满足新版展示和排序。未提交、未推送、未部署。
+
+### 2026-09-21 - 毕业生后台身份选项与文案精简（本地待部署）
+
+- Sanity 团队成员左侧第五类名称确认并固定为“毕业生”。“入学年份”字段说明精简为“必填”，删除自动生成身份等附加解释。
+- 毕业生专用字段由旧 `alumniDegree` 改为 `alumniIdentity`，后台标题为“身份”，提供博士后、博士研究生、硕士研究生、访问学者四个单选项；前端和 AI 公开知识均按入学年份与所选身份生成双语身份。
+- 迁移脚本将唐陆禛映射为 `alumniIdentity=master`，并兼容读取尚未迁移的 `alumniDegree` 后清理旧字段。
+
+### 2026-09-21 - People 五类数据迁移与 Studio 正式部署
+
+- 用户明确授权推送部署后，先将 Production 的128份文档与114个资产完整导出至仓库外 `E:/科研/课题组网站/YizhouFan-private/Sanity备份/yizhoufan-production-before-people-five-category-deploy-20260921.tar.gz`，再执行迁移。
+- 首次迁移完成11个非草稿 Person；复核 raw perspective 时发现3个历史草稿仍保留旧字段，因此修正脚本为同时处理 published 与 drafts，并以对应正式文档分类覆盖草稿的过期分类。第二次事务 `dxx2Fm5CvAJLVhr6oYWYH0` 幂等迁移全部14条记录；最终确认每条均有 `memberCategory/enrollmentYear`，唐陆禛正式与草稿均为 `alumniIdentity=master`，且所有旧字段均已清理。
+- 新版 Schema 与 Studio 已成功部署至 `https://yizhoufan.sanity.studio/`；左侧分类名称为“毕业生”，入学年份说明仅为“必填”，毕业生身份提供博士后、博士研究生、硕士研究生、访问学者四个选项。

@@ -1,51 +1,72 @@
 import type {Language} from "./content";
 import type {PublicPerson} from "./cms/types";
 
-const roleRanks: Record<NonNullable<PublicPerson["memberRole"]>, number> = {
-  postdoc: 0,
-  phd: 1,
-  masterToPhd: 2,
-  master: 3,
-  graduated: 4,
-  other: 5,
+export const PERSON_CATEGORIES = ["postdoc", "phd", "master", "visiting", "alumni"] as const;
+export type PersonCategory = (typeof PERSON_CATEGORIES)[number];
+
+export const PERSON_CATEGORY_LABELS: Record<PersonCategory, {en: string; zh: string}> = {
+  postdoc: {en: "Postdoctoral Fellows", zh: "博士后"},
+  phd: {en: "Ph.D. Students", zh: "博士研究生"},
+  master: {en: "Master’s Students", zh: "硕士研究生"},
+  visiting: {en: "Visiting Scholars", zh: "访问学者"},
+  alumni: {en: "Alumni", zh: "毕业生"},
 };
 
-// Published records created before `memberRole` was introduced remain sortable until
-// the field is backfilled in Sanity. Graduation is checked first because an alumnus'
-// display text may also mention a current doctoral programme elsewhere.
-export function personRoleRank(person: PublicPerson): number {
-  if (person.memberRole) return roleRanks[person.memberRole];
+const legacyRoleCategories: Record<NonNullable<PublicPerson["memberRole"]>, PersonCategory> = {
+  postdoc: "postdoc",
+  phd: "phd",
+  masterToPhd: "phd",
+  master: "master",
+  graduated: "alumni",
+  other: "visiting",
+};
+
+// Existing published documents continue to render correctly while the new
+// category field is being backfilled in Sanity.
+export function personCategory(person: PublicPerson): PersonCategory | undefined {
+  if (person.memberCategory) return person.memberCategory;
+  if (person.memberRole) return legacyRoleCategories[person.memberRole];
 
   const position = `${person.positionZh ?? ""} ${person.position ?? ""}`.toLocaleLowerCase();
-  if (/博士后|postdoc|post-doctor/u.test(position)) return roleRanks.postdoc;
-  if (/毕业|校友|alumn/u.test(position)) return roleRanks.graduated;
-  if (/硕转博|硕博连读|master(?:'s)?[- ]to[- ](?:phd|doctoral)|master.*doctoral/u.test(position)) return roleRanks.masterToPhd;
-  if (/博士研究生|博士生|ph\.?d\.? student|doctoral student/u.test(position)) return roleRanks.phd;
-  if (/硕士研究生|硕士生|master(?:'s)? student/u.test(position)) return roleRanks.master;
-  return roleRanks.other;
+  if (/博士后|postdoc|post-doctor/u.test(position)) return "postdoc";
+  if (/毕业|校友|alumn|graduate/u.test(position)) return "alumni";
+  if (/访问学者|visiting scholar/u.test(position)) return "visiting";
+  if (/硕转博|硕博连读|博士研究生|博士生|ph\.?d\.? student|doctoral student/u.test(position)) return "phd";
+  if (/硕士研究生|硕士生|master(?:'s|’s)? student/u.test(position)) return "master";
+  return undefined;
 }
 
-// Stable, language-aware sort for team members. Does not rely on Sanity return order.
-// 1. Members with an enrollment year come first.
-// 2. Enrollment year descending (most recent first).
-// 3. Within the same year: postdoc, PhD, master's-to-PhD, master's, graduated, other.
-// 4. Then by the display name for the current language.
-// 5. Members without an enrollment year sort to the end using the same role/name rules.
+export function personSortYear(person: PublicPerson): number | undefined {
+  return person.enrollmentYear;
+}
+
+export function sortPeopleInCategory(people: PublicPerson[], lang: Language): PublicPerson[] {
+  const locale = lang === "zh" ? "zh-Hans-u-co-pinyin" : "en";
+  const nameOf = (person: PublicPerson) => lang === "zh" ? person.nameZh || person.name : person.name || person.nameZh;
+
+  return [...people].sort((a, b) => {
+    const yearA = personSortYear(a);
+    const yearB = personSortYear(b);
+    if (yearA == null && yearB != null) return 1;
+    if (yearA != null && yearB == null) return -1;
+    if (yearA != null && yearB != null && yearA !== yearB) return yearB - yearA;
+    return nameOf(a).localeCompare(nameOf(b), locale, {sensitivity: "base"});
+  });
+}
+
+export function groupPeople(people: PublicPerson[], lang: Language) {
+  return PERSON_CATEGORIES.map((category) => ({
+    category,
+    label: PERSON_CATEGORY_LABELS[category][lang],
+    people: sortPeopleInCategory(
+      people.filter((person) => personCategory(person) === category),
+      lang,
+    ),
+  }));
+}
+
+// Kept as a small public utility for callers that need the same order without
+// rendering the section wrappers.
 export function sortPeople(people: PublicPerson[], lang: Language): PublicPerson[] {
-  const locale = lang === "zh" ? "zh-Hans" : "en";
-  const nameOf = (person: PublicPerson) => (lang === "zh" ? person.nameZh || person.name : person.name || person.nameZh);
-  const byName = (a: PublicPerson, b: PublicPerson) => nameOf(a).localeCompare(nameOf(b), locale);
-
-  const withYear = people.filter((person) => person.enrollmentYear != null);
-  const withoutYear = people.filter((person) => person.enrollmentYear == null);
-
-  const withYearSorted = [...withYear].sort((a, b) =>
-    ((b.enrollmentYear as number) - (a.enrollmentYear as number))
-    || (personRoleRank(a) - personRoleRank(b))
-    || byName(a, b),
-  );
-  const withoutYearSorted = [...withoutYear].sort((a, b) =>
-    (personRoleRank(a) - personRoleRank(b)) || byName(a, b),
-  );
-  return [...withYearSorted, ...withoutYearSorted];
+  return groupPeople(people, lang).flatMap((group) => group.people);
 }
