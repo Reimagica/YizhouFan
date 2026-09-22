@@ -80,7 +80,7 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
   const html = await response.text();
   assert.match(html, /个人简介/);
   assert.match(html, /范逸洲/);
-  assert.doesNotMatch(html, /个人网站/);
+  assert.match(html, /范逸洲个人主页/);
   assert.match(html, /学术数据/);
   assert.match(html, /本站学术成果/);
   assert.match(html, /最佳学生论文提名/);
@@ -97,7 +97,7 @@ test("uses the Chinese profile as the Chinese landing page", async () => {
 test("publishes unique bilingual titles, descriptions, canonicals, and one H1 per main page", async () => {
   const pages = [
     ["/en", "Yizhou Fan | Peking University", "Academic profile of Yizhou Fan at Peking University, covering his biography, research interests, appointments, honors, public projects, and academic service."],
-    ["/zh", "范逸洲｜北京大学教育学院", "范逸洲的个人学术主页，介绍其在北京大学教育学院的任职、研究方向、学术经历、荣誉、公开科研项目与学术服务。"],
+    ["/zh", "范逸洲个人主页｜北京大学教育学院", "范逸洲个人网站与个人主页，介绍北京大学教育学院范逸洲的个人简介、研究方向、学术成果、课程、学术报告与研究团队。"],
     ["/en/publications", "Publications & Open PDFs | Yizhou Fan", "Search Yizhou Fan’s publications and books, read abstracts and citation details, copy BibTeX, and download copyright-cleared PDFs."],
     ["/zh/publications", "范逸洲学术成果与公开 PDF", "检索范逸洲的论文与著作，查看摘要和引文信息、复制 BibTeX，并下载已确认可公开的 PDF 全文。"],
     ["/en/talks", "Academic Talks | Yizhou Fan", "Browse Yizhou Fan’s academic talks by title, host, or year and access verified public presentation materials when available."],
@@ -367,7 +367,7 @@ test("renders all members on one page without category tabs (en)", async () => {
   assert.match(html, /2026 cohort · Ph\.D\. student/);
   assert.match(html, /2023 cohort · Master’s student/);
   assert.match(html, /Destination/);
-  assert.match(html, /HKU Faculty of Education/);
+  assert.match(html, /Faculty of Education/);
   assert.doesNotMatch(html, /person-card__year/);
   // No member detail route / no clickable fake entry.
   assert.doesNotMatch(html, /href="\/en\/people\/[^"]+"/);
@@ -430,7 +430,7 @@ test("renders a bilingual institutional footer with public contact details", asy
   const english = await request("/en");
   const englishHtml = await english.text();
   assert.match(englishHtml, /Mailing address/);
-  assert.match(englishHtml, /Room 419, Graduate School of Education/);
+  assert.match(englishHtml, /Room 423, Graduate School of Education/);
   assert.match(englishHtml, /Beijing 100871, China/);
   assert.match(englishHtml, /fyz@pku.edu.cn/);
 

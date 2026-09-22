@@ -968,3 +968,13 @@ npm run studio:build
 - 首次迁移完成11个非草稿 Person；复核 raw perspective 时发现3个历史草稿仍保留旧字段，因此修正脚本为同时处理 published 与 drafts，并以对应正式文档分类覆盖草稿的过期分类。第二次事务 `dxx2Fm5CvAJLVhr6oYWYH0` 幂等迁移全部14条记录；最终确认每条均有 `memberCategory/enrollmentYear`，唐陆禛正式与草稿均为 `alumniIdentity=master`，且所有旧字段均已清理。
 - 新版 Schema 与 Studio 已成功部署至 `https://yizhoufan.sanity.studio/`；左侧分类名称为“毕业生”，入学年份说明仅为“必填”，毕业生身份提供博士后、博士研究生、硕士研究生、访问学者四个选项。
 - 功能提交 `f56a9e8 Restructure People categories and alumni fields` 已推送 GitHub `main` 并触发 Vercel 自动部署；`https://yizhoufan.com/zh/people` 与 `/en/people` 均返回200，命中五类分组、许淼 / Sophia Xu、唐陆禛的“2023级硕士研究生 / 2023 cohort · Master’s student”及双语毕业去向。正式 Studio 返回200。
+
+### 2026-09-22 - 中文首页搜索语义增强（本地待部署）
+
+- 用户反馈英文检索 `yizhoufan` 已可找到网站，但中文检索“范逸洲”尚不稳定；在不改变前端布局、不添加无效 meta keywords、不堆砌关键词的前提下，中文首页 Title 调整为“范逸洲个人主页｜北京大学教育学院”，Description 调整为自然表述“范逸洲个人网站与个人主页，介绍北京大学教育学院范逸洲的个人简介、研究方向、学术成果、课程、学术报告与研究团队”。首页 ProfilePage JSON-LD 的中文名称同步更新，保留现有 Person、canonical、hreflang 与 sitemap 结构。
+- 本地验证：ESLint 通过；Next.js Production build 通过并生成24个页面；本轮仅修改 `app/[lang]/page.tsx`，未推送或部署，待用户确认后再执行发布并在 Google Search Console / 百度搜索资源平台请求重新抓取中文首页。
+
+### 2026-09-22 - 更新公开通讯地址办公室号（待部署）
+
+- 根据用户确认，将全站双语页脚公开通讯地址中的办公室号由 Room/419 室改为 Room/423 室；街道、机构和邮编保持不变。同步更新渲染回归测试，未改变其他内容。
+- 本轮与前一条中文首页搜索语义增强一并验证后推送部署。

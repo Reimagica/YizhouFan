@@ -94,8 +94,8 @@ export function SiteShell({ lang, activePath = "", children }: SiteShellProps) {
         </div>
         <address className="site-footer__address">
           <p className="site-footer__label">{lang === "zh" ? "通讯地址" : "Mailing address"}</p>
-          <span>{lang === "zh" ? "北京市海淀区颐和园路5号" : "Room 419, Graduate School of Education"}</span>
-          <span>{lang === "zh" ? "北京大学教育学院419室" : "Peking University, No. 5 Yiheyuan Road"}</span>
+          <span>{lang === "zh" ? "北京市海淀区颐和园路5号" : "Room 423, Graduate School of Education"}</span>
+          <span>{lang === "zh" ? "北京大学教育学院423室" : "Peking University, No. 5 Yiheyuan Road"}</span>
           <span>{lang === "zh" ? "邮编：100871" : "Beijing 100871, China"}</span>
         </address>
       </footer>

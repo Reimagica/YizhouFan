@@ -13,9 +13,9 @@ export async function generateMetadata({params}: {params: Promise<{lang: string}
     lang,
     "",
     "Yizhou Fan | Peking University",
-    "范逸洲｜北京大学教育学院",
+    "范逸洲个人主页｜北京大学教育学院",
     "Academic profile of Yizhou Fan at Peking University, covering his biography, research interests, appointments, honors, public projects, and academic service.",
-    "范逸洲的个人学术主页，介绍其在北京大学教育学院的任职、研究方向、学术经历、荣誉、公开科研项目与学术服务。",
+    "范逸洲个人网站与个人主页，介绍北京大学教育学院范逸洲的个人简介、研究方向、学术成果、课程、学术报告与研究团队。",
   );
 }
 
@@ -37,7 +37,7 @@ export default async function LanguageHome({ params }: { params: Promise<{ lang:
     "@id": `${profileUrl}#profile-page`,
     url: profileUrl,
     inLanguage: zh ? "zh-CN" : "en",
-    name: zh ? "范逸洲｜北京大学教育学院" : "Yizhou Fan | Peking University",
+    name: zh ? "范逸洲个人主页｜北京大学教育学院" : "Yizhou Fan | Peking University",
     description: profile.bio.join(" "),
     mainEntity: {
       "@type": "Person",
