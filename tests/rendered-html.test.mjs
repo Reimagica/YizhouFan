@@ -353,7 +353,7 @@ test("renders all members on one page without category tabs (en)", async () => {
   }
   // All members render on one page across the section grids.
   const cardCount = html.split('class="person-card"').length - 1;
-  assert.equal(cardCount, 11);
+  assert.equal(cardCount, 12);
   assert.doesNotMatch(html, /No public members/);
   assert.match(html, /Luzhen Tang/);
   assert.match(html, /Zijian Li/);
@@ -362,6 +362,7 @@ test("renders all members on one page without category tabs (en)", async () => {
   assert.match(html, /Ling Ma/);
   assert.match(html, /Boyu Shi/);
   assert.match(html, /Sophia Xu/);
+  assert.match(html, /Chen Naping/);
   assert.match(html, /2026 cohort · Visiting Scholar/);
   assert.doesNotMatch(html, /Enrollment year forthcoming|Profile forthcoming/);
   assert.match(html, /2026 cohort · Ph\.D\. student/);
@@ -381,11 +382,12 @@ test("renders all completed member profiles in Chinese without tabs (zh)", async
   assert.doesNotMatch(html, /aria-pressed="true"/);
   for (const heading of ["博士后", "博士研究生", "硕士研究生", "访问学者", "毕业生"]) assert.match(html, new RegExp(heading));
   const cardCount = html.split('class="person-card"').length - 1;
-  assert.equal(cardCount, 11);
+  assert.equal(cardCount, 12);
   assert.match(html, /唐陆禛/);
   assert.match(html, /李子健/);
   assert.match(html, /许明雪/);
   assert.match(html, /肖琳霏/);
+  assert.match(html, /陈娜平/);
   assert.match(html, /马玲/);
   assert.match(html, /石博羽/);
   assert.match(html, /许淼/);

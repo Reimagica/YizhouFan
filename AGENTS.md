@@ -13,7 +13,7 @@
 | 当前阶段 | 2026-09-21 People 五类纵向分组、分类新增入口、毕业生四类身份选择及统一入学年份排序已完成 Sanity Production 迁移、Studio 部署、GitHub 推送与 Vercel 正式站双语验收；新成员石博羽与访问学者许淼已上线。2026-09-17 搜索收录阶段 1–8 优化、百度 HTML 验证与正文图片 alt 约束已部署。`yizhoufan.com` 已可访问，apex/`www` 权威域名信号冲突按用户要求暂缓处理；DeepSeek、Upstash 服务商侧最终凭据轮换仍待完成 |
 | 技术栈 | 标准 Next.js 16 App Router + React 19 + TypeScript + Tailwind CSS v4；Sanity Studio 独立子项目 |
 | 包管理 | npm |
-| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、11 个非草稿 Person（另有3个既有 Person 草稿）。当前共有 114 个 Asset（92 file、22 image；旧头像保留用于回退）；11位正式 Person 均具备相应年份、双语 `bio` 与 `portrait`。14条 Person 正式/草稿记录均已写入 `memberCategory` 并清理旧 `position/memberRole/graduationYear/alumniDegree/order/category`；唐陆禛使用 `alumniIdentity=master` 与双语毕业去向。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
+| 当前数据形态 | Sanity `production` 是正式数据源；业务文档为 1 Profile、6 Course、92 Publication、11 Talk、12 个非草稿 Person（另有3个既有 Person 草稿）。当前共有 115 个 Asset（92 file、23 image；旧头像保留用于回退）；12位正式 Person 均具备相应年份、双语 `bio` 与 `portrait`。15条 Person 正式/草稿记录均已写入 `memberCategory` 并清理旧 `position/memberRole/graduationYear/alumniDegree/order/category`；唐陆禛使用 `alumniIdentity=master` 与双语毕业去向。Publication 92 published、0 draft，其中 4 条已勾选 `featured`，91 条已具备公开 PDF；Talk 11 published、0 draft；课程“同伴教学法”已 published；未配置 Sanity 时回退到受控双语静态数据；后台无访客登录 |
 | 默认语言 | 英文 `/en`；中文 `/zh`；根路径 `/` 跳转英文；双语入口直接展示个人信息，不再设独立首页 |
 
 ---
@@ -978,3 +978,10 @@ npm run studio:build
 
 - 根据用户确认，将全站双语页脚公开通讯地址中的办公室号由 Room/419 室改为 Room/423 室；街道、机构和邮编保持不变。同步更新渲染回归测试，未改变其他内容。
 - 本轮与前一条中文首页搜索语义增强一并验证后推送部署。
+
+### 2026-10-09 - 更新英文导师简介并新增访问学者陈娜平（代码待部署）
+
+- 根据用户提供的最终英文文案，Sanity Production Profile 的英文 `bio` 已更新为一段完整简介，包含北京大学任职、教育技术系副主任、莫纳什大学兼职研究员、北京大学教育技术学博士、爱丁堡大学博士后训练、研究方向与 QS Reimagine Education Award / SoLAR Emerging Scholar Award；中文 `bio` 保持并恢复为当前公开版本。受控静态回退英文 Profile 同步更新。
+- 从用户提供的《个人简介（陈娜平）》DOCX 核对到陈娜平 / Chen Naping、2023级进修教师、汕头大学医学院讲师、医学教育博士在读及研究简介；按用户要求归入访问学者类别，`enrollmentYear=2023`，双语简介写入 Sanity `person-012` 并发布。原图 979×1468 仅做中部 1:1 裁切为 979×979 JPEG，Sanity Asset 为 `image-9937a148f016c1b042026f613b762bc6badb0e33-979x979-jpg`。
+- 受控回退成员数据同步加入陈娜平，现正式 Person 数量为12；新增 `studio/scripts/add-chen-naping.mjs`（默认干跑，显式 `ADD_CHEN_NAPING_APPLY=1` 才写入）与 `studio/scripts/update-profile-bio.mjs`（默认干跑），不包含任何凭据。Sanity 写入事务为 `e2xTCHiyS8cvV9FyV2PARc`，Profile 修复事务为 `DJM35LYBR155oSfn84qfVC`。
+- 回归结果：前端 `npm test` 64/64 通过，ESLint 通过，Sanity Studio build 通过；本轮代码尚未提交、推送或部署，待用户明确要求后再执行。

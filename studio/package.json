@@ -11,6 +11,8 @@
     "migrate:peer-instruction": "sanity exec scripts/add-peer-instruction-course.mjs --with-user-token",
     "migrate:people-categories": "sanity exec scripts/migrate-people-categories.mjs --with-user-token",
     "add:sophia-xu": "sanity exec scripts/add-sophia-xu.mjs --with-user-token",
+    "add:chen-naping": "sanity exec scripts/add-chen-naping.mjs --with-user-token",
+    "update:profile-bio": "sanity exec scripts/update-profile-bio.mjs --with-user-token",
     "prefix:person-positions": "sanity exec scripts/prefix-person-positions.mjs --with-user-token",
     "attach:missing-publication-pdfs": "sanity exec scripts/attach-missing-publication-pdfs.mjs --with-user-token",
     "migrate:publications": "sanity exec scripts/migrate-publications.mjs --with-user-token",

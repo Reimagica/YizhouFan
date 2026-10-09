@@ -250,6 +250,14 @@ export const people = [
     bioZh: "许淼，教育博士，昆明学院外国语学院讲师、研究生导师。主要研究方向为英语课程与教学论、英语教学法、英语教师教育及人工智能赋能教育教学。",
   },
   {
+    name: "Chen Naping",
+    nameZh: "陈娜平",
+    memberCategory: "visiting",
+    enrollmentYear: 2023,
+    bio: "Chen Naping, M.Med., is a lecturer at Shantou University Medical College and a Ph.D. candidate in Medical Education. Her research interests focus on using artificial intelligence to cultivate medical students’ clinical reasoning skills and self-regulated learning.",
+    bioZh: "陈娜平，临床医学硕士，医学教育博士在读，汕头大学医学院讲师。主要研究方向为人工智能赋能医学生临床推理能力培养及医学生自我调节学习。",
+  },
+  {
     name: "Luzhen Tang",
     nameZh: "唐陆禛",
     memberCategory: "alumni",
